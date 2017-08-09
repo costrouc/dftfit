@@ -1,0 +1,28 @@
+
+# LAMMPS Input File for MgO
+
+# Initialize Simulation
+clear
+units metal
+dimension 3
+boundary p p p
+atom_style charge
+
+# Read in atomic positions and unit cell
+read_data mgo.data
+
+# Define Interatoic Potential
+pair_style buck/coul/long 10.0
+pair_coeff 1 1 1309077.3 0.0306730024 -9.99749294
+pair_coeff 1 2 4254.53827 0.23847176 27.5030583
+pair_coeff 2 2 2374.5301 0.290297534 26.5174178
+
+kspace_style ewald 1.0e-5
+
+# Run minimization
+fix 1 all box/relax iso 0.0 vmax 0.001
+
+thermo 10
+# thermo_style custom step lx ly lz vol
+
+minimize 1.0e-10 1.0e-10 2000 100000
