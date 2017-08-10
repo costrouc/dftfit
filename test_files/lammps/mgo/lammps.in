@@ -1,0 +1,13 @@
+log  lammps.log
+units  metal
+dimension  3
+boundary  p p p
+atom_style  full
+pair_style  buck/coul/long 10.0
+kspace_style  pppm 1.0e-5
+read_data  initial.data
+dump  1 all custom 1 mol.lammpstrj id type x y z fx fy fz
+dump_modify  1 sort id
+thermo_style  custom step etotal pxx pyy pzz pxy pxz pyz
+run  0
+
