@@ -6,6 +6,7 @@ molecular dyanmics potentials by fitting ab initio dft data.
 Our package is unique in that it takes advantage of LAMMPS, a well
 established molecular dynamics package."""
 
+
 class PyTest(TestCommand):
     user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
 
@@ -27,11 +28,12 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
+version='0.0.1'
 setup(
     name='dftfit',
-    version="0.1",
+    version=version,
     description='Ab-Initio Molecular Dynamics Potential Development',
-    install_requires=['numpy', 'scipy', 'ase', 'pymatgen', 'pymatgen-lammps'],
+    install_requires=['pymatgen', 'pymatgen-lammps'],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     cmdclass = {'test': PyTest},
