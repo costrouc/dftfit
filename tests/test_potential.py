@@ -8,7 +8,7 @@ def test_potential_lammps():
         },
         'kspace': {
             'type': 'pppm',
-            'cutoff': 10.0
+            'tollerance': 10.0
         },
         'pair': {
             'type': 'buckingham',

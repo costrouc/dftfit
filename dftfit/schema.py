@@ -41,7 +41,7 @@ class KspaceSchema(BaseSchema):
     KSPACE_TYPES = {'ewald', 'pppm'}
 
     type = fields.String(required=True, validate=validate.OneOf(KSPACE_TYPES))
-    cutoff = fields.Float(required=True, validate=validate.Range(min=1e-6))
+    tollerance = fields.Float(required=True, validate=validate.Range(min=1e-16))
 
 
 class ParametersSchema(BaseSchema):

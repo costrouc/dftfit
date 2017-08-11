@@ -76,11 +76,49 @@ lammps_dftfit_set = OrderedDict([
 
 
 class LammpsWriter(MDWriter):
-    def __init__(self, structure, potentials, user_lammps_settings=None):
-        self.data = LammpsData.from_structure(structure, potentials, include_charge=True)
+    def __init__(self, structure, potential):
+        self.structure = structure
+        self.potential = potential
+        self.data = LammpsData.from_structure(self.structure)
+        # use data index to get (charge set + pair_coeff set)
+
         lammps_script = LammpsScript(lammps_dftfit_set)
-        lammps_script.update(user_lammps_settings or [])
+        lammps_script.update([self.kspace_style, self.pair_style])
         self.lammps_input = LammpsInput(lammps_script, self.data)
 
     def write_input(self, directory):
         self.lammps_input.write_input(directory)
+
+    @property
+    def charge(self):
+        # set type <atom type> charge <value>
+        pass
+
+    @property
+    def kspace_style(self):
+        if self.potential['kspace']:
+            style = self.potential['kspace']['type']
+            cutoff = self.potential['kspace']['cutoff']
+            return ('kspace_style', '%s %f' % (style, cutoff))
+        return ('kspace_style', [])
+
+    @property
+    def pair_style(self):
+        pair_map = {
+            'buckingham': 'buck'
+        }
+
+        if self.potential['pair']:
+            style = pair_map[self.potential['pair']]
+            cutoff = self.potential['pair']['cutoff']
+            if self.potential['kspace'] in {'ewald', 'pppm'}:
+                style += '/coul/long'
+            return ('pair_style', '%s %d' % (style, cutoff))
+        return ('pair_style', [])
+
+    @property
+    def pair_coeff(self):
+        # pair_coeff <atom_type> <atom_type> <v1> <v2> <v3>
+        if self.potential['pair']:
+            symbol_indicies = self.data.symbol_indicies
+            print(symbol_indicies)
