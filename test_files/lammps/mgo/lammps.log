@@ -1,0 +1,69 @@
+units  metal
+dimension  3
+boundary  p p p
+atom_style  full
+pair_style  buck/coul/long 10.0
+kspace_style  pppm 1.0e-5
+read_data  initial.data
+  triclinic box = (0 0 0) to (4.19909 4.19909 4.19909) with tilt (2.5712e-16 2.5712e-16 2.5712e-16)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  8 atoms
+  0 = max # of 1-2 neighbors
+  0 = max # of 1-3 neighbors
+  0 = max # of 1-4 neighbors
+  1 = max # of special neighbors
+dump  1 all custom 1 mol.lammpstrj id type x y z fx fy fz
+dump_modify  1 sort id
+thermo_style  custom step etotal pxx pyy pzz pxy pxz pyz
+run  0
+WARNING: No fixes defined, atoms won't move (../verlet.cpp:55)
+PPPM initialization ...
+WARNING: Using 12-bit tables for long-range coulomb (../kspace.cpp:316)
+  G vector (1/distance) = 0.356365
+  grid = 8 8 8
+  stencil order = 5
+  estimated absolute RMS force accuracy = 2.47121e-05
+  estimated relative force accuracy = 1.71616e-06
+  using double precision FFTs
+  3d grid and FFT values/proc = 4913 512
+Neighbor list info ...
+  1 neighbor list requests
+  update every 1 steps, delay 10 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 12
+  ghost atom cutoff = 12
+  binsize = 6 -> bins = 1 1 1
+Memory usage per processor = 6.80418 Mbytes
+Step TotEng Pxx Pyy Pzz Pxy Pxz Pyz 
+       0    -85.34101    661.01685    661.01685    661.01685 9.2077572e-11 -3.5735631e-10 -4.0058502e-10 
+Loop time of 2.64264e-06 on 1 procs for 0 steps with 8 atoms
+
+0.0% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Bond    | 0          | 0          | 0          |   0.0 |  0.00
+Kspace  | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 2.643e-06  |            |       |100.00
+
+Nlocal:    8 ave 8 max 8 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    2189 ave 2189 max 2189 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    3000 ave 3000 max 3000 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 3000
+Ave neighs/atom = 375
+Ave special neighs/atom = 0
+Neighbor list builds = 0
+Dangerous builds = 0
+
+Total wall time: 0:00:00
