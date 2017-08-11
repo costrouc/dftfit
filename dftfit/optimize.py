@@ -21,8 +21,7 @@ from .io import (
     write_lammps_data_file,
     filetypes
 )
-from .utils import which
-from .logging import create_logger
+from shutil import which
 
 
 class Dftfit:
