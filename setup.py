@@ -51,7 +51,6 @@ setup(
     download_url='https://gitlab.aves.io/costrouc/dftfit/repository/archive.zip?ref=v%s' % version,
     packages=find_packages(exclude=('tests', 'docs', 'notebooks', 'examples')),
     install_requires=['pymatgen', 'pymatgen-lammps'],
-    setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     license='LGPLv2.1+',
 )
