@@ -14,7 +14,7 @@ unittest:
     - echo "============== Testing Package ============="
     - python --version
     - pip install . # quieter
-    - python setup.py test
+    - python setup.py test -a '-m "not mattoolkit"'
     - echo "============================================"
 
 deploy_pypi:
