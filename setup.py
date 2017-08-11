@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
-
-long_description = """DFTFIT is a package for creating
-molecular dyanmics potentials by fitting ab initio dft data.
-Our package is unique in that it takes advantage of LAMMPS, a well
-established molecular dynamics package."""
+# To use a consistent encoding
+from codecs import open
+from os import path
+import sys
+import shlex
 
 
 class PyTest(TestCommand):
@@ -27,21 +27,31 @@ class PyTest(TestCommand):
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
+here = path.abspath(path.dirname(__file__))
+
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
 
 version='0.0.1'
 setup(
     name='dftfit',
     version=version,
     description='Ab-Initio Molecular Dynamics Potential Development',
+    long_description=long_description,
+    url='https://gitlab.aves.io/costrouc/dftfit',
+    author='Chris Ostrouchov',
+    author_email='chris.ostrouchov+dftfit@gmail.com',
+    classifiers=[
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+    ],
+    cmdclass = {'test': PyTest},
+    keywords='materials dft molecular dynamics lammps science hpc',
+    download_url='https://gitlab.aves.io/costrouc/dftfit/repository/archive.zip?ref=v%s' % version,
+    packages=find_packages(exclude=('tests', 'docs', 'notebooks', 'examples')),
     install_requires=['pymatgen', 'pymatgen-lammps'],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
-    cmdclass = {'test': PyTest},
-    url='https://github.com/costrou/dftfit',
-    maintainer='Christopher Ostrouchov',
-    maintainer_email='chris.ostrouchov+dftfit@gmail.com',
     license='LGPLv2.1+',
-    platforms=['linux'],
-    packages=find_packages(exclude=('tests', 'docs', 'notebooks', 'examples')),
-    long_description=long_description,
 )
