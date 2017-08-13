@@ -45,8 +45,8 @@ class KspaceSchema(BaseSchema):
 
 
 class ParametersSchema(BaseSchema):
-    atoms = fields.List(fields.String(validate=validate.OneOf(element_symbols)), required=True)
-    parameters = fields.List(fields.Float())
+    elements = fields.List(fields.String(validate=validate.OneOf(element_symbols)), required=True)
+    coefficients = fields.List(fields.Float())
 
 
 class PairPotentialSchema(BaseSchema):

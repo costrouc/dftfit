@@ -5,8 +5,7 @@ import numpy as np
 from pymatgen import Lattice, Specie, Structure
 
 from dftfit.io import LammpsReader, LammpsWriter
-from lammps.core import LammpsPotentials
-
+from dftfit.potential import Potential
 
 
 def test_lammps_reader():
@@ -30,18 +29,34 @@ def test_lammps_writer():
     sites = [[0, 0, 0], [0.5, 0.5, 0.5]]
     structure = Structure.from_spacegroup(225, lattice, atoms, sites)
 
-    lammps_potentials = LammpsPotentials(pair={
-        (mg, mg): '1309362.2766468062  0.104    0.0',
-        (mg, o ): '9892.357            0.20199  0.0',
-        (o , o ): '2145.7345           0.3      30.2222'
-    })
+    potential_schema = {
+        'charge': {
+            'Mg': 1.4, 'O': -1.4
+        },
+        'kspace': {
+            'type': 'pppm', 'tollerance': 1e-5
+        },
+        'pair': {
+            'type': 'buckingham',
+            'cutoff': 10.0,
+            'parameters': [
+                {
+                    'elements': ['Mg', 'Mg'],
+                    'coefficients': [1309362.2766468062, 0.104, 0.0]
+                },
+                {
+                    'elements': ['Mg', 'O'],
+                    'coefficients': [9892.357, 0.20199, 0.0]
+                },
+                {
+                    'elements': ['O', 'O'],
+                    'coefficients': [2145.7345, 0.3, 30.2222]
+                }
+            ]
+        }
+    }
 
-    user_lammps_settings = [
-        ('pair_style', 'buck/coul/long 10.0'),
-        ('kspace_style', 'pppm 1.0e-5')
-    ]
-
-    lammps = LammpsWriter(structure, lammps_potentials, user_lammps_settings)
+    lammps = LammpsWriter(structure, potential_schema)
     with TemporaryDirectory() as tempdir:
         lammps.write_input(tempdir)
         assert set(os.listdir(tempdir)) == {'lammps.in', 'initial.data'}

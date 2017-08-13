@@ -14,11 +14,14 @@ def test_potential_lammps():
             'type': 'buckingham',
             'cutoff': 10.0,
             'parameters': [{
-                'atoms': ['Mg', 'O'],
-                'parameters': [1.0, 0.0, 3.0]
+                'elements': ['Mg', 'O'],
+                'coefficients': [1.0, 0.0, 3.0]
             }]
         }
     }
     potential = Potential(schema)
     print(potential)
-    assert False
+
+
+def test_potential_from_file():
+    potential = Potential.from_file('test_files/potential/mgo.yaml')

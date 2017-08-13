@@ -2,14 +2,17 @@
 
 
 """
+import json
+
+import yaml
 
 from .schema import PotentialSchema
-import json
 
 
 class Potential:
     def __init__(self, schema):
-        self.schema = PotentialSchema().load(schema)
+        schema_load, errors = PotentialSchema().load(schema)
+        self.schema = schema_load
 
     @property
     def parameters(self):
@@ -17,6 +20,24 @@ class Potential:
 
         """
         raise NotImplementedError()
+
+
+    @classmethod
+    def from_file(cls, filename, format=None):
+        if format not in {'json', 'yaml'}:
+            if filename.endswith('json'):
+                format = 'json'
+            elif filename.endswith('yaml') or filename.endswith('yml'):
+                format = 'yaml'
+            else:
+                raise ValueError('unrecognized filetype from filename %s' % filename)
+
+        if format == 'json':
+            with open(filename) as f:
+                return cls(json.load(f))
+        elif format in {'yaml', 'yml'}:
+            with open(filename) as f:
+                return cls(yaml.load(f))
 
 
     @parameters.setter

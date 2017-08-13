@@ -5,6 +5,9 @@ from lammps.output import LammpsRun, LammpsData
 from lammps.inputs import LammpsInput, LammpsScript
 
 from .base import MDReader, MDWriter
+from .utils import element_type_to_symbol
+from ..potential import Potential
+
 
 
 class LammpsReader(MDReader):
@@ -65,9 +68,11 @@ lammps_dftfit_set = OrderedDict([
     ('dimension', 3),
     ('boundary', 'p p p'),
     ('atom_style', 'full'),
-    ('pair_style', []),
-    ('kspace_style', []),
     ('read_data', 'initial.data'),
+    ('kspace_style', []),
+    ('pair_style', []),
+    ('pair_coeff', []),
+    ('set', []),
     ('dump', '1 all custom 1 mol.lammpstrj id type x y z fx fy fz'),
     ('dump_modify', '1 sort id'),
     ('thermo_style', 'custom step etotal pxx pyy pzz pxy pxz pyz'),
@@ -78,12 +83,14 @@ lammps_dftfit_set = OrderedDict([
 class LammpsWriter(MDWriter):
     def __init__(self, structure, potential):
         self.structure = structure
-        self.potential = potential
-        self.data = LammpsData.from_structure(self.structure)
-        # use data index to get (charge set + pair_coeff set)
+        if not isinstance(potential, Potential):
+            potential = Potential(potential)
 
+        self.potential = potential.schema # TODO: Hack potential should do more work
+        self.data = LammpsData.from_structure(self.structure)
+        self.symbol_indicies = {element_type_to_symbol(s): i for s, i in self.data.symbol_indicies.items()}
         lammps_script = LammpsScript(lammps_dftfit_set)
-        lammps_script.update([self.kspace_style, self.pair_style])
+        lammps_script.update([self.charge, self.kspace_style, self.pair_style, self.pair_coeff])
         self.lammps_input = LammpsInput(lammps_script, self.data)
 
     def write_input(self, directory):
@@ -91,15 +98,17 @@ class LammpsWriter(MDWriter):
 
     @property
     def charge(self):
-        # set type <atom type> charge <value>
-        pass
+        set_commands = []
+        for element, charge in self.potential.get('charge', {}).items():
+            set_commands.append('type %d charge %f' % (self.symbol_indicies[element], charge))
+        return ('set', set_commands)
 
     @property
     def kspace_style(self):
-        if self.potential['kspace']:
+        if 'kspace' in self.potential:
             style = self.potential['kspace']['type']
-            cutoff = self.potential['kspace']['cutoff']
-            return ('kspace_style', '%s %f' % (style, cutoff))
+            tollerance = self.potential['kspace']['tollerance']
+            return ('kspace_style', '%s %f' % (style, tollerance))
         return ('kspace_style', [])
 
     @property
@@ -108,17 +117,20 @@ class LammpsWriter(MDWriter):
             'buckingham': 'buck'
         }
 
-        if self.potential['pair']:
-            style = pair_map[self.potential['pair']]
+        if 'pair' in self.potential:
+            style = pair_map[self.potential['pair']['type']]
             cutoff = self.potential['pair']['cutoff']
-            if self.potential['kspace'] in {'ewald', 'pppm'}:
+            if 'kspace'in self.potential and self.potential['kspace']['type'] in {'ewald', 'pppm'}:
                 style += '/coul/long'
             return ('pair_style', '%s %d' % (style, cutoff))
         return ('pair_style', [])
 
     @property
     def pair_coeff(self):
-        # pair_coeff <atom_type> <atom_type> <v1> <v2> <v3>
-        if self.potential['pair']:
-            symbol_indicies = self.data.symbol_indicies
-            print(symbol_indicies)
+        if 'pair' in self.potential:
+            symbols_to_indicies = lambda symbols: [self.symbol_indicies[s] for s in symbols]
+            pair_coeffs = []
+            for coeff in self.potential['pair']['parameters']:
+                pair_coeffs.append(' '.join(list(map(str, symbols_to_indicies(coeff['elements']) + coeff['coefficients']))))
+            return ('pair_coeff', pair_coeffs)
+        return ('pair_coeff', [])

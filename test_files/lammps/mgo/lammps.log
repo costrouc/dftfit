@@ -2,8 +2,6 @@ units  metal
 dimension  3
 boundary  p p p
 atom_style  full
-pair_style  buck/coul/long 10.0
-kspace_style  pppm 1.0e-5
 read_data  initial.data
   triclinic box = (0 0 0) to (4.19909 4.19909 4.19909) with tilt (2.5712e-16 2.5712e-16 2.5712e-16)
   1 by 1 by 1 MPI processor grid
@@ -13,6 +11,15 @@ read_data  initial.data
   0 = max # of 1-3 neighbors
   0 = max # of 1-4 neighbors
   1 = max # of special neighbors
+kspace_style  pppm 0.000010
+pair_style  buck/coul/long 10
+pair_coeff 1 1 1309362.2766468062 0.104 0.0
+pair_coeff 1 2 9892.357 0.20199 0.0
+pair_coeff 2 2 2145.7345 0.3 30.2222
+set type 2 charge -1.400000
+  4 settings made for charge
+set type 1 charge 1.400000
+  4 settings made for charge
 dump  1 all custom 1 mol.lammpstrj id type x y z fx fy fz
 dump_modify  1 sort id
 thermo_style  custom step etotal pxx pyy pzz pxy pxz pyz
@@ -37,7 +44,7 @@ Neighbor list info ...
 Memory usage per processor = 6.80418 Mbytes
 Step TotEng Pxx Pyy Pzz Pxy Pxz Pyz 
        0    -85.34101    661.01685    661.01685    661.01685 9.2077572e-11 -3.5735631e-10 -4.0058502e-10 
-Loop time of 2.64264e-06 on 1 procs for 0 steps with 8 atoms
+Loop time of 1.33883e-06 on 1 procs for 0 steps with 8 atoms
 
 0.0% CPU use with 1 MPI tasks x no OpenMP threads
 
@@ -51,7 +58,7 @@ Neigh   | 0          | 0          | 0          |   0.0 |  0.00
 Comm    | 0          | 0          | 0          |   0.0 |  0.00
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 2.643e-06  |            |       |100.00
+Other   |            | 1.339e-06  |            |       |100.00
 
 Nlocal:    8 ave 8 max 8 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
