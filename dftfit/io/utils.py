@@ -5,7 +5,7 @@ def element_type_to_symbol(specie):
     if isinstance(specie, Specie):
         return specie.element.symbol
     elif isinstance(specie, Element):
-        return element.symbol
+        return specie.symbol
     elif isinstance(specie, str):
         return specie
     else:

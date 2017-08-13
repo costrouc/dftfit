@@ -1,3 +1,6 @@
+import subprocess
+
+
 class DFTReader:
     @property
     def forces(self):
@@ -42,9 +45,15 @@ class MDReader:
         raise NotImplementedError()
 
 
-# Need MDPotential class
-
-
 class MDWriter:
     def write_input(self, directory):
         raise NotImplementedError()
+
+
+class MDRunner:
+    def run(self, writer, command, directory):
+        raise NotImplementedError()
+
+    def _run(self, command, run_directory):
+        process = subprocess.Popen(command, cwd=run_directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return process.wait()

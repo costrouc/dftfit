@@ -20,7 +20,6 @@ def test_potential_lammps():
         }
     }
     potential = Potential(schema)
-    print(potential)
 
 
 def test_potential_from_file():
@@ -30,4 +29,3 @@ def test_potential_from_file():
 def test_potential_from_file_read_parameters():
     potential = Potential.from_file('test_files/potential/mgo.yaml')
     print(potential.parameters)
-    assert False

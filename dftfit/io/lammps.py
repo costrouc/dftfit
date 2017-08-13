@@ -1,10 +1,11 @@
 from pathlib import Path
 from collections import OrderedDict
+import subprocess
 
 from lammps.output import LammpsRun, LammpsData
 from lammps.inputs import LammpsInput, LammpsScript
 
-from .base import MDReader, MDWriter
+from .base import MDReader, MDWriter, MDRunner
 from .utils import element_type_to_symbol
 from ..potential import Potential
 
@@ -134,3 +135,14 @@ class LammpsWriter(MDWriter):
                 pair_coeffs.append(' '.join(list(map(str, symbols_to_indicies(coeff['elements']) + coeff['coefficients']))))
             return ('pair_coeff', pair_coeffs)
         return ('pair_coeff', [])
+
+
+class LammpsRunner(MDRunner):
+    def run(self, writer, command=None, directory=None):
+        directory = directory or '.'
+        command = command or ['lammps']
+        writer.write_input(directory)
+        return_code = self._run(command, directory)
+        if return_code != 0:
+            raise ValueError('Lammps calculation exited with non zero return code')
+        return LammpsReader(directory)
