@@ -25,3 +25,9 @@ def test_potential_lammps():
 
 def test_potential_from_file():
     potential = Potential.from_file('test_files/potential/mgo.yaml')
+
+
+def test_potential_from_file_read_parameters():
+    potential = Potential.from_file('test_files/potential/mgo.yaml')
+    print(potential.parameters)
+    assert False
