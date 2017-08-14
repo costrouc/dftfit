@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields, validate, ValidationError
+from marshmallow import Schema, Field, fields, validate, ValidationError
 from marshmallow.decorators import validates_schema
 
 from .data import element_symbols
@@ -24,6 +24,23 @@ class BaseSchema(Schema):
                 check_unknown(original_data_single)
         else:
             check_unknown(original_data)
+
+
+# class FloatOrParameter(Field):
+#     def _serialize(self, value, attr, obj):
+#         if isinstance(value, (float, int)):
+#             return float(value)
+#         elif isinstance(value, dict):
+#             if ''
+#         else:
+#             raise ValidationError('invalid parameter')
+#         if not value:
+#             return ''
+#         return unicode(value).title()
+
+
+class ConstraintSchema(BaseSchema):
+    charge_balance = fields.String()
 
 
 class ChargesSchema(BaseSchema):
@@ -57,7 +74,14 @@ class PairPotentialSchema(BaseSchema):
     parameters = fields.Nested(ParametersSchema, required=True, many=True)
 
 
-class PotentialSchema(BaseSchema):
+class PotentialSpecSchema(BaseSchema):
+    constraint = fields.Nested(ConstraintSchema)
     charge = fields.Nested(ChargesSchema)
     kspace = fields.Nested(KspaceSchema)
     pair = fields.Nested(PairPotentialSchema)
+
+
+class PotentialSchema(BaseSchema):
+    version = fields.String(required=True, validate=validate.Equal('v1'))
+    kind = fields.String(required=True, validate=validate.Equal('Potential'))
+    spec = fields.Nested(PotentialSpecSchema)

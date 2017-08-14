@@ -99,16 +99,18 @@ class LammpsWriter(MDWriter):
 
     @property
     def charge(self):
+        spec = self.potential['spec']
         set_commands = []
-        for element, charge in self.potential.get('charge', {}).items():
+        for element, charge in spec.get('charge', {}).items():
             set_commands.append('type %d charge %f' % (self.symbol_indicies[element], charge))
         return ('set', set_commands)
 
     @property
     def kspace_style(self):
-        if 'kspace' in self.potential:
-            style = self.potential['kspace']['type']
-            tollerance = self.potential['kspace']['tollerance']
+        spec = self.potential['spec']
+        if 'kspace' in spec:
+            style = spec['kspace']['type']
+            tollerance = spec['kspace']['tollerance']
             return ('kspace_style', '%s %f' % (style, tollerance))
         return ('kspace_style', [])
 
@@ -118,20 +120,22 @@ class LammpsWriter(MDWriter):
             'buckingham': 'buck'
         }
 
-        if 'pair' in self.potential:
-            style = pair_map[self.potential['pair']['type']]
-            cutoff = self.potential['pair']['cutoff']
-            if 'kspace'in self.potential and self.potential['kspace']['type'] in {'ewald', 'pppm'}:
+        spec = self.potential['spec']
+        if 'pair' in spec:
+            style = pair_map[spec['pair']['type']]
+            cutoff = spec['pair']['cutoff']
+            if 'kspace'in spec and spec['kspace']['type'] in {'ewald', 'pppm'}:
                 style += '/coul/long'
             return ('pair_style', '%s %d' % (style, cutoff))
         return ('pair_style', [])
 
     @property
     def pair_coeff(self):
-        if 'pair' in self.potential:
+        spec = self.potential['spec']
+        if 'pair' in spec:
             symbols_to_indicies = lambda symbols: [self.symbol_indicies[s] for s in symbols]
             pair_coeffs = []
-            for coeff in self.potential['pair']['parameters']:
+            for coeff in spec['pair']['parameters']:
                 pair_coeffs.append(' '.join(list(map(str, symbols_to_indicies(coeff['elements']) + coeff['coefficients']))))
             return ('pair_coeff', pair_coeffs)
         return ('pair_coeff', [])

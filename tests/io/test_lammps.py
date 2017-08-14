@@ -30,29 +30,33 @@ def test_lammps_writer():
     structure = Structure.from_spacegroup(225, lattice, atoms, sites)
 
     potential_schema = {
-        'charge': {
-            'Mg': 1.4, 'O': -1.4
-        },
-        'kspace': {
-            'type': 'pppm', 'tollerance': 1e-5
-        },
-        'pair': {
-            'type': 'buckingham',
-            'cutoff': 10.0,
-            'parameters': [
-                {
-                    'elements': ['Mg', 'Mg'],
-                    'coefficients': [1309362.2766468062, 0.104, 0.0]
-                },
-                {
-                    'elements': ['Mg', 'O'],
-                    'coefficients': [9892.357, 0.20199, 0.0]
-                },
-                {
-                    'elements': ['O', 'O'],
-                    'coefficients': [2145.7345, 0.3, 30.2222]
-                }
-            ]
+        'version': 'v1',
+        'kind': 'Potential',
+        'spec': {
+            'charge': {
+                'Mg': 1.4, 'O': -1.4
+            },
+            'kspace': {
+                'type': 'pppm', 'tollerance': 1e-5
+            },
+            'pair': {
+                'type': 'buckingham',
+                'cutoff': 10.0,
+                'parameters': [
+                    {
+                        'elements': ['Mg', 'Mg'],
+                        'coefficients': [1309362.2766468062, 0.104, 0.0]
+                    },
+                    {
+                        'elements': ['Mg', 'O'],
+                        'coefficients': [9892.357, 0.20199, 0.0]
+                    },
+                    {
+                        'elements': ['O', 'O'],
+                        'coefficients': [2145.7345, 0.3, 30.2222]
+                    }
+                ]
+            }
         }
     }
 
