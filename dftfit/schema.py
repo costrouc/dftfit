@@ -1,4 +1,4 @@
-from marshmallow import Schema, Field, fields, validate, ValidationError
+from marshmallow import Schema, fields, validate, ValidationError
 from marshmallow.decorators import validates_schema
 
 from .data import element_symbols
@@ -26,7 +26,7 @@ class BaseSchema(Schema):
             check_unknown(original_data)
 
 
-# class FloatOrParameter(Field):
+# class FloatOrParameter(fields.Field):
 #     def _serialize(self, value, attr, obj):
 #         if isinstance(value, (float, int)):
 #             return float(value)
