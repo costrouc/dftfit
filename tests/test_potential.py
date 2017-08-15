@@ -31,5 +31,5 @@ def test_potential_from_file():
 
 
 def test_potential_from_file_read_parameters():
-    potential = Potential.from_file('test_files/potential/mgo.yaml')
-    print(potential.parameters)
+    potential = Potential.from_file('test_files/potential/mgo-fitting.yaml')
+    assert len(potential.parameters) == 8

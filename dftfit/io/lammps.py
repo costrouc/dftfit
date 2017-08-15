@@ -102,7 +102,7 @@ class LammpsWriter(MDWriter):
         spec = self.potential['spec']
         set_commands = []
         for element, charge in spec.get('charge', {}).items():
-            set_commands.append('type %d charge %f' % (self.symbol_indicies[element], charge))
+            set_commands.append('type %d charge %f' % (self.symbol_indicies[element], float(charge)))
         return ('set', set_commands)
 
     @property
@@ -111,7 +111,7 @@ class LammpsWriter(MDWriter):
         if 'kspace' in spec:
             style = spec['kspace']['type']
             tollerance = spec['kspace']['tollerance']
-            return ('kspace_style', '%s %f' % (style, tollerance))
+            return ('kspace_style', '%s %f' % (style, float(tollerance)))
         return ('kspace_style', [])
 
     @property
@@ -126,7 +126,7 @@ class LammpsWriter(MDWriter):
             cutoff = spec['pair']['cutoff']
             if 'kspace'in spec and spec['kspace']['type'] in {'ewald', 'pppm'}:
                 style += '/coul/long'
-            return ('pair_style', '%s %d' % (style, cutoff))
+            return ('pair_style', '%s %f' % (style, float(cutoff)))
         return ('pair_style', [])
 
     @property

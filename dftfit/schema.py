@@ -1,4 +1,6 @@
-from marshmallow import Schema, fields, validate, ValidationError
+import sys
+
+from marshmallow import Schema, fields, validate, ValidationError, pre_load
 from marshmallow.decorators import validates_schema
 
 from .data import element_symbols
@@ -26,51 +28,74 @@ class BaseSchema(Schema):
             check_unknown(original_data)
 
 
-# class FloatOrParameter(fields.Field):
-#     def _serialize(self, value, attr, obj):
-#         if isinstance(value, (float, int)):
-#             return float(value)
-#         elif isinstance(value, dict):
-#             if ''
-#         else:
-#             raise ValidationError('invalid parameter')
-#         if not value:
-#             return ''
-#         return unicode(value).title()
+class Parameter:
+    """ Float with tracking. initial value and bounds.
+
+    """
+    def __init__(self, initial, bounds=(-sys.float_info.max, sys.float_info.max), computed=None):
+        self.initial = float(initial)
+        self.current = float(initial)
+        self.bounds = [float(_) for _ in bounds]
+        self.computed = computed
+
+    def __float__(self):
+        if self.computed is None:
+            return self.current
+        return self.computed()
+
+    def __str__(self):
+        return str(self.current)
+
+
+class ParameterSchema(BaseSchema):
+    initial = fields.Float(required=True)
+    bounds = fields.List(fields.Float(), validate=validate.Length(equal=2), missing=(-sys.float_info.max, sys.float_info.max))
+
+
+class FloatOrParameter(fields.Field):
+    def _deserialize(self, value, attr, data):
+        try:
+            return float(value)
+        except (ValueError, TypeError):
+            schema_load, errors = ParameterSchema().load(value)
+            return Parameter(**value)
+
+    def _validate(self, value):
+        if value is None:
+            return None
+        try:
+            super()._validate(float(value))
+        except (ValueError, TypeError):
+            schema_load, errors = ParameterSchema().load(value)
+            if not (schema_load['bounds'][0] < schema_load['initial'] < schema_load['bounds'][1]):
+                raise ValidationError('initial value must be between bounds', 'initial')
+            super()._validate(schema_load['initial'])
 
 
 class ConstraintSchema(BaseSchema):
     charge_balance = fields.String()
 
 
-class ChargesSchema(BaseSchema):
-    class Meta:
-        fields = tuple(element_symbols)
-
-    @validates_schema
-    def validate_charge(self, data):
-        for element, charge in data.items():
-            if not isinstance(charge, (int, float)):
-                raise ValidationError('charge must be int or float', element)
+ChargesSchema = type('ChargeSchema', (BaseSchema,), {element: FloatOrParameter() for element in element_symbols})
 
 
 class KspaceSchema(BaseSchema):
     KSPACE_TYPES = {'ewald', 'pppm'}
 
     type = fields.String(required=True, validate=validate.OneOf(KSPACE_TYPES))
-    tollerance = fields.Float(required=True, validate=validate.Range(min=1e-16))
+    tollerance = FloatOrParameter(required=True, validate=validate.Range(min=1e-16))
 
 
 class ParametersSchema(BaseSchema):
     elements = fields.List(fields.String(validate=validate.OneOf(element_symbols)), required=True)
-    coefficients = fields.List(fields.Float())
+    coefficients = fields.List(FloatOrParameter())
 
 
 class PairPotentialSchema(BaseSchema):
     PAIR_POTENTIALS = {'buckingham'}
 
     type = fields.String(required=True, validate=validate.OneOf(PAIR_POTENTIALS))
-    cutoff = fields.Float(required=True, validate=validate.Range(min=1e-6))
+    cutoff = FloatOrParameter(required=True, validate=validate.Range(min=1e-6))
     parameters = fields.Nested(ParametersSchema, required=True, many=True)
 
 
