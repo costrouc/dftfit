@@ -28,6 +28,8 @@ class BaseSchema(Schema):
             check_unknown(original_data)
 
 
+# ======= Potential ========
+
 class Parameter:
     """ Float with tracking. initial value and bounds.
 
@@ -110,3 +112,15 @@ class PotentialSchema(BaseSchema):
     version = fields.String(required=True, validate=validate.Equal('v1'))
     kind = fields.String(required=True, validate=validate.Equal('Potential'))
     spec = fields.Nested(PotentialSpecSchema)
+
+
+# ======= Training Set =======
+
+class TrainingSpecSchema(BaseSchema):
+    pass
+
+
+class TrainingSchema(BaseSchema):
+    version = fields.String(required=True, validate=validate.Equal('v1'))
+    kind = fields.String(required=True, validate=validate.Equal('Training'))
+    spec = fields.Nested(TrainingSpecSchema)
