@@ -8,7 +8,8 @@ import yaml
 import numpy as np
 from pymatgen.core import Composition
 
-from .schema import PotentialSchema, Parameter
+from .schema import PotentialSchema
+from .parameter import FloatParameter
 
 
 class Potential:
@@ -26,7 +27,7 @@ class Potential:
                 if not {e.symbol for e in composition.keys()} <= charges.keys():
                     raise ValueError('charge ballance constrains requires all elements to be defined in charge')
                 for charge_element, parameter in charges.items():
-                    if isinstance(parameter, Parameter) and parameter.computed == None:
+                    if isinstance(parameter, FloatParameter) and parameter.computed == None:
                         break
                 else:
                     if abs(sum(float(charges[element.symbol]) * amount for element, amount in composition.items())) > 1e-8:
@@ -44,7 +45,7 @@ class Potential:
             elif isinstance(value, (tuple, list)):
                 for item in value:
                     _walk(item)
-            elif isinstance(value, Parameter) and value.computed == None:
+            elif isinstance(value, FloatParameter) and value.computed == None:
                 self._parameters.append(value)
         _walk(self.schema)
 

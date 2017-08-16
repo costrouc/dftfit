@@ -1,52 +1,10 @@
 import sys
 
-from marshmallow import Schema, fields, validate, ValidationError, pre_load
-from marshmallow.decorators import validates_schema
+from marshmallow import fields, validate, ValidationError
 
-from .data import element_symbols
-
-
-class BaseSchema(Schema):
-    def __init__(self, strict=True, **kwargs):
-        super(Schema, self).__init__(strict=strict, **kwargs)
-
-    @validates_schema(pass_original=True, pass_many=False, skip_on_field_errors=True)
-    def check_unknown_fields(self, data, original_data):
-        def check_unknown(original_data_single):
-            dump_only_keys = {key for key in self.fields if self.fields[key].dump_only}
-
-            unknown_dump = set(dump_only_keys) & set(original_data_single)
-            unknown_invalid = set(original_data_single) - set(self.fields.keys())
-            unknown = unknown_dump | unknown_invalid
-            if unknown:
-                raise ValidationError('Unknown field', unknown)
-
-        if isinstance(original_data, list):
-            for original_data_single in original_data:
-                check_unknown(original_data_single)
-        else:
-            check_unknown(original_data)
-
-
-# ======= Potential ========
-
-class Parameter:
-    """ Float with tracking. initial value and bounds.
-
-    """
-    def __init__(self, initial, bounds=(-sys.float_info.max, sys.float_info.max), computed=None):
-        self.initial = float(initial)
-        self.current = float(initial)
-        self.bounds = [float(_) for _ in bounds]
-        self.computed = computed
-
-    def __float__(self):
-        if self.computed is None:
-            return self.current
-        return self.computed()
-
-    def __str__(self):
-        return str(self.current)
+from .base import BaseSchema
+from ..data import element_symbols
+from ..parameter import FloatParameter
 
 
 class ParameterSchema(BaseSchema):
@@ -60,7 +18,7 @@ class FloatOrParameter(fields.Field):
             return float(value)
         except (ValueError, TypeError):
             schema_load, errors = ParameterSchema().load(value)
-            return Parameter(**value)
+            return FloatParameter(**value)
 
     def _validate(self, value):
         if value is None:
@@ -112,15 +70,3 @@ class PotentialSchema(BaseSchema):
     version = fields.String(required=True, validate=validate.Equal('v1'))
     kind = fields.String(required=True, validate=validate.Equal('Potential'))
     spec = fields.Nested(PotentialSpecSchema)
-
-
-# ======= Training Set =======
-
-class TrainingSpecSchema(BaseSchema):
-    pass
-
-
-class TrainingSchema(BaseSchema):
-    version = fields.String(required=True, validate=validate.Equal('v1'))
-    kind = fields.String(required=True, validate=validate.Equal('Training'))
-    spec = fields.Nested(TrainingSpecSchema)
