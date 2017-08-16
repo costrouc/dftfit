@@ -15,7 +15,7 @@ class Dftfit:
         self.max_iter = max_iter
         self.step_toll = step_toll
 
-        if not np.isclose(sum(w_f, w_s, w_e), 1.0, 1e-8):
+        if not np.isclose(sum([w_f, w_s, w_e]), 1.0, 1e-8):
             raise ValueError('sum of weighting functions must be one')
 
         self.weights = {
@@ -29,7 +29,7 @@ class Dftfit:
         """
 
         """
-        pass
+        print('Fitting.....')
 
 
     def predict(self, structure):
