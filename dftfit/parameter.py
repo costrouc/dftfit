@@ -5,16 +5,21 @@ class FloatParameter:
     """ Float with tracking. initial value and bounds.
 
     """
-    def __init__(self, initial, bounds=(-sys.float_info.max, sys.float_info.max), computed=None):
-        self.initial = float(initial)
+    def __init__(self, initial, bounds=None, fixed=False):
+        bounds = bounds or (-sys.float_info.max, sys.float_info.max)
         self.current = float(initial)
         self.bounds = [float(_) for _ in bounds]
-        self.computed = computed
+        self.computed = None
+        self._fixed = fixed
+
+    @property
+    def fixed(self):
+        return self._fixed or self.computed != None
 
     def __float__(self):
-        if self.computed is None:
-            return self.current
-        return self.computed()
+        if self.computed:
+            return self.computed()
+        return self.current
 
     def __str__(self):
         return str(self.current)

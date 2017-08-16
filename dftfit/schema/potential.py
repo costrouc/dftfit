@@ -12,10 +12,11 @@ class ParameterSchema(BaseSchema):
     bounds = fields.List(fields.Float(), validate=validate.Length(equal=2), missing=(-sys.float_info.max, sys.float_info.max))
 
 
-class FloatOrParameter(fields.Field):
+class FloatParameterField(fields.Field):
     def _deserialize(self, value, attr, data):
         try:
-            return float(value)
+            value = float(value)
+            return FloatParameter(value, fixed=True)
         except (ValueError, TypeError):
             schema_load, errors = ParameterSchema().load(value)
             return FloatParameter(**value)
@@ -36,26 +37,26 @@ class ConstraintSchema(BaseSchema):
     charge_balance = fields.String()
 
 
-ChargesSchema = type('ChargeSchema', (BaseSchema,), {element: FloatOrParameter() for element in element_symbols})
+ChargesSchema = type('ChargeSchema', (BaseSchema,), {element: FloatParameterField() for element in element_symbols})
 
 
 class KspaceSchema(BaseSchema):
     KSPACE_TYPES = {'ewald', 'pppm'}
 
     type = fields.String(required=True, validate=validate.OneOf(KSPACE_TYPES))
-    tollerance = FloatOrParameter(required=True, validate=validate.Range(min=1e-16))
+    tollerance = FloatParameterField(required=True, validate=validate.Range(min=1e-16))
 
 
 class ParametersSchema(BaseSchema):
     elements = fields.List(fields.String(validate=validate.OneOf(element_symbols)), required=True)
-    coefficients = fields.List(FloatOrParameter())
+    coefficients = fields.List(FloatParameterField())
 
 
 class PairPotentialSchema(BaseSchema):
     PAIR_POTENTIALS = {'buckingham'}
 
     type = fields.String(required=True, validate=validate.OneOf(PAIR_POTENTIALS))
-    cutoff = FloatOrParameter(required=True, validate=validate.Range(min=1e-6))
+    cutoff = FloatParameterField(required=True, validate=validate.Range(min=1e-6))
     parameters = fields.Nested(ParametersSchema, required=True, many=True)
 
 

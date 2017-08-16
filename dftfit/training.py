@@ -26,6 +26,9 @@ class Training:
     def calculations(self):
         return self._calculations
 
+    def __iter__(self):
+        return iter(self._calculations)
+
     def download_mattoolkit_calculations(self, selector):
         from mattoolkit.api import CalculationResourceList
 

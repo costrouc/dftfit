@@ -1,5 +1,8 @@
-from itertols import combinations
+from itertools import combinations
 from tempfile import TemporaryDirectory
+import math
+
+import numpy as np
 
 from .io.lammps import LammpsWriter, LammpsRunner
 
@@ -22,7 +25,7 @@ def optimize_function(md_calculations, dft_calculations, weight_forces, weight_s
     n_energy_sq_error = 0.0
     d_energy_sq_error = 0.0
 
-    for md_calculation, dft_calcualtion in zip(md_calculations, dft_calculations):
+    for md_calculation, dft_calculation in zip(md_calculations, dft_calculations):
         n_force_sq_error += np.sum((md_calculation.forces - dft_calculation.forces)**2.0)
         d_force_sq_error += np.sum(dft_calculation.forces**2.0)
 
@@ -33,11 +36,11 @@ def optimize_function(md_calculations, dft_calculations, weight_forces, weight_s
         n_energy_sq_error += ((md_calc_i.energy - md_calc_j.energy) - (dft_calc_i.energy - dft_calc_j.energy))**2.0
         d_energy_sq_error += (dft_calc_i.energy - dft_calc_j.energy)**2.0
 
-    force_sq_error = sqrt(n_force_sq_error / d_force_sq_error)
-    stress_sq_error = sqrt(n_stress_sq_error / d_stress_sq_error)
-    energy_sq_error = sqrt(n_energy_sq_error / d_energy_sq_error)
+    force_sq_error = math.sqrt(n_force_sq_error / d_force_sq_error)
+    stress_sq_error = math.sqrt(n_stress_sq_error / d_stress_sq_error)
+    energy_sq_error = math.sqrt(n_energy_sq_error / d_energy_sq_error)
 
-    return (weight_force * force_sq_error +
+    return (weight_forces * force_sq_error +
             weight_stress * stress_sq_error +
             weight_energy * energy_sq_error)
 

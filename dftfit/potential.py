@@ -27,7 +27,7 @@ class Potential:
                 if not {e.symbol for e in composition.keys()} <= charges.keys():
                     raise ValueError('charge ballance constrains requires all elements to be defined in charge')
                 for charge_element, parameter in charges.items():
-                    if isinstance(parameter, FloatParameter) and parameter.computed == None:
+                    if isinstance(parameter, FloatParameter) and not parameter.fixed:
                         break
                 else:
                     if abs(sum(float(charges[element.symbol]) * amount for element, amount in composition.items())) > 1e-8:
@@ -38,16 +38,18 @@ class Potential:
     def _collect_parameters(self):
         self._parameters = []
 
-        def _walk(value):
+        def _walk(value): # Ordered traversal of dictionary
             if isinstance(value, dict):
-                for key in value:
+                for key in sorted(value.keys()):
                     _walk(value[key])
             elif isinstance(value, (tuple, list)):
                 for item in value:
                     _walk(item)
-            elif isinstance(value, FloatParameter) and value.computed == None:
+            elif isinstance(value, FloatParameter):
                 self._parameters.append(value)
         _walk(self.schema)
+
+        self._optimization_parameters = [p for p in self._parameters if not p.fixed]
 
     @classmethod
     def from_file(cls, filename, format=None):
@@ -73,16 +75,24 @@ class Potential:
         """
         return np.array([float(parameter) for parameter in self._parameters])
 
-    @parameters.setter
-    def parameters(self, parameters):
+    @property
+    def optimization_parameters(self):
+        return self._optimization_parameters
+
+    @optimization_parameters.setter
+    def optimization_parameters(self, parameters):
         """ Update potential with given parameters
 
         """
-        if len(parameters) != len(self._parameters):
+        if len(parameters) != len(self._optimization_parameters):
             raise ValueError('updating parameters does not match length of potential parameters')
 
-        for parameter, update_parameter in zip(self._parameters, parameters):
+        for parameter, update_parameter in zip(self._optimization_parameters, parameters):
             parameter.current = update_parameter
+
+    @property
+    def optimization_bounds(self):
+        return np.array([parameter.bounds for parameter in self._optimization_parameters])
 
     def __str__(self):
         return json.dumps(self.schema, sort_keys=True, indent=4)
