@@ -5,7 +5,6 @@ Has a caching layer as to speed up future runs
 import json
 
 import yaml
-from mattoolkit.api import CalculationResourceList
 
 from .schema import TrainingSchema
 from .io import MTKReader
@@ -28,6 +27,8 @@ class Training:
         return self._calculations
 
     def download_mattoolkit_calculations(self, selector):
+        from mattoolkit.api import CalculationResourceList
+
         calculations = CalculationResourceList()
         calculations.get(params={'labels': selector['labels']})
         return [MTKReader(c.id) for c in calculations.items]
