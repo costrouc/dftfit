@@ -1,6 +1,7 @@
-[![Build Status](https://travis-ci.org/costrouc/dftfit.svg?branch=master)](https://travis-ci.org/costrouc/dftfit)
+TODO: much is incorrect needs update
 
-# DFTFIT
+DFTFIT
+------
 
 DFTFIT is a python code that used Ab Initio data from DFT calculations
 such as VASP and QE to create molecular dynamic potentials. Our
@@ -9,7 +10,8 @@ package differs from other similar codes in that we leverage LAMMPS.
 Presentations about dftfit:
  - [HTCMC 2016](https://speakerdeck.com/costrouc/dftfit-potential-generation-for-molecular-dynamics-calculations#)
 
-## Algorithm
+Algorithm
+---------
 
 We use least squares for finding the optimal parameters for a proposed
 potential. Since our DFTFIT uses LAMMPS, the user has the freedom to
@@ -21,7 +23,9 @@ proposes a method for determining a new potential for Silicon.
 
 ![Optimization Equation](docs/img/eqs.png)
 
-### Parameters
+Parameters
+----------
+
  - [$n_c$] number of system configurations
  - [$N$] number of atoms in each configuration
  - [$\alpha, \beta$] tensor with 3D dimensions [x, y, z]
@@ -32,7 +36,9 @@ proposes a method for determining a new potential for Silicon.
  - [$F, S, E$] force, stress, and energy respectively.
 
 
-# Dependencies
+Dependencies
+------------
+
  - [LAMMPS](http://lammps.sandia.gov/)
  - [NLOPT](http://ab-initio.mit.edu/wiki/index.php/NLopt) with python extension or scipy
  - [ASE](https://wiki.fysik.dtu.dk/ase/download.html)
@@ -42,7 +48,8 @@ proposes a method for determining a new potential for Silicon.
 Currently DFTFIT depends on the atomic simulation environment but we will be moving to [pymatgen](http://pymatgen.org/) as soon as possible.
 
 
-# Install
+Install
+-------
 
 ```bash
 python3 setup.py develop --user
@@ -57,12 +64,16 @@ This software must be seperatly installed by the user.
 Additionally nlopt is an optional dependency that requires the python
 extension as well. We hope to remove the need for nlopt.
 
-# Running
+Running
+-------
+
 DFTFIT is a library that provides methods for optimization. There is a
 GUI in the works. See the test folder for examples. Currently there
 are examples for mgo and ceria.
 
-# Examples
+Examples
+--------
+
 Two examples are included within the dftfit package. Currently it only
 works with the nlopt package. NLOPT requires python 2.7. We hope to
 remove this dependency soon.
