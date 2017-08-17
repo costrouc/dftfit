@@ -21,6 +21,12 @@ class FloatParameterField(fields.Field):
             schema_load, errors = ParameterSchema().load(value)
             return FloatParameter(**value)
 
+    def _serialize(self, value, attr, data):
+        if value.fixed and not value.computed:
+            return float(value)
+        else:
+            return {'initial': float(value), 'bounds': value.bounds}
+
     def _validate(self, value):
         if value is None:
             return None

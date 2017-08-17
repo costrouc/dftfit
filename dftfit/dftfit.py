@@ -31,7 +31,7 @@ class Dftfit:
         }
 
 
-    def fit(self, calculations, potential):
+    def fit(self, calculations, initial_potential):
         """
 
         Args:
@@ -39,6 +39,7 @@ class Dftfit:
            - potential: model of Potential to fit
         """
         def optimization_function(parameters):
+            potential = initial_potential.copy()
             potential.optimization_parameters = parameters
             md_calculations = []
 
@@ -46,23 +47,21 @@ class Dftfit:
                 md_calculation = evaluate('LAMMPS', calculation.structure, potential)
                 md_calculations.append(md_calculation)
 
-            score = optimize_function(md_calculations, calculations,
-                                      weight_forces=self.weights['forces'],
-                                      weight_stress=self.weights['stress'],
-                                      weight_energy=self.weights['energy'])
-            print(' '.join(['{:12.8g}'.format(_) for _ in parameters]), score)
-            return score
+            result = optimize_function(md_calculations, calculations, self.weights)
+            parameter_str = ' '.join(['{:12.8g}'.format(_) for _ in parameters])
+            optimization_str = '%12.6f %12.6f %12.6f %12.6f' % (result['parts']['forces'], result['parts']['stress'], result['parts']['energy'], result['score'])
+            print(parameter_str, optimization_str)
+            return result['score']
 
         result = optimize.minimize(
             fun=optimization_function,
-            x0=potential.optimization_parameters,
+            x0=initial_potential.optimization_parameters,
             method=self.method,
-            bounds=potential.optimization_bounds,
+            bounds=initial_potential.optimization_bounds,
             tol=self.step_tolerance,
             options={'disp': True, 'maxiter': self.max_iterations}
         )
         print(result)
-        print('Done!')
 
     def predict(self, structure):
         pass

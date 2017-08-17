@@ -68,6 +68,28 @@ class Potential:
             with open(filename) as f:
                 return cls(yaml.load(f))
 
+    def as_dict(self):
+        schema_dump, errors = PotentialSchema().dump(self.schema)
+        return schema_dump
+
+    def __copy__(self):
+        return type(self)(self.as_dict())
+
+    def copy(self):
+        return self.__copy__()
+
+    def __hash__(self):
+        class CustomEncoder(json.JSONEncoder):
+            def default(self, obj):
+                if isinstance(obj, FloatParameter):
+                    return "FloatParameter"
+                else:
+                    return super().default(obj)
+        return hash(json.dumps(self.schema, sort_keys=True, cls=CustomEncoder))
+
+    def __eq__(self, other):
+        return hash(self) == hash(other) and np.all(np.isclose(self.parameters, other.parameters, rtol=1e-16))
+
     @property
     def parameters(self):
         """ Returns parameters for potentials as a list of float values
@@ -77,7 +99,7 @@ class Potential:
 
     @property
     def optimization_parameters(self):
-        return self._optimization_parameters
+        return np.array([float(parameter) for parameter in self._optimization_parameters])
 
     @optimization_parameters.setter
     def optimization_parameters(self, parameters):
@@ -88,11 +110,14 @@ class Potential:
             raise ValueError('updating parameters does not match length of potential parameters')
 
         for parameter, update_parameter in zip(self._optimization_parameters, parameters):
-            parameter.current = update_parameter
+            parameter.current = float(update_parameter)
 
     @property
     def optimization_bounds(self):
         return np.array([parameter.bounds for parameter in self._optimization_parameters])
 
+    def __repr__(self):
+        return self.__str__()
+
     def __str__(self):
-        return json.dumps(self.schema, sort_keys=True, indent=4)
+        return json.dumps(self.as_dict(), sort_keys=True, indent=4)
