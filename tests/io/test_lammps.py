@@ -11,8 +11,8 @@ from dftfit.potential import Potential
 def test_lammps_reader():
     lammps = LammpsReader('test_files/lammps/mgo')
     assert np.all(np.isclose(lammps.forces, np.zeros((8, 3))))
-    assert np.all(np.isclose(lammps.stress, np.zeros((3, 3))))
-    assert np.isclose(lammps.energy, 0)
+    assert np.all(np.isclose(lammps.stress, np.eye(3) * 661.01685))
+    assert np.isclose(lammps.energy, -85.34101)
     structure = lammps.structure
     assert len(structure) == 8
     assert set(s.symbol for s in structure.species) == {'Mg', 'O'}

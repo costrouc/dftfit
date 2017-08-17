@@ -43,7 +43,7 @@ class LammpsReader(MDReader):
         # TODO: check units
         self._forces = output.get_forces(-1)
         self._stress = output.get_stress(-1)
-        self._energy = output.lammps_log.thermo_data['etotal'][-1]
+        self._energy = output.get_energy(-1)
         self._structure = output.get_structure(-1)
 
     @property

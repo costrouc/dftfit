@@ -14,8 +14,8 @@ def test_lammps_run_valid(mgo_structure):
     writer = LammpsWriter(structure, potential)
     reader = LammpsRunner().run(writer, ['lammps', '-i', 'lammps.in'], '/tmp/lammps')
     assert np.all(np.isclose(reader.forces, np.zeros((1000, 3))))
-    assert np.all(np.isclose(reader.stress, np.zeros((3, 3))))
-    assert np.isclose(reader.energy, 0)
+    assert np.all(np.isclose(reader.stress, np.eye(3) *  6.10545970e+02))
+    assert np.isclose(reader.energy, -10667.662)
     structure = reader.structure
     assert len(structure) == 1000
     assert set(s.symbol for s in structure.species) == {'Mg', 'O'}
