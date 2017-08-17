@@ -16,15 +16,15 @@ spec:
       - elements: ['Mg', 'Mg']
         coefficients:
            - {'initial': 1309362.2766468062, 'bounds': [0, 4000000]}
-           - {'initial': 0.104, 'bounds': [0, 1000]}
+           - {'initial': 0.104, 'bounds': [1e-8, 1000]}
            - 0.0
       - elements: ['Mg', 'O']
         coefficients:
-           - {'initial': 9892.357, 'bounds': [1e-8, 20000]}
+           - {'initial': 9892.357, 'bounds': [0, 20000]}
            - {'initial': 0.20199, 'bounds': [1e-8, 1000]}
            - 0.0
       - elements: ['O', 'O']
         coefficients:
           - {'initial': 2145.7345, 'bounds': [0, 10000]}
-          - {'initial': 0.3, 'bounds': [0, 1000]}
+          - {'initial': 0.3, 'bounds': [1e-8, 1000]}
           - {'initial': 30.2222}

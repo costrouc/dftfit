@@ -50,7 +50,7 @@ class Dftfit:
             result = optimize_function(md_calculations, calculations, self.weights)
             parameter_str = ' '.join(['{:12.8g}'.format(_) for _ in parameters])
             optimization_str = '%12.6f %12.6f %12.6f %12.6f' % (result['parts']['forces'], result['parts']['stress'], result['parts']['energy'], result['score'])
-            print(parameter_str, optimization_str)
+            print(parameter_str, '|', optimization_str)
             return result['score']
 
         result = optimize.minimize(

@@ -146,7 +146,7 @@ class LammpsRunner(MDRunner):
         directory = directory or '.'
         command = command or ['lammps']
         writer.write_input(directory)
-        return_code = self._run(command, directory)
+        return_code, stdout, stderr = self._run(command, directory)
         if return_code != 0:
-            raise ValueError('Lammps calculation exited with non zero return code')
+            raise ValueError('Lammps calculation exited with non zero return code', stdout, stderr)
         return LammpsReader(directory)

@@ -56,4 +56,6 @@ class MDRunner:
 
     def _run(self, command, run_directory):
         process = subprocess.Popen(command, cwd=run_directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return process.wait()
+        return_code = process.wait()
+        stdout, stderr = process.communicate()
+        return return_code, stdout, stderr
