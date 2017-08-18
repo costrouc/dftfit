@@ -49,7 +49,12 @@ class Potential:
                 self._parameters.append(value)
         _walk(self.schema)
 
-        self._optimization_parameters = [p for p in self._parameters if not p.fixed]
+        self._optimization_parameters = []
+        self._optimization_parameter_indicies = []
+        for i, p in enumerate(self._parameters):
+            if not p.fixed:
+                self._optimization_parameters.append(p)
+                self._optimization_parameter_indicies.append(i)
 
     @classmethod
     def from_file(cls, filename, format=None):
@@ -115,6 +120,10 @@ class Potential:
     @property
     def optimization_bounds(self):
         return np.array([parameter.bounds for parameter in self._optimization_parameters])
+
+    @property
+    def optimization_parameter_indicies(self):
+        return self._optimization_parameter_indicies
 
     def __repr__(self):
         return self.__str__()
