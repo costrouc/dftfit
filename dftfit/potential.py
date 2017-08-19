@@ -73,9 +73,18 @@ class Potential:
             with open(filename) as f:
                 return cls(yaml.load(f))
 
-    def as_dict(self):
-        schema_dump, errors = PotentialSchema().dump(self.schema)
-        return schema_dump
+    def as_dict(self, with_parameters=True):
+        if with_parameters:
+            schema_dump, errors = PotentialSchema().dump(self.schema)
+            return schema_dump
+        else:
+            class CustomEncoder(json.JSONEncoder):
+                def default(self, obj):
+                    if isinstance(obj, FloatParameter):
+                        return "FloatParameter"
+                    else:
+                        return super().default(obj)
+            return json.loads(json.dumps(self.schema, cls=CustomEncoder))
 
     def __copy__(self):
         return type(self)(self.as_dict())
@@ -84,13 +93,7 @@ class Potential:
         return self.__copy__()
 
     def __hash__(self):
-        class CustomEncoder(json.JSONEncoder):
-            def default(self, obj):
-                if isinstance(obj, FloatParameter):
-                    return "FloatParameter"
-                else:
-                    return super().default(obj)
-        return hash(json.dumps(self.schema, sort_keys=True, cls=CustomEncoder))
+        return hash(json.dumps(self.as_dict(with_parameters=False), sort_keys=True))
 
     def __eq__(self, other):
         return hash(self) == hash(other) and np.all(np.isclose(self.parameters, other.parameters, rtol=1e-16))
@@ -123,7 +126,7 @@ class Potential:
 
     @property
     def optimization_parameter_indicies(self):
-        return self._optimization_parameter_indicies
+        return np.array(self._optimization_parameter_indicies)
 
     def __repr__(self):
         return self.__str__()
