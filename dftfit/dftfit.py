@@ -110,8 +110,9 @@ class Dftfit:
     def _log_final(self, result):
         print(result)
         with self.db.transaction() as session:
-            run = session.query(Run).filter(id=self._run_id).one()
+            run = session.query(Run).filter(Run.id == self._run_id).one()
             run.end_time = dt.datetime.utcnow()
+            session.add(run)
 
     def fit(self, calculations, initial_potential):
         """
