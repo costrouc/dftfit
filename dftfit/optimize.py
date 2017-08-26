@@ -1,19 +1,7 @@
 from itertools import combinations
-from tempfile import TemporaryDirectory
 import math
 
 import numpy as np
-
-from .io.lammps import LammpsWriter, LammpsRunner
-
-
-def evaluate(runner, structure, potential):
-    if runner == 'LAMMPS':
-        with TemporaryDirectory() as tempdir:
-            writer = LammpsWriter(structure, potential)
-            return LammpsRunner().run(writer, ['lammps', '-i', 'lammps.in'], tempdir)
-    else:
-        raise ValueError('unknown runner')
 
 
 def optimize_function(md_calculations, dft_calculations, weights):

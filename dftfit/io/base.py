@@ -51,7 +51,7 @@ class MDWriter:
 
 
 class MDRunner:
-    def run(self, writer, command, directory):
+    def run(self, command, directory):
         raise NotImplementedError()
 
     def _run(self, command, run_directory):

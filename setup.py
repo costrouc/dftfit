@@ -52,7 +52,7 @@ setup(
     packages=find_packages(exclude=('tests', 'docs', 'notebooks', 'examples')),
     install_requires=['pymatgen==2017.7.4', 'pymatgen-lammps', 'marshmallow', 'pyyaml', 'click', 'sqlalchemy'],
     extras_require={
-        'mattoolkit': 'mattoolkit'
+        'mattoolkit': 'mattoolkit',
     },
     tests_require=['pytest'],
     entry_points={

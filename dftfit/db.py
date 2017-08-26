@@ -66,6 +66,7 @@ class Evaluation(Base):
     run_id = Column(types.Integer, ForeignKey('run.id'), nullable=False)
 
     step = Column(types.Integer)
+    parameters = Column(types.String)
     sq_force_error = Column(types.Float)
     sq_stress_error = Column(types.Float)
     sq_energy_error = Column(types.Float)

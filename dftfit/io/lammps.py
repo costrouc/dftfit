@@ -1,9 +1,13 @@
 from pathlib import Path
 from collections import OrderedDict
 import subprocess
+import tempfile
+import asyncio
+import os
 
 from lammps.output import LammpsRun, LammpsData
 from lammps.inputs import LammpsInput, LammpsScript
+from lammps.calculator import LammpsCalculator
 
 from .base import MDReader, MDWriter, MDRunner
 from .utils import element_type_to_symbol
@@ -64,6 +68,7 @@ class LammpsReader(MDReader):
 
 
 lammps_dftfit_set = OrderedDict([
+    ('echo', 'both'),
     ('log', 'lammps.log'),
     ('units', 'metal'),
     ('dimension', 3),
@@ -76,8 +81,9 @@ lammps_dftfit_set = OrderedDict([
     ('set', []),
     ('dump', '1 all custom 1 mol.lammpstrj id type x y z fx fy fz'),
     ('dump_modify', '1 sort id'),
+    ('thermo_modify', 'flush yes'),
     ('thermo_style', 'custom step etotal pxx pyy pzz pxy pxz pyz'),
-    ('run', 0)
+    ('run', 0),
 ])
 
 
@@ -141,12 +147,51 @@ class LammpsWriter(MDWriter):
         return ('pair_coeff', [])
 
 
+# should turn into async context manager
 class LammpsRunner(MDRunner):
-    def run(self, writer, command=None, directory=None):
-        directory = directory or '.'
-        command = command or ['lammps']
-        writer.write_input(directory)
-        return_code, stdout, stderr = self._run(command, directory)
-        if return_code != 0:
-            raise ValueError('Lammps calculation exited with non zero return code', stdout, stderr)
-        return LammpsReader(directory)
+    def __init__(self, calculations, cmd=None, max_workers=1):
+        self.calculations = calculations
+        self.cmd = cmd or ['lammps']
+        self.max_workers = max_workers
+
+    async def initialize(self):
+        self.tempdir = tempfile.TemporaryDirectory()
+        self.lammps_calculator = LammpsCalculator(max_workers=self.max_workers, cwd=str(self.tempdir.name), cmd=self.cmd)
+        await self.lammps_calculator._create()
+
+        for i, calculation in enumerate(self.calculations):
+            data_file = LammpsData.from_structure(calculation.structure)
+            data_file.write_file(Path(self.tempdir.name) / ('initial.%d.data' % i))
+
+    async def calculate(self, potential):
+        writer = LammpsWriter(self.calculations.calculations[0].structure, potential)
+        script = writer.lammps_input.lammps_script
+
+        # Run Calculations
+        lammps_futures = []
+        for i, calculation in enumerate(self.calculations):
+            script['read_data'] = 'initial.%d.data' % i
+            script['log'] = 'lammps.%d.log' % i
+            dump = str(script.get('dump')).split()
+            dump[4] = 'mol.%d.lammpstrj' % i
+            script['dump'] = ' '.join(dump)
+            lammps_futures.append(await self.lammps_calculator.submit(script))
+            await asyncio.sleep(1e-6) # TODO: why needed?
+            # import pdb; pdb.set_trace()
+        results = await asyncio.gather(*lammps_futures)
+        # for result in results:
+        #     print(result)
+
+        # import pdb; pdb.set_trace()
+        # Parse Calculations
+        calculations = []
+        for i, calculation in enumerate(self.calculations):
+            calculations.append(LammpsReader(
+                self.tempdir.name,
+                data_filename='initial.%d.data' % i,
+                log_filename='lammps.%d.log' % i,
+                dump_filename='mol.%d.lammpstrj' % i))
+        return calculations
+
+    async def finalize(self):
+        self.tempdir.cleanup()
