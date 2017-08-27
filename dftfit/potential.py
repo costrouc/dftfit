@@ -78,7 +78,7 @@ class Potential:
     @classmethod
     def from_best_optimized_for_potential_calulations(cls, potential, calculations, database_filename=None):
         # TODO: Notice that for now calculations are not considered for selection
-        potential_str = json.dumps(initial_potential.as_dict(with_parameters=False), sort_keys=True)
+        potential_str = json.dumps(potential.as_dict(with_parameters=False), sort_keys=True)
         potential_hash = hashlib.md5(potential_str.encode('utf-8')).hexdigest()
         optimized_potential = potential.copy()
         with DatabaseManager(database_filename or 'dftfit.db').transaction() as session:
