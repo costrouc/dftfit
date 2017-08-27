@@ -3,6 +3,7 @@
 
 """
 import json
+import hashlib
 
 import yaml
 import numpy as np
@@ -10,6 +11,7 @@ from pymatgen.core import Composition
 
 from .schema import PotentialSchema
 from .parameter import FloatParameter
+from .db import DatabaseManager, Base, Potential, Run, Evaluation
 
 
 class Potential:
@@ -72,6 +74,20 @@ class Potential:
         elif format in {'yaml', 'yml'}:
             with open(filename) as f:
                 return cls(yaml.load(f))
+
+    @classmethod
+    def from_best_optimized_for_potential_calulations(cls, potential, calculations, database_filename=None):
+        # TODO: Notice that for now calculations are not considered for selection
+        potential_str = json.dumps(initial_potential.as_dict(with_parameters=False), sort_keys=True)
+        potential_hash = hashlib.md5(potential_str.encode('utf-8')).hexdigest()
+        optimized_potential = potential.copy()
+        with DatabaseManager(database_filename or 'dftfit.db').transaction() as session:
+            evaluation = session.query(Evaluation) \
+                                .filter(Evaluation.potential.id == potential_hash) \
+                                .order_by(Evaluation.score).first()
+            parameters = json.loads(evaluation.parameters)
+            optimized_potential.optimization_parameters = parameters
+        return optimized_potential
 
     def as_dict(self, with_parameters=True):
         if with_parameters:

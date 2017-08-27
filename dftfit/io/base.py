@@ -54,7 +54,8 @@ class MDRunner:
     def run(self, command, directory):
         raise NotImplementedError()
 
-    def _run(self, command, run_directory):
+    @classmethod
+    def _run(cls, command, run_directory):
         process = subprocess.Popen(command, cwd=run_directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return_code = process.wait()
         stdout, stderr = process.communicate()

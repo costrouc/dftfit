@@ -12,7 +12,7 @@ def test_lammps_run_valid(mgo_structure):
     potential = Potential.from_file('test_files/potential/mgo.yaml')
 
     writer = LammpsWriter(structure, potential)
-    reader = LammpsRunner().run(writer, ['lammps', '-i', 'lammps.in'], '/tmp/lammps')
+    reader = LammpsRunner.run_single(writer, ['lammps', '-i', 'lammps.in'], '/tmp/lammps')
     assert np.all(np.isclose(reader.forces, np.zeros((1000, 3))))
     assert np.all(np.isclose(reader.stress, np.eye(3) *  6.10545970e+02))
     assert np.isclose(reader.energy, -10667.662)

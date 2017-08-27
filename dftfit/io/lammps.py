@@ -89,44 +89,43 @@ lammps_dftfit_set = OrderedDict([
 
 class LammpsWriter(MDWriter):
     def __init__(self, structure, potential):
-        self.structure = structure
         if not isinstance(potential, Potential):
             potential = Potential(potential)
 
-        self.potential = potential.schema # TODO: Hack potential should do more work
-        self.data = LammpsData.from_structure(self.structure)
-        self.symbol_indicies = {element_type_to_symbol(s): i for s, i in self.data.symbol_indicies.items()}
-        lammps_script = LammpsScript(lammps_dftfit_set)
-        lammps_script.update([self.charge, self.kspace_style, self.pair_style, self.pair_coeff])
-        self.lammps_input = LammpsInput(lammps_script, self.data)
+        self.lammps_input = LammpsInput(
+            LammpsScript(lammps_dftfit_set),
+            LammpsData.from_structure(structure)
+        )
+        modify_input_for_potential(self.lammps_input, potential)
 
     def write_input(self, directory):
         self.lammps_input.write_input(directory)
 
-    @property
-    def charge(self):
-        spec = self.potential['spec']
+
+def modify_input_for_potential(lammps_input, potential):
+    symbol_indicies = {element_type_to_symbol(s): i for s, i in lammps_input.lammps_data.symbol_indicies.items()}
+
+    def charge(potential):
+        spec = potential.schema['spec']
         set_commands = []
         for element, charge in spec.get('charge', {}).items():
-            set_commands.append('type %d charge %f' % (self.symbol_indicies[element], float(charge)))
+            set_commands.append('type %d charge %f' % (symbol_indicies[element], float(charge)))
         return ('set', set_commands)
 
-    @property
-    def kspace_style(self):
-        spec = self.potential['spec']
+    def kspace_style(potential):
+        spec = potential.schema['spec']
         if 'kspace' in spec:
             style = spec['kspace']['type']
             tollerance = spec['kspace']['tollerance']
             return ('kspace_style', '%s %f' % (style, float(tollerance)))
         return ('kspace_style', [])
 
-    @property
-    def pair_style(self):
+    def pair_style(potential):
         pair_map = {
             'buckingham': 'buck'
         }
 
-        spec = self.potential['spec']
+        spec = potential.schema['spec']
         if 'pair' in spec:
             style = pair_map[spec['pair']['type']]
             cutoff = spec['pair']['cutoff']
@@ -135,16 +134,22 @@ class LammpsWriter(MDWriter):
             return ('pair_style', '%s %f' % (style, float(cutoff)))
         return ('pair_style', [])
 
-    @property
-    def pair_coeff(self):
-        spec = self.potential['spec']
+    def pair_coeff(potential):
+        spec = potential.schema['spec']
         if 'pair' in spec:
-            symbols_to_indicies = lambda symbols: [self.symbol_indicies[s] for s in symbols]
+            symbols_to_indicies = lambda symbols: [symbol_indicies[s] for s in symbols]
             pair_coeffs = []
             for coeff in spec['pair']['parameters']:
                 pair_coeffs.append(' '.join(list(map(str, symbols_to_indicies(coeff['elements']) + coeff['coefficients']))))
             return ('pair_coeff', pair_coeffs)
         return ('pair_coeff', [])
+
+    lammps_input.lammps_script.update([
+        charge(potential),
+        kspace_style(potential),
+        pair_style(potential),
+        pair_coeff(potential)
+    ])
 
 
 # should turn into async context manager
@@ -162,6 +167,12 @@ class LammpsRunner(MDRunner):
         for i, calculation in enumerate(self.calculations):
             data_file = LammpsData.from_structure(calculation.structure)
             data_file.write_file(Path(self.tempdir.name) / ('initial.%d.data' % i))
+
+    @classmethod
+    def run_single(cls, lammps_input, command='lammps', run_directory='.'):
+        lammps_input.write_input(run_directory)
+        cls._run(command, run_directory)
+        return LammpsReader(run_directory)
 
     async def calculate(self, potential):
         writer = LammpsWriter(self.calculations.calculations[0].structure, potential)
