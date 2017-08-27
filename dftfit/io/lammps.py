@@ -171,7 +171,7 @@ class LammpsRunner(MDRunner):
     @classmethod
     def run_single(cls, lammps_input, command='lammps', run_directory='.'):
         lammps_input.write_input(run_directory)
-        cls._run(command, run_directory)
+        return_code, stdout, stderr = cls._run(command, run_directory)
         return LammpsReader(run_directory)
 
     async def calculate(self, potential):

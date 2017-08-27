@@ -11,7 +11,7 @@ from pymatgen.core import Composition
 
 from .schema import PotentialSchema
 from .parameter import FloatParameter
-from .db import DatabaseManager, Base, Potential, Run, Evaluation
+from . import db
 
 
 class Potential:
@@ -81,10 +81,10 @@ class Potential:
         potential_str = json.dumps(potential.as_dict(with_parameters=False), sort_keys=True)
         potential_hash = hashlib.md5(potential_str.encode('utf-8')).hexdigest()
         optimized_potential = potential.copy()
-        with DatabaseManager(database_filename or 'dftfit.db').transaction() as session:
-            evaluation = session.query(Evaluation) \
-                                .filter(Evaluation.potential.id == potential_hash) \
-                                .order_by(Evaluation.score).first()
+        with db.DatabaseManager(database_filename or 'dftfit.db').transaction() as session:
+            evaluation = session.query(db.Evaluation) \
+                                .filter(db.Evaluation.potential_id == potential_hash) \
+                                .order_by(db.Evaluation.score).first()
             parameters = json.loads(evaluation.parameters)
             optimized_potential.optimization_parameters = parameters
         return optimized_potential
