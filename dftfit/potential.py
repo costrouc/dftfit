@@ -75,6 +75,10 @@ class Potential:
             with open(filename) as f:
                 return cls(yaml.load(f))
 
+    def md5hash(self):
+        potential_str = json.dumps(self.as_dict(with_parameters=False), sort_keys=True)
+        return hashlib.md5(potential_str.encode('utf-8')).hexdigest()
+
     @classmethod
     def from_best_optimized_for_potential_calulations(cls, potential, calculations, database_filename=None):
         # TODO: Notice that for now calculations are not considered for selection
