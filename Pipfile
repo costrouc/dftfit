@@ -19,3 +19,4 @@ pygmo = "*"
 [dev-packages]
 
 ipykernel = "*"
+pytest = "*"
