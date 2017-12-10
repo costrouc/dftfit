@@ -7,7 +7,7 @@ import numpy as np
 
 from .io.lammps import LammpsLocalCalculator
 from .db import DatabaseManager
-from .db_utils import write_run_initial, write_run_final, write_evaluation
+from .db_actions import write_run_initial, write_run_final, write_evaluation
 
 
 class DFTFITProblemBase:
