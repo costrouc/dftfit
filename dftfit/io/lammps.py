@@ -1,18 +1,15 @@
 from pathlib import Path
 from collections import OrderedDict
-import subprocess
-import tempfile
 import asyncio
-import os
+import functools
 
+import numpy as np
 from lammps.output import LammpsRun, LammpsData
 from lammps.inputs import LammpsInput, LammpsScript
-from lammps.calculator import LammpsCalculator
+from lammps.calculator.client import LammpsLocalClient
 
-from .base import MDReader, MDWriter, MDRunner
+from .base import MDReader, MDCalculator
 from .utils import element_type_to_symbol
-from ..potential import Potential
-
 
 
 class LammpsReader(MDReader):
@@ -50,22 +47,6 @@ class LammpsReader(MDReader):
         self._energy = output.get_energy(-1)
         self._structure = output.get_structure(-1)
 
-    @property
-    def forces(self):
-        return self._forces
-
-    @property
-    def stress(self):
-        return self._stress
-
-    @property
-    def energy(self):
-        return self._energy
-
-    @property
-    def structure(self):
-        return self._structure
-
 
 lammps_dftfit_set = OrderedDict([
     ('echo', 'both'),
@@ -87,21 +68,6 @@ lammps_dftfit_set = OrderedDict([
 ])
 
 
-class LammpsWriter(MDWriter):
-    def __init__(self, structure, potential):
-        if not isinstance(potential, Potential):
-            potential = Potential(potential)
-
-        self.lammps_input = LammpsInput(
-            LammpsScript(lammps_dftfit_set),
-            LammpsData.from_structure(structure)
-        )
-        modify_input_for_potential(self.lammps_input, potential)
-
-    def write_input(self, directory):
-        self.lammps_input.write_input(directory)
-
-
 def modify_input_for_potential(lammps_input, potential):
     symbol_indicies = {element_type_to_symbol(s): i for s, i in lammps_input.lammps_data.symbol_indicies.items()}
 
@@ -120,28 +86,41 @@ def modify_input_for_potential(lammps_input, potential):
             return ('kspace_style', '%s %f' % (style, float(tollerance)))
         return ('kspace_style', [])
 
+    def tersoff_file(potential):
+        spec = potential.schema['spec']
+        if 'pair' in spec and spec['pair']['type'] == 'tersoff':
+            lines = []
+            for parameter in spec['pair']['parameters']:
+                lines.append(' '.join(parameter['elements'] + [float(c) for c in parameter['coefficients']]))
+            return ('\n'.join(lines), 'potential.tersoff')
+        return []
+
     def pair_style(potential):
         pair_map = {
-            'buckingham': 'buck'
+            'buckingham': ('buck', '{style} {cutoff}'),
+            'tersoff': ('tersoff', '{style}')
         }
 
         spec = potential.schema['spec']
         if 'pair' in spec:
-            style = pair_map[spec['pair']['type']]
-            cutoff = spec['pair']['cutoff']
+            style, pair_style_format = pair_map[spec['pair']['type']]
+            cutoff = spec['pair'].get('cutoff', 10) # angstroms
             if 'kspace'in spec and spec['kspace']['type'] in {'ewald', 'pppm'}:
                 style += '/coul/long'
-            return ('pair_style', '%s %f' % (style, float(cutoff)))
+            return ('pair_style', pair_style_format.format(**{'style': style, 'cutoff': float(cutoff)}))
         return ('pair_style', [])
 
     def pair_coeff(potential):
         spec = potential.schema['spec']
         if 'pair' in spec:
-            symbols_to_indicies = lambda symbols: [symbol_indicies[s] for s in symbols]
-            pair_coeffs = []
-            for coeff in spec['pair']['parameters']:
-                pair_coeffs.append(' '.join(list(map(str, symbols_to_indicies(coeff['elements']) + coeff['coefficients']))))
-            return ('pair_coeff', pair_coeffs)
+            if spec['pair']['type'] in ['buckingham']:
+                symbols_to_indicies = lambda symbols: [symbol_indicies[s] for s in symbols]
+                pair_coeffs = []
+                for coeff in spec['pair']['parameters']:
+                    pair_coeffs.append(' '.join(list(map(str, symbols_to_indicies(coeff['elements']) + coeff['coefficients']))))
+                return ('pair_coeff', pair_coeffs)
+            elif spec['pair']['type'] == 'tersoff':
+                return '* * potential.tersoff Si C Si'; # TODO: find out how to determine
         return ('pair_coeff', [])
 
     lammps_input.lammps_script.update([
@@ -150,59 +129,44 @@ def modify_input_for_potential(lammps_input, potential):
         pair_style(potential),
         pair_coeff(potential)
     ])
+    lammps_input.additional_files.extend(tersoff_file(potential))
 
 
-# should turn into async context manager
-class LammpsRunner(MDRunner):
-    def __init__(self, calculations, cmd=None, max_workers=1):
-        self.calculations = calculations
-        self.cmd = cmd or ['lammps']
-        self.max_workers = max_workers
+class LammpsLocalCalculator(MDCalculator):
+    def __init__(self, command='lammps_ubuntu', num_workers=1):
+        self.num_cores = 1
+        self.command = command
+        self.lammps_local_client = LammpsLocalClient(command=command, num_workers=num_workers)
 
-    async def initialize(self):
-        self.tempdir = tempfile.TemporaryDirectory()
-        self.lammps_calculator = LammpsCalculator(max_workers=self.max_workers, cwd=str(self.tempdir.name), cmd=self.cmd)
-        await self.lammps_calculator._create()
+    async def create(self):
+        await self.lammps_local_client.create()
 
-        for i, calculation in enumerate(self.calculations):
-            data_file = LammpsData.from_structure(calculation.structure)
-            data_file.write_file(Path(self.tempdir.name) / ('initial.%d.data' % i))
+    @staticmethod
+    def calculation_future(internal_future, structure, future):
+        exception = future.exception()
+        if exception:
+            internal_future.set_exception(exception)
+        else:
+            result = future.result()
+            internal_future.set_result(MDReader(
+                forces=np.array(result['results']['forces']),
+                stress=np.array(result['results']['stress']),
+                energy=result['results']['energy'],
+                structure=structure
+            ))
 
-    @classmethod
-    def run_single(cls, lammps_input, command='lammps', run_directory='.'):
-        lammps_input.write_input(run_directory)
-        return_code, stdout, stderr = cls._run(command, run_directory)
-        return LammpsReader(run_directory)
+    async def submit(self, structure, potential):
+        lammps_input = LammpsInput(
+            LammpsScript(lammps_dftfit_set),
+            LammpsData.from_structure(structure))
+        modify_input_for_potential(lammps_input, potential)
+        data_filename = lammps_input.lammps_script.data_filenames[0]
+        stdin = str(lammps_input.lammps_script)
+        files = {data_filename: str(lammps_input.lammps_data)}
+        future = await self.lammps_local_client.submit(stdin, files, {'stress', 'energy', 'forces'})
+        future_wrapper = asyncio.Future()
+        future.add_done_callback(functools.partial(self.calculation_future, future_wrapper, structure))
+        return future_wrapper
 
-    async def calculate(self, potential):
-        writer = LammpsWriter(self.calculations.calculations[0].structure, potential)
-        script = writer.lammps_input.lammps_script
-
-        # Run Calculations
-        lammps_futures = []
-        for i, calculation in enumerate(self.calculations):
-            script['read_data'] = 'initial.%d.data' % i
-            script['log'] = 'lammps.%d.log' % i
-            dump = str(script.get('dump')).split()
-            dump[4] = 'mol.%d.lammpstrj' % i
-            script['dump'] = ' '.join(dump)
-            lammps_futures.append(await self.lammps_calculator.submit(script))
-            await asyncio.sleep(1e-6) # TODO: why needed?
-            # import pdb; pdb.set_trace()
-        results = await asyncio.gather(*lammps_futures)
-        # for result in results:
-        #     print(result)
-
-        # import pdb; pdb.set_trace()
-        # Parse Calculations
-        calculations = []
-        for i, calculation in enumerate(self.calculations):
-            calculations.append(LammpsReader(
-                self.tempdir.name,
-                data_filename='initial.%d.data' % i,
-                log_filename='lammps.%d.log' % i,
-                dump_filename='mol.%d.lammpstrj' % i))
-        return calculations
-
-    async def finalize(self):
-        self.tempdir.cleanup()
+    def shutdown(self):
+        self.lammps_local_client.shutdown()

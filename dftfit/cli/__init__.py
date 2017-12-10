@@ -12,3 +12,4 @@ def cli(ctx, loglevel):
 
 
 from . import train
+from . import test

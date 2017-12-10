@@ -1,79 +1,83 @@
-from contextlib import contextmanager
+import sqlite3 as sqlite
+import json
+import datetime as dt
 
-from sqlalchemy import create_engine, types
-from sqlalchemy.schema import Column, ForeignKey
-from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+
+POTENTIAL_TABLE = """
+CREATE TABLE IF NOT EXISTS potential (
+    id     TEXT PRIMARY KEY,
+    schema TEXT NOT NULL
+)
+"""
+
+
+RUN_TABLE = """
+CREATE TABLE IF NOT EXISTS run (
+    id                 INTEGER PRIMARY KEY,
+    potential_id       TEXT NOT NULL,
+    start_time         DATETIME NOT NULL,
+    end_time           DATETIME,
+    initial_parameters JSON NOT NULL,
+    indicies           JSON NOT NULL,
+    bounds             JSON NOT NULL,
+
+    FOREIGN KEY(potential_id) REFERENCES potential(id)
+)
+"""
+
+EVALUATION_TABLE = """
+CREATE TABLE IF NOT EXISTS evaluation (
+    id                 INTEGER PRIMARY KEY,
+    run_id             INTEGER NOT NULL,
+    parameters         JSON NOT NULL,
+    sq_force_error     REAL NOT NULL,
+    sq_stress_error    REAL NOT NULL,
+    sq_energy_error    REAL NOT NULL,
+    w_f                REAL NOT NULL,
+    w_s                REAL NOT NULL,
+    w_e                REAL NOT NULL,
+
+    FOREIGN KEY(run_id) REFERENCES run(id)
+)
+"""
 
 
 class DatabaseManager:
     def __init__(self, filename=None):
-        filename = filename or ':memory'
-        self.engine = create_engine('sqlite:///{}'.format(filename))
-        self.Session = sessionmaker(bind=self.engine)
+        self._connection = sqlite.connect(filename or ':memory:', detect_types=sqlite.PARSE_DECLTYPES)
+        self._connection.row_factory = sqlite.Row
+        self.register_types()
+        self.create_tables()
 
-    def create_tables(self, base):
-        base.metadata.create_all(self.engine)
+    @staticmethod
+    def adapt_json(d):
+        return (json.dumps(d)).encode()
 
-    @contextmanager
-    def transaction(self):
-        session = self.Session()
-        try:
-            yield session
-            session.commit()
-        except:
-            session.rollback()
-            raise
-        finally:
-            session.close()
+    @staticmethod
+    def convert_json(data):
+        return json.loads(data.decode())
 
+    @staticmethod
+    def adapt_datetime(datetime):
+        return (datetime.strftime('%Y-%m-%d %H:%M:%S')).encode()
 
-Base = declarative_base()
+    @staticmethod
+    def convert_datetime(data):
+        return dt.datetime.strptime(data.decode(), '%Y-%m-%d %H:%M:%S')
 
+    def register_types(self):
+        sqlite.register_adapter(dt.datetime, self.adapt_datetime)
+        sqlite.register_adapter(dict, self.adapt_json)
+        sqlite.register_adapter(list, self.adapt_json)
+        sqlite.register_adapter(tuple, self.adapt_json)
+        sqlite.register_converter('datetime', self.convert_datetime)
+        sqlite.register_converter('json', self.convert_json)
 
-class Potential(Base):
-    __tablename__ = "potential"
+    def create_tables(self):
+        self.connection.execute(POTENTIAL_TABLE)
+        self.connection.execute(RUN_TABLE)
+        self.connection.execute(EVALUATION_TABLE)
 
-    id = Column(types.String, primary_key=True)
-    schema = Column(types.String)
-
-    runs = relationship('Run', back_populates='potential')
-    evaluations = relationship('Evaluation', back_populates='potential')
-
-
-class Run(Base):
-    __tablename__ = "run"
-
-    id = Column(types.Integer, primary_key=True)
-
-    potential_id = Column(types.Integer, ForeignKey('potential.id'), nullable=False)
-    # Calculations
-    start_time = Column(types.DateTime)
-    end_time = Column(types.DateTime)
-    initial_parameters = Column(types.String)
-    indicies = Column(types.String)
-    bounds = Column(types.String)
-
-    potential = relationship('Potential', back_populates='runs', uselist=False)
-    evaluations = relationship('Evaluation', back_populates='run')
-
-
-class Evaluation(Base):
-    __tablename__ = 'evaluation'
-
-    id = Column(types.Integer, primary_key=True)
-    potential_id = Column(types.Integer, ForeignKey('potential.id'), nullable=False)
-    run_id = Column(types.Integer, ForeignKey('run.id'), nullable=False)
-
-    step = Column(types.Integer)
-    parameters = Column(types.String)
-    sq_force_error = Column(types.Float)
-    sq_stress_error = Column(types.Float)
-    sq_energy_error = Column(types.Float)
-    weight_forces = Column(types.Float)
-    weight_stress = Column(types.Float)
-    weight_energy = Column(types.Float)
-    score = Column(types.Float)
-
-    potential = relationship('Potential', back_populates='evaluations', uselist=False)
-    run = relationship('Run', back_populates='evaluations', uselist=False)
+    @property
+    def connection(self):
+        return self._connection

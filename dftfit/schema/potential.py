@@ -62,7 +62,7 @@ class PairPotentialSchema(BaseSchema):
     PAIR_POTENTIALS = {'buckingham'}
 
     type = fields.String(required=True, validate=validate.OneOf(PAIR_POTENTIALS))
-    cutoff = FloatParameterField(required=True, validate=validate.Range(min=1e-6))
+    cutoff = FloatParameterField(required=False, validate=validate.Range(min=1e-6))
     parameters = fields.Nested(ParametersSchema, required=True, many=True)
 
 

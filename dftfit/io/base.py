@@ -24,39 +24,33 @@ class DFTReader:
 
 
 class MDReader:
+    def __init__(self, forces, stress, energy, structure):
+        self._forces = forces
+        self._stress = stress
+        self._energy = energy
+        self._structure = structure
+
     @property
     def forces(self):
         """ return numpy.ndarray X x 3 in units [eV/Angstom] """
-        raise NotImplementedError()
+        return self._forces
 
     @property
     def stress(self):
         """ return numpy.ndarray 3 x 3 in units [GPa] """
-        raise NotImplementedError()
+        return self._stress
 
     @property
     def energy(self):
         """ return float in units [eV] """
-        raise NotImplementedError()
+        return self._energy
 
     @property
     def structure(self):
         """ returns pymatgen.Structure. Not units for pymatgen are Angstroms """
+        return self._structure
+
+
+class MDCalculator:
+    async def submit(self, structure, potential):
         raise NotImplementedError()
-
-
-class MDWriter:
-    def write_input(self, directory):
-        raise NotImplementedError()
-
-
-class MDRunner:
-    def run(self, command, directory):
-        raise NotImplementedError()
-
-    @classmethod
-    def _run(cls, command, run_directory):
-        process = subprocess.Popen(command, cwd=run_directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return_code = process.wait()
-        stdout, stderr = process.communicate()
-        return return_code, stdout, stderr
