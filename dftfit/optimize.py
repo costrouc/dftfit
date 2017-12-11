@@ -17,22 +17,29 @@ available_algorithms = {
 }
 
 
-class DFTFITOptimize:
-    def __init__(self, dft_calculations, potential, algorithm='pygmo.de', algorithm_kwargs=None, problem_kwargs=None):
+class Optimize:
+    def __init__(self, dft_calculations, potential, algorithm='pygmo.de', algorithm_kwargs=None, problem_kwargs=None, dbm=None):
+        self.dbm = dbm
         self.algorithm_name = algorithm
         if self.algorithm_name not in available_algorithms:
             raise ValueError(f'algorithm {self.algorithm_name} not available')
         if available_algorithms[self.algorithm_name][1] == 'S':
-            problem = DFTFITSingleProblem(potential=potential, dft_calculations=dft_calculations, **problem_kwargs)
+            internal_problem = DFTFITSingleProblem(potential=potential, dft_calculations=dft_calculations, dbm=dbm, **problem_kwargs)
         else:
-            problem = DFTFITMultiProblem(potential=potential, dft_calculations=dft_calculations, **problem_kwargs)
-        self._problem = pygmo.problem(problem)
+            internal_problem = DFTFITMultiProblem(potential=potential, dft_calculations=dft_calculations, dbm=dbm, **problem_kwargs)
+        self._internal_problem = internal_problem
+        self._problem = pygmo.problem(internal_problem)
         self.algorithm_kwargs = algorithm_kwargs or {}
 
     def population(self, size, seed=None):
         return pygmo.population(self._problem, size, seed=seed)
 
-    def optimize(self, population, steps, seed=None):
+    def optimize(self, population, steps, seed=None, run_id=None):
         algorithm_constructor = available_algorithms[self.algorithm_name][0]
         self._algorithm = pygmo.algorithm(algorithm_constructor(gen=steps, seed=seed, **self.algorithm_kwargs))
-        return self._algorithm.evolve(population)
+        try:
+            self._internal_problem.dbm_initialize_run()
+            new_population = self._algorithm.evolve(population)
+        finally:
+            self._internal_problem.dbm_finalize_run()
+        return new_population

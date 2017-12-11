@@ -11,7 +11,7 @@ from .db_actions import write_run_initial, write_run_final, write_evaluation
 
 
 class DFTFITProblemBase:
-    def __init__(self, potential, calculator='lammps', database=None, loop=None, **kwargs):
+    def __init__(self, potential, calculator='lammps', dbm=None, loop=None, **kwargs):
         self.loop = loop or asyncio.get_event_loop()
         calculator_mapper = {
             'lammps': LammpsLocalCalculator
@@ -19,11 +19,23 @@ class DFTFITProblemBase:
         self.calculator = calculator_mapper[calculator](**kwargs)
         self.loop.run_until_complete(self.calculator.create())
         self.potential = potential
+        self.dbm = dbm
+        self._run_id = None
 
-        self.dbm = None
-        if database:
-            self.dbm = DatabaseManager(database)
+    def dbm_initialize_run(self):
+        if self.dbm:
             self._potential_id, self._run_id = write_run_initial(self.dbm, self.potential)
+
+    def dbm_store_evaluation(self, potential, result):
+        if self.dbm:
+            if self._run_id is None:
+                self.dbm_initialize_run()
+            write_evaluation(self.dbm, self._run_id, potential, result)
+
+    def dbm_finalize_run(self):
+        if self.dbm:
+            write_run_final(self.dbm, self._run_id)
+            self._run_id = None
 
     def __deepcopy__(self, memo):
         return self # override copy method
@@ -52,8 +64,7 @@ class DFTFITSingleProblem(DFTFITProblemBase):
         potential.optimization_parameters = parameters
         md_calculations = self.loop.run_until_complete(self._fitness(self.dft_calculations, potential))
         result = singleobjective_function(self.dft_calculations, md_calculations, self.weights)
-        if self.dbm:
-            write_evaluation(self.dbm, self._run_id, potential, result)
+        self.dbm_store_evaluation(potential, result)
         return (result['score'],)
 
 
@@ -70,8 +81,7 @@ class DFTFITMultiProblem(DFTFITProblemBase):
         potential.optimization_parameters = parameters
         md_calculations = self.loop.run_until_complete(self._fitness(self.dft_calculations, potential))
         result = multiobjective_function(self.dft_calculations, md_calculations)
-        if self.dbm:
-            write_evaluation(self.dbm, self._run_id, potential, result)
+        self.dbm_store_evaluation(potential, result)
         return result['score']
 
 

@@ -1,0 +1,17 @@
+version: v1
+kind: Configuration
+spec:
+  logging: INFO
+  database: "test.db"
+  steps: 10
+  population: 5
+  algorithm:
+    name: 'pygmo.de'
+  problem:
+    calculator: 'lammps'
+    command: 'lammps_serial'
+    w_f: 0.8
+    w_s: 0.1
+    w_e: 0.1
+  training:
+    use_cache: true
