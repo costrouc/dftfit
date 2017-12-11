@@ -4,8 +4,8 @@ spec:
   constraint:
     charge_balance: MgO
   charge:
-    Mg: {'initial': 1.4, 'bounds': [1, 2]}
-    O: {'initial':-1.4, 'bounds': [-2, -1]}
+    Mg: {'initial': 1.4, 'bounds': [1.2, 2.0]}
+    O: {'initial':-1.4, 'bounds': [-2, -1.2]}
   kspace:
     type: pppm
     tollerance: 1e-5
@@ -16,15 +16,15 @@ spec:
       - elements: ['Mg', 'Mg']
         coefficients:
            - {'initial': 1309362.2766468062, 'bounds': [0, 4000000]}
-           - {'initial': 0.104, 'bounds': [1e-8, 1000]}
+           - {'initial': 0.104, 'bounds': [1e-3, 10]}
            - 0.0
       - elements: ['Mg', 'O']
         coefficients:
            - {'initial': 9892.357, 'bounds': [0, 20000]}
-           - {'initial': 0.20199, 'bounds': [1e-8, 1000]}
+           - {'initial': 0.20199, 'bounds': [1e-3, 10]}
            - 0.0
       - elements: ['O', 'O']
         coefficients:
           - {'initial': 2145.7345, 'bounds': [0, 10000]}
-          - {'initial': 0.3, 'bounds': [1e-8, 1000]}
-          - {'initial': 30.2222, 'bounds': [-1e5, 1e5]}
+          - {'initial': 0.3, 'bounds': [1e-3, 10]}
+          - {'initial': 30.2222, 'bounds': [-1000, 1000]}
