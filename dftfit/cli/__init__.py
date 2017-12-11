@@ -1,11 +1,10 @@
-import click
+import argparse
+
+from .train import add_subcommand_train
 
 
-@click.group()
-@click.pass_context
-def cli(ctx, loglevel):
-    pass
-
-
-from . import train
-from . import test
+def init_parser():
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
+    add_subcommand_train(subparsers)
+    return parser

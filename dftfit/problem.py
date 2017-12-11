@@ -1,13 +1,15 @@
 from itertools import combinations
 import math
 import asyncio
-import json
+import logging
 
 import numpy as np
 
 from .io.lammps import LammpsLocalCalculator
 from .db import DatabaseManager
 from .db_actions import write_run_initial, write_run_final, write_evaluation
+
+logger = logging.getLogger(__name__)
 
 
 class DFTFITProblemBase:
@@ -40,6 +42,9 @@ class DFTFITProblemBase:
     def __deepcopy__(self, memo):
         return self # override copy method
 
+    def __del__(self):
+        self.calculator.shutdown()
+
     async def _fitness(self, dft_calculations, potential):
         md_calculation_futures = []
         for dft_calculation in dft_calculations:
@@ -65,6 +70,7 @@ class DFTFITSingleProblem(DFTFITProblemBase):
         md_calculations = self.loop.run_until_complete(self._fitness(self.dft_calculations, potential))
         result = singleobjective_function(self.dft_calculations, md_calculations, self.weights)
         self.dbm_store_evaluation(potential, result)
+        logger.info(f'evaluation: {result["score"]}')
         return (result['score'],)
 
 
@@ -82,6 +88,7 @@ class DFTFITMultiProblem(DFTFITProblemBase):
         md_calculations = self.loop.run_until_complete(self._fitness(self.dft_calculations, potential))
         result = multiobjective_function(self.dft_calculations, md_calculations)
         self.dbm_store_evaluation(potential, result)
+        logger.info(f'evaluation: {result["score"]}')
         return result['score']
 
 
