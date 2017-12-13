@@ -8,15 +8,34 @@ def _write_potential(dbm, potential):
     potential_hash = hashlib.md5(potential_str.encode('utf-8')).hexdigest()
 
     result = dbm.connection.execute(
-        'SELECT id FROM potential WHERE potential.id = ?',
+        'SELECT id FROM potential WHERE potential.hash = ?',
         (potential_hash,)).fetchone()
     if result:
         return result['id']
 
     cursor = dbm.connection.execute(
-        'INSERT INTO potential (id, schema) VALUES (?, ?)',
+        'INSERT INTO potential (hash, schema) VALUES (?, ?)',
         (potential_hash, potential.as_dict(with_parameters=False))
     )
+    print('lastrowid potential', cursor.lastrowid)
+    return cursor.lastrowid
+
+
+def _write_training(dbm, training):
+    training_str = json.dumps(training.schema, sort_keys=True)
+    training_hash = hashlib.md5(training_str.encode('utf-8')).hexdigest()
+
+    result = dbm.connection.execute(
+        'SELECT id FROM training WHERE training.hash = ?',
+        (training_hash,)).fetchone()
+    if result:
+        return result['id']
+
+    cursor = dbm.connection.execute(
+        'INSERT INTO training (hash, schema) VALUES (?, ?)',
+        (training_hash, training.schema)
+    )
+    print('lastrowid traingin', cursor.lastrowid)
     return cursor.lastrowid
 
 
@@ -45,13 +64,14 @@ def _write_labels(dbm, run_id, labels):
 def write_run_initial(dbm, potential, training, configuration):
     with dbm.connection:
         potential_id = _write_potential(dbm, potential)
+        training_id = _write_training(dbm, training)
         cursor = dbm.connection.execute('''
-        INSERT INTO run (name, potential_id, training, configuration, start_time, initial_parameters, indicies, bounds)
+        INSERT INTO run (name, potential_id, training_id, configuration, start_time, initial_parameters, indicies, bounds)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             configuration.run_name,
             potential_id,
-            training.schema,
+            training_id,
             configuration.schema,
             dt.datetime.utcnow(),
             potential.parameters.tolist(),

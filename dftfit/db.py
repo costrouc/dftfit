@@ -5,8 +5,22 @@ import datetime as dt
 
 POTENTIAL_TABLE = """
 CREATE TABLE IF NOT EXISTS potential (
-    id     TEXT PRIMARY KEY,
-    schema JSON NOT NULL
+    id     INTEGER PRIMARY KEY,
+    hash   TEXT NOT NULL,
+    schema JSON NOT NULL,
+
+    UNIQUE (hash) ON CONFLICT ROLLBACK
+)
+"""
+
+
+TRAINING_TABLE = """
+CREATE TABLE IF NOT EXISTS training (
+    id     INTEGER PRIMARY KEY,
+    hash   TEXT NOT NULL,
+    schema JSON NOT NULL,
+
+    UNIQUE (hash) ON CONFLICT ROLLBACK
 )
 """
 
@@ -15,8 +29,8 @@ RUN_TABLE = """
 CREATE TABLE IF NOT EXISTS run (
     id                 INTEGER PRIMARY KEY,
     name               TEXT,
-    potential_id       TEXT NOT NULL,
-    training           JSON NOT NULL,
+    potential_id       INTEGER NOT NULL,
+    training_id        INTEGER NOT NULL,
     configuration      JSON,
     start_time         DATETIME NOT NULL,
     end_time           DATETIME,
@@ -24,7 +38,8 @@ CREATE TABLE IF NOT EXISTS run (
     indicies           JSON NOT NULL,
     bounds             JSON NOT NULL,
 
-    FOREIGN KEY(potential_id) REFERENCES potential(id)
+    FOREIGN KEY(potential_id) REFERENCES potential(id),
+    FOREIGN KEY(training_id) REFERENCES training(id)
 )
 """
 
@@ -99,6 +114,7 @@ class DatabaseManager:
 
     def create_tables(self):
         self.connection.execute(POTENTIAL_TABLE)
+        self.connection.execute(TRAINING_TABLE)
         self.connection.execute(RUN_TABLE)
         self.connection.execute(RUN_LABEL_TABLE)
         self.connection.execute(LABEL_TABLE)
