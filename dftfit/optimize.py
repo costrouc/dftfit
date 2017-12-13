@@ -37,9 +37,5 @@ class Optimize:
     def optimize(self, population, steps, seed=None, run_id=None):
         algorithm_constructor = available_algorithms[self.algorithm_name][0]
         self._algorithm = pygmo.algorithm(algorithm_constructor(gen=steps, seed=seed, **self.algorithm_kwargs))
-        try:
-            self._internal_problem.dbm_initialize_run()
-            new_population = self._algorithm.evolve(population)
-        finally:
-            self._internal_problem.dbm_finalize_run()
-        return new_population
+        self._internal_problem.run_id = run_id
+        return self._algorithm.evolve(population)

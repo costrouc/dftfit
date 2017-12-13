@@ -3,44 +3,75 @@ import hashlib
 import datetime as dt
 
 
-def write_potential(dbm, potential):
+def _write_potential(dbm, potential):
     potential_str = json.dumps(potential.as_dict(with_parameters=False), sort_keys=True)
     potential_hash = hashlib.md5(potential_str.encode('utf-8')).hexdigest()
 
-    with dbm.connection:
-        result = dbm.connection.execute(
-            'SELECT id FROM potential WHERE potential.id = ?',
-            (potential_hash,)).fetchone()
+    result = dbm.connection.execute(
+        'SELECT id FROM potential WHERE potential.id = ?',
+        (potential_hash,)).fetchone()
+    if result:
+        return result['id']
+
+    cursor = dbm.connection.execute(
+        'INSERT INTO potential (id, schema) VALUES (?, ?)',
+        (potential_hash, potential.as_dict(with_parameters=False))
+    )
+    return cursor.lastrowid
+
+
+def _write_labels(dbm, run_id, labels):
+    for key, value in labels.items():
+        result = dbm.connection.execute('''
+        SELECT id FROM label
+        WHERE label.key = ? AND label.value = ?
+        ''', (key, value)).fetchone()
+
         if result:
-            return result['id']
+            label_id = result['id']
+        else:
+            cursor = dbm.connection.execute('''
+            INSERT INTO label (key, value)
+            VALUES (?, ?)
+            ''', (key, value))
+            label_id = cursor.lastrowid
 
-        cursor = dbm.connection.execute(
-            'INSERT INTO potential (id, schema) VALUES (?, ?)',
-            (potential_hash, potential_str)
-        )
-        return cursor.lastrowid
+        cursor = dbm.connection.execute('''
+        INSERT INTO run_label (run_id, label_id)
+        VALUES (?, ?)
+        ''', (run_id, label_id))
 
 
-def write_run_initial(dbm, potential):
-    potential_id = write_potential(dbm, potential)
+def write_run_initial(dbm, potential, configuration=None):
+    run_name = configuration.run_name if configuration else None
+    run_labels = configuration.run_labels if configuration else None
+    configuration_schema = configuration.schema if configuration else None
 
     with dbm.connection:
+        potential_id = _write_potential(dbm, potential)
         cursor = dbm.connection.execute('''
-        INSERT INTO run (potential_id, start_time, initial_parameters, indicies, bounds)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO run (name, potential_id, configuration, start_time, initial_parameters, indicies, bounds)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         ''', (
+            run_name,
             potential_id,
-            dt.datetime.now(),
+            configuration_schema,
+            dt.datetime.utcnow(),
             potential.parameters.tolist(),
             potential.optimization_parameter_indicies.tolist(),
             potential.optimization_bounds.tolist()
         ))
-        return potential_id, cursor.lastrowid
+        run_id = cursor.lastrowid
+        _write_labels(dbm, run_id, run_labels)
+        return potential_id, run_id
 
 
 def write_run_final(dbm, run_id):
     with dbm.connection:
-        cursor = dbm.connection.execute('UPDATE run SET end_time = ? WHERE id = ? AND end_time IS NULL', (dt.datetime.now(), run_id))
+        cursor = dbm.connection.execute('''
+        UPDATE run SET end_time = ?
+        WHERE id = ? AND end_time IS NULL
+        ''', (dt.datetime.now(), run_id))
 
 
 def write_evaluation(dbm, run_id, potential, result):

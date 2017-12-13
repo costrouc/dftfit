@@ -22,22 +22,17 @@ class DFTFITProblemBase:
         self.loop.run_until_complete(self.calculator.create())
         self.potential = potential
         self.dbm = dbm
-        self._run_id = None
+        self.run_id = None
 
     def dbm_initialize_run(self):
-        if self.dbm:
-            self._potential_id, self._run_id = write_run_initial(self.dbm, self.potential)
+        if self.dbm and self.run_id is None:
+            self._potential_id, self.run_id = write_run_initial(self.dbm, self.potential)
 
     def dbm_store_evaluation(self, potential, result):
         if self.dbm:
-            if self._run_id is None:
+            if self.run_id is None:
                 self.dbm_initialize_run()
-            write_evaluation(self.dbm, self._run_id, potential, result)
-
-    def dbm_finalize_run(self):
-        if self.dbm:
-            write_run_final(self.dbm, self._run_id)
-            self._run_id = None
+            write_evaluation(self.dbm, self.run_id, potential, result)
 
     def __deepcopy__(self, memo):
         return self # override copy method

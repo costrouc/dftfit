@@ -6,7 +6,7 @@ import datetime as dt
 POTENTIAL_TABLE = """
 CREATE TABLE IF NOT EXISTS potential (
     id     TEXT PRIMARY KEY,
-    schema TEXT NOT NULL
+    schema JSON NOT NULL
 )
 """
 
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS run (
     id                 INTEGER PRIMARY KEY,
     name               TEXT,
     potential_id       TEXT NOT NULL,
-    configuration      JSON NOT NULL,
+    configuration      JSON,
     training           JSON NOT NULL,
     start_time         DATETIME NOT NULL,
     end_time           DATETIME,
@@ -42,7 +42,9 @@ LABEL_TABLE = """
 CREATE TABLE IF NOT EXISTS label (
     id        INTEGER PRIMARY KEY,
     key       TEXT NOT NULL,
-    value     TEXT NOT NULL
+    value     TEXT NOT NULL,
+
+    UNIQUE(key, value) ON CONFLICT ROLLBACK
 )
 """
 
@@ -72,7 +74,7 @@ class DatabaseManager:
 
     @staticmethod
     def adapt_json(d):
-        return (json.dumps(d)).encode()
+        return (json.dumps(d, sort_keys=True)).encode()
 
     @staticmethod
     def convert_json(data):

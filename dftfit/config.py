@@ -19,6 +19,10 @@ class Configuration:
         # Logging
         init_logging(self.schema['spec'].get('logging', 'WARNING'))
 
+        # Name and Labels
+        self.run_name = self.schema['metadata'].get('name')
+        self.run_labels = self.schema['metadata'].get('labels')
+
         # Seed
         self.seed = self.schema['spec'].get('seed', random.randint(0, 1_000_000_000))
 
