@@ -17,7 +17,6 @@ def _write_potential(dbm, potential):
         'INSERT INTO potential (hash, schema) VALUES (?, ?)',
         (potential_hash, potential.as_dict(with_parameters=False))
     )
-    print('lastrowid potential', cursor.lastrowid)
     return cursor.lastrowid
 
 
@@ -35,7 +34,6 @@ def _write_training(dbm, training):
         'INSERT INTO training (hash, schema) VALUES (?, ?)',
         (training_hash, training.schema)
     )
-    print('lastrowid traingin', cursor.lastrowid)
     return cursor.lastrowid
 
 
