@@ -42,27 +42,24 @@ def _write_labels(dbm, run_id, labels):
         ''', (run_id, label_id))
 
 
-def write_run_initial(dbm, potential, configuration=None):
-    run_name = configuration.run_name if configuration else None
-    run_labels = configuration.run_labels if configuration else None
-    configuration_schema = configuration.schema if configuration else None
-
+def write_run_initial(dbm, potential, training, configuration):
     with dbm.connection:
         potential_id = _write_potential(dbm, potential)
         cursor = dbm.connection.execute('''
-        INSERT INTO run (name, potential_id, configuration, start_time, initial_parameters, indicies, bounds)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO run (name, potential_id, training, configuration, start_time, initial_parameters, indicies, bounds)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
-            run_name,
+            configuration.run_name,
             potential_id,
-            configuration_schema,
+            training.schema,
+            configuration.schema,
             dt.datetime.utcnow(),
             potential.parameters.tolist(),
             potential.optimization_parameter_indicies.tolist(),
             potential.optimization_bounds.tolist()
         ))
         run_id = cursor.lastrowid
-        _write_labels(dbm, run_id, run_labels)
+        _write_labels(dbm, run_id, configuration.run_labels)
         return potential_id, run_id
 
 
@@ -71,7 +68,7 @@ def write_run_final(dbm, run_id):
         cursor = dbm.connection.execute('''
         UPDATE run SET end_time = ?
         WHERE id = ? AND end_time IS NULL
-        ''', (dt.datetime.now(), run_id))
+        ''', (dt.datetime.utcnow(), run_id))
 
 
 def write_evaluation(dbm, run_id, potential, result):

@@ -7,13 +7,13 @@ import numpy as np
 
 from .io.lammps import LammpsLocalCalculator
 from .db import DatabaseManager
-from .db_actions import write_run_initial, write_run_final, write_evaluation
+from .db_actions import write_evaluation
 
 logger = logging.getLogger(__name__)
 
 
 class DFTFITProblemBase:
-    def __init__(self, potential, calculator='lammps', dbm=None, loop=None, **kwargs):
+    def __init__(self, potential, calculator='lammps', dbm=None, run_id=None, loop=None, **kwargs):
         self.loop = loop or asyncio.get_event_loop()
         calculator_mapper = {
             'lammps': LammpsLocalCalculator
@@ -22,17 +22,13 @@ class DFTFITProblemBase:
         self.loop.run_until_complete(self.calculator.create())
         self.potential = potential
         self.dbm = dbm
-        self.run_id = None
+        self._run_id = run_id
+        if self.dbm and not isinstance(self._run_id, int):
+            raise ValueError('cannot write evaluation to database without integer run_id')
 
-    def dbm_initialize_run(self):
-        if self.dbm and self.run_id is None:
-            self._potential_id, self.run_id = write_run_initial(self.dbm, self.potential)
-
-    def dbm_store_evaluation(self, potential, result):
+    def store_evaluation(self, potential, result):
         if self.dbm:
-            if self.run_id is None:
-                self.dbm_initialize_run()
-            write_evaluation(self.dbm, self.run_id, potential, result)
+            write_evaluation(self.dbm, self._run_id, potential, result)
 
     def __deepcopy__(self, memo):
         return self # override copy method
@@ -64,7 +60,7 @@ class DFTFITSingleProblem(DFTFITProblemBase):
         potential.optimization_parameters = parameters
         md_calculations = self.loop.run_until_complete(self._fitness(self.dft_calculations, potential))
         result = singleobjective_function(self.dft_calculations, md_calculations, self.weights)
-        self.dbm_store_evaluation(potential, result)
+        self.store_evaluation(potential, result)
         logger.info(f'evaluation: {result["score"]}')
         return (result['score'],)
 
@@ -82,7 +78,7 @@ class DFTFITMultiProblem(DFTFITProblemBase):
         potential.optimization_parameters = parameters
         md_calculations = self.loop.run_until_complete(self._fitness(self.dft_calculations, potential))
         result = multiobjective_function(self.dft_calculations, md_calculations)
-        self.dbm_store_evaluation(potential, result)
+        self.store_evaluation(potential, result)
         logger.info(f'evaluation: {result["score"]}')
         return result['score']
 

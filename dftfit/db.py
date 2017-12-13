@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS run (
     id                 INTEGER PRIMARY KEY,
     name               TEXT,
     potential_id       TEXT NOT NULL,
-    configuration      JSON,
     training           JSON NOT NULL,
+    configuration      JSON,
     start_time         DATETIME NOT NULL,
     end_time           DATETIME,
     initial_parameters JSON NOT NULL,
@@ -30,10 +30,11 @@ CREATE TABLE IF NOT EXISTS run (
 
 RUN_LABEL_TABLE = """
 CREATE TABLE IF NOT EXISTS run_label (
-    run_id      INTEGER PRIMARY KEY,
-    label_id    INTEGER PRIMARY KEY,
+    run_id      INTEGER NOT NULL,
+    label_id    INTEGER NOT NULL,
 
-    FOREIGN KEY(run_id) REFERENCES run(id)
+    PRIMARY KEY(run_id, label_id),
+    FOREIGN KEY(run_id) REFERENCES run(id),
     FOREIGN KEY(label_id) REFERENCES label(id)
 )
 """
