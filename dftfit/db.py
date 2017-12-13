@@ -14,7 +14,10 @@ CREATE TABLE IF NOT EXISTS potential (
 RUN_TABLE = """
 CREATE TABLE IF NOT EXISTS run (
     id                 INTEGER PRIMARY KEY,
+    name               TEXT,
     potential_id       TEXT NOT NULL,
+    configuration      JSON NOT NULL,
+    training           JSON NOT NULL,
     start_time         DATETIME NOT NULL,
     end_time           DATETIME,
     initial_parameters JSON NOT NULL,
@@ -22,6 +25,24 @@ CREATE TABLE IF NOT EXISTS run (
     bounds             JSON NOT NULL,
 
     FOREIGN KEY(potential_id) REFERENCES potential(id)
+)
+"""
+
+RUN_LABEL_TABLE = """
+CREATE TABLE IF NOT EXISTS run_label (
+    run_id      INTEGER PRIMARY KEY,
+    label_id    INTEGER PRIMARY KEY,
+
+    FOREIGN KEY(run_id) REFERENCES run(id)
+    FOREIGN KEY(label_id) REFERENCES label(id)
+)
+"""
+
+LABEL_TABLE = """
+CREATE TABLE IF NOT EXISTS label (
+    id        INTEGER PRIMARY KEY,
+    key       TEXT NOT NULL,
+    value     TEXT NOT NULL
 )
 """
 
@@ -76,6 +97,8 @@ class DatabaseManager:
     def create_tables(self):
         self.connection.execute(POTENTIAL_TABLE)
         self.connection.execute(RUN_TABLE)
+        self.connection.execute(RUN_LABEL_TABLE)
+        self.connection.execute(LABEL_TABLE)
         self.connection.execute(EVALUATION_TABLE)
 
     @property

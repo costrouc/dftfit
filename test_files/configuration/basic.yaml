@@ -1,5 +1,10 @@
 version: v1
 kind: Configuration
+metadata:
+  name: simple test
+  labels:
+    test: simple
+    hello: world
 spec:
   logging: INFO
   database: "test.db"
