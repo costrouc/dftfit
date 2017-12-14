@@ -1,15 +1,8 @@
-import sys
-
-from .cli import init_parser
+from .cli import cli
 
 
 def main():
-    parser = init_parser()
-    if len(sys.argv) == 1:
-        parser.print_help()
-        sys.exit(1)
-    args = parser.parse_args()
-    args.func(args)
+    cli()
 
 
 if __name__ == '__main__':
