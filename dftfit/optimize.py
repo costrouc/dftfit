@@ -6,7 +6,8 @@ from .problem import DFTFITSingleProblem, DFTFITMultiProblem
 available_algorithms = {
     'pygmo.de': (pygmo.de, 'S'), # S-U
     'pygmo.sade': (pygmo.sade, 'S'), # S-U
-    'pygmo.de1220': (pygmo.pso, 'S'), # S-U
+    'pygmo.de1220': (pygmo.de1220, 'S'), # S-U
+    'pygmo.pso': (pygmo.pso, 'S'), # S-U
     'pygmo.sea': (pygmo.sea, 'S'), # S-U
     'pygmo.sga': (pygmo.sga, 'S'), # S-U
     # 'pygmo.simulated_annealing': simulated_annealing # api does not match others
