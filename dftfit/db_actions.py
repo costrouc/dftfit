@@ -108,3 +108,82 @@ def write_evaluation(dbm, run_id, potential, result):
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ''', (run_id, potential.optimization_parameters.tolist(),
               *errors, *weights))
+
+
+def filter_potentials(dbm, potential, limit=10, condition='best', run_id=None, labels=None):
+    """Select a subset of evaluations. Currently only works on single
+    objective functions because "best" and "worst" are subjective in
+    multiobjecive functions.
+
+    Arguments:
+     - condition (str): best, random, worst
+
+    THIS IS THE REASON TO USE SQLALCHEMY QUERY BUILDER.... I HAVE LEARNED NOW
+    """
+    potential_str = json.dumps(potential.as_dict(with_parameters=False), sort_keys=True)
+    potential_hash = hashlib.md5(potential_str.encode('utf-8')).hexdigest()
+
+    query = '''
+    SELECT DISTINCT run.id, count(*) as count
+    FROM run {join_sql}
+    WHERE {where_sql}
+    '''
+
+    join_statement = []
+    where_statement = []
+    query_arguments = []
+    if labels:
+        join_statement.extend([
+            'JOIN run_label ON run.id = run_label.run_id',
+            'JOIN label ON run_label.label_id = label.id'
+        ])
+        select_labels = []
+        for key, value in labels.items():
+            if not isinstance(key, str) or not isinstance(value, str):
+                raise ValueError(f'key: {key} values: {values} for label must be strings')
+            select_labels.append('(label.key = ? AND label.value = ?)')
+            query_arguments.extend([key, value])
+        where_statement.append(' OR '.join(select_labels))
+        query += f"""
+        GROUP BY run.id
+        HAVING count = {len(labels)}
+        """
+
+    if run_id:
+        if not isinstance(run_id, int):
+            raise ValueError('run_id must be integer')
+        where_statement.append('run.id = ?')
+        query_arguments.append(run_id)
+
+    join_statement.append('JOIN potential ON run.potential_id = potential.id')
+    where_statement.append('potential.hash = ?')
+    query_arguments.append(potential_hash)
+
+    if condition == 'best':
+        order_sql = 'e.w_f * e.sq_force_error + e.w_s * e.sq_stress_error + e.w_e * e.sq_energy_error ASC'
+    elif condition == 'worst':
+        order_sql = 'e.w_f * e.sq_force_error + e.w_s * e.sq_stress_error + e.w_e * e.sq_energy_error DESC'
+    elif condition == 'random':
+        order_sql = 'RANDOM()'
+    else:
+        raise ValueError('condition ordering not supported')
+
+    # find all run ids that match selection
+    query = query.format(join_sql=' '.join(join_statement),
+                         where_sql=' AND '.join(where_statement))
+    run_ids = [row['id'] for row in dbm.connection.execute(query, query_arguments)]
+
+    # pick subset of potentials
+    query = f'''
+    SELECT e.parameters FROM evaluation e
+    WHERE {' OR '.join(['e.run_id = ?' for _ in run_ids])}
+    ORDER BY {order_sql}
+    LIMIT {limit}
+    '''
+
+    potentials = []
+    for row in dbm.connection.execute(query, run_ids):
+        tmp_potential = potential.copy()
+        tmp_potential.optimization_parameters = row['parameters']
+        potentials.append(tmp_potential)
+    return potentials
