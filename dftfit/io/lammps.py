@@ -141,32 +141,17 @@ class LammpsLocalCalculator(MDCalculator):
     async def create(self):
         await self.lammps_local_client.create()
 
-    @staticmethod
-    def calculation_future(internal_future, structure, future):
-        exception = future.exception()
-        if exception:
-            internal_future.set_exception(exception)
-        else:
-            result = future.result()
-            internal_future.set_result(MDReader(
-                forces=np.array(result['results']['forces']),
-                stress=np.array(result['results']['stress']),
-                energy=result['results']['energy'],
-                structure=structure
-            ))
-
-    async def submit(self, structure, potential):
+    async def submit(self, structure, potential, properties=None, lammps_set=None):
+        lammps_set = lammps_set or lammps_dftfit_set
+        properties = properties or {'stress', 'energy', 'forces'}
         lammps_input = LammpsInput(
-            LammpsScript(lammps_dftfit_set),
+            LammpsScript(lammps_set),
             LammpsData.from_structure(structure))
         modify_input_for_potential(lammps_input, potential)
         data_filename = lammps_input.lammps_script.data_filenames[0]
         stdin = str(lammps_input.lammps_script)
         files = {data_filename: str(lammps_input.lammps_data)}
-        future = await self.lammps_local_client.submit(stdin, files, {'stress', 'energy', 'forces'})
-        future_wrapper = asyncio.Future()
-        future.add_done_callback(functools.partial(self.calculation_future, future_wrapper, structure))
-        return future_wrapper
+        return await self.lammps_local_client.submit(stdin, files, properties)
 
     def shutdown(self):
         self.lammps_local_client.shutdown()

@@ -6,6 +6,7 @@ import logging
 import numpy as np
 
 from .io.lammps import LammpsLocalCalculator
+from .io.base import MDReader
 from .db import DatabaseManager
 from .db_actions import write_evaluation
 
@@ -40,7 +41,17 @@ class DFTFITProblemBase:
         md_calculation_futures = []
         for dft_calculation in dft_calculations:
             md_calculation_futures.append(await self.calculator.submit(dft_calculation.structure, potential))
-        return await asyncio.gather(*md_calculation_futures)
+        lammps_results = await asyncio.gather(*md_calculation_futures)
+
+        def convert_to_reader(lammps_result):
+            return MDReader(
+                forces=np.array(lammps_result['results']['forces']),
+                stress=np.array(lammps_result['results']['stress']),
+                energy=lammps_result['results']['energy'],
+                structure=dft_calculation.structure
+            )
+        return [convert_to_reader(_) for _ in lammps_results]
+
 
     def get_bounds(self):
         return tuple(zip(*self.potential.optimization_bounds.tolist()))
