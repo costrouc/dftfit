@@ -2,6 +2,8 @@ import json
 import hashlib
 import datetime as dt
 
+from .potential import Potential
+
 
 def _write_potential(dbm, potential):
     potential_str = json.dumps(potential.as_dict(with_parameters=False), sort_keys=True)
@@ -186,3 +188,43 @@ def filter_potentials(dbm, potential, limit=10, condition='best', run_id=None, l
         tmp_potential.optimization_parameters = row['parameters']
         results.append({'potential': tmp_potential, 'score': row['score']})
     return results
+
+
+def select_potential_from_evaluation(dbm, evaluation_id):
+    result = dbm.connection.execute('''
+    SELECT potential.schema, parameters, initial_parameters, indicies, bounds
+    FROM evaluation
+        JOIN run ON run.id = evaluation.run_id
+        JOIN potential ON potential.id = run.potential_id
+    WHERE evaluation.id = ?
+    ''', (evaluation_id,)).fetchone()
+    if result is None:
+        raise ValueError(f'evaluation_id {evaluation_id} does not exist')
+
+    # TODO but the information is there
+    parameter_index = 0
+    initial_parameters = result['initial_parameters']
+
+    def _walk(value): # Ordered traversal of dictionary
+        if isinstance(value, dict):
+            for key in sorted(value.keys()):
+                if isinstance(value[key], str) and value[key] == 'FloatParameter':
+                    value[key] = {'initial': 0.0}
+                else:
+                    _walk(value[key])
+        elif isinstance(value, (list)):
+            for i, item in enumerate(value):
+                if isinstance(item, str) and item == 'FloatParameter':
+                    value[i] = {'initial': 0.0}
+                else:
+                    _walk(item)
+    potential_schema = result['schema']
+    _walk(potential_schema)
+
+    print(result['initial_parameters'])
+    print(result['indicies'])
+    print(result['parameters'])
+    print(result['bounds'])
+
+    # potential = Potential(potential_schema)
+    # potential._bounds
