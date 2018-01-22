@@ -45,14 +45,16 @@ class Predict:
             'forces': np.array(result['results']['forces'])
         }
 
-    def lattice_constant(self, structure, potential, supercell=(1, 1, 1)):
+    def lattice_constant(self, structure, potential, supercell=(1, 1, 1), etol=1e-6, ftol=1e-6):
         conventional_structure = self.conventional_structure(structure)
 
         async def calculate():
+            relax_lammps_script = load_lammps_set('relax')
+            relax_lammps_script['minimize'] = '%f %f 2000 10000' % (etol, ftol)
             future = await self.calculator.submit(
                 conventional_structure * supercell, potential,
                 properties={'lattice'},
-                lammps_set=load_lammps_set('relax'))
+                lammps_set=relax_lammps_script)
             await future
             return future.result()
 
