@@ -63,7 +63,8 @@ class Predict:
         return conventional_structure.lattice, Lattice(lattice.matrix / np.array(supercell))
 
     def elastic_constant(self, structure, potential, supercell=(1, 1, 1),
-                         nd=0.01, ns=0.05, num_norm=4, num_shear=4):
+                         nd=0.01, ns=0.05, num_norm=4, num_shear=4,
+                         etol=1e-6, ftol=1e-6):
         conventional_structure = self.conventional_structure(structure)
         deformation_set = DeformedStructureSet(conventional_structure * supercell,
                                                nd=nd, ns=ns,
@@ -74,6 +75,7 @@ class Predict:
         async def calculate():
             relax_lammps_script = load_lammps_set('relax')
             relax_lammps_script['fix'] = []
+            relax_lammps_script['minimize'] = '%f %f 2000 10000' % (etol, ftol)
             futures = []
             for deformation, deformed_structure in zip(deformation_set.deformations, deformation_set):
                 strains.append(Strain.from_deformation(deformation))
@@ -82,12 +84,8 @@ class Predict:
                     properties={'stress'},
                     lammps_set=relax_lammps_script))
             for result in await asyncio.gather(*futures):
-                stress = Stress(np.array(result['results']['stress'])) # Convert to GPa soon
-                print(stress)
+                stress = Stress(np.array(result['results']['stress']) * 1e-4) # Convert to GPa
                 stresses.append(stress)
 
         self.loop.run_until_complete(calculate())
-        print(strains[0])
-        print(stresses[0])
-
-        return ElasticTensor.from_diff_fit(strains, stresses)
+        return ElasticTensor.from_pseudoinverse(strains, stresses)
