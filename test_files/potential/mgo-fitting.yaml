@@ -4,8 +4,8 @@ spec:
   constraint:
     charge_balance: MgO
   charge:
-    Mg: {'initial': 1.4, 'bounds': [1.2, 2.0]}
     O: {'initial':-1.4, 'bounds': [-2, -1.2]}
+    Mg: {'initial': 1.4, 'bounds': [1.2, 2.0]}
   kspace:
     type: pppm
     tollerance: 1e-5

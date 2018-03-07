@@ -2,13 +2,11 @@ import random
 import json
 
 import yaml
+import os
 
 from .logging import init_logging
 from .db import DatabaseManager
 from .schema import ConfigurationSchema
-
-
-CACHE_FILENAME = 'cache.db'
 
 
 class Configuration:
@@ -29,10 +27,14 @@ class Configuration:
         # Database
         self.dbm = None
         if 'database' in self.schema['spec']:
-            self.dbm = DatabaseManager(self.schema['spec']['database'])
+            database_filename = os.path.expanduser(self.schema['spec']['database'])
+            database_directory, filename = os.path.split(database_filename)
+            os.makedirs(database_directory, exist_ok=True)
+            self.dbm = DatabaseManager(database_filename)
 
         # Training
-        self.training_kwargs = self.schema['spec'].get('training', {})
+        self.training_kwargs = self.schema['spec'].get('training', {
+            'cache_filename': '~/.cache/dftfit/cache.db'})
 
         # Algorithm
         _algorithm_kwargs= self.schema['spec'].get('algorithm', {})

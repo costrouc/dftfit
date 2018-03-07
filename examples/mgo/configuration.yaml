@@ -1,0 +1,23 @@
+version: v1
+kind: Configuration
+metadata:
+  name: testing
+  labels:
+    algorithm: "pygmo.sade"
+    test: test
+spec:
+  logging: INFO
+  database: "/tmp/dftfit/database.db"
+  steps: 10
+  population: 10
+  algorithm:
+    name: 'pygmo.sade'
+  problem:
+    calculator: 'lammps'
+    command: 'lammps_serial'
+    num_workers: 3
+    w_f: 0.3
+    w_s: 0.6
+    w_e: 0.1
+  training:
+    cache_filename: "./cache/cache.db"

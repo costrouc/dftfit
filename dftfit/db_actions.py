@@ -112,7 +112,7 @@ def write_evaluation(dbm, run_id, potential, result):
               *errors, *weights))
 
 
-def filter_potentials(dbm, potential, limit=10, condition='best', run_id=None, labels=None):
+def filter_evaluations(dbm, potential, limit=10, condition='best', run_id=None, labels=None):
     """Select a subset of evaluations. Currently only works on single
     objective functions because "best" and "worst" are subjective in
     multiobjecive functions.
@@ -182,8 +182,12 @@ def filter_potentials(dbm, potential, limit=10, condition='best', run_id=None, l
     ORDER BY {order_sql}
     LIMIT {limit}
     '''
+    return dbm.connection.execute(query, run_ids)
+
+
+def filter_potentials(dbm, potential, limit=10, condition='best', run_id=None, labels=None):
     results = []
-    for row in dbm.connection.execute(query, run_ids):
+    for row in filter_evaluations(dbm, potential, limit, condition, run_id, labels):
         tmp_potential = potential.copy()
         tmp_potential.optimization_parameters = row['parameters']
         results.append({'potential': tmp_potential, 'score': row['score']})
@@ -201,11 +205,11 @@ def select_potential_from_evaluation(dbm, evaluation_id):
     if result is None:
         raise ValueError(f'evaluation_id {evaluation_id} does not exist')
 
-    # TODO but the information is there
+    # Bad design but it works
     parameter_index = 0
     initial_parameters = result['initial_parameters']
 
-    def _walk(value): # Ordered traversal of dictionary
+    def _walk(value):  # Ordered traversal of dictionary
         if isinstance(value, dict):
             for key in sorted(value.keys()):
                 if isinstance(value[key], str) and value[key] == 'FloatParameter':

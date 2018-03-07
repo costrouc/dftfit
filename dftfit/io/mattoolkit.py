@@ -4,13 +4,12 @@ import os
 import numpy as np
 
 from .base import DFTReader
-from ..config import CACHE_FILENAME
 
 
 class MTKReader(DFTReader):
-    def __init__(self, calculation_id, use_cache=True):
+    def __init__(self, calculation_id, cache_filename=None):
         self.calculation_id = calculation_id
-        self._load(use_cache=use_cache)
+        self._load(cache_filename=cache_filename)
 
     def _download(self, calculation_id):
         from mattoolkit.api.calculation import CalculationResourceItem
@@ -29,12 +28,12 @@ class MTKReader(DFTReader):
         else:
             raise ValueError('unable to use calculation type %s' % calculation.type)
 
-    def _load(self, use_cache):
-        if use_cache:
-            cache_directory = os.path.expanduser('~/.cache/dftfit/')
+    def _load(self, cache_filename):
+        if cache_filename:
+            cache_directory, filename = os.path.split(cache_filename)
             os.makedirs(cache_directory, exist_ok=True)
             key = f'mattoolkit.calculation.{self.calculation_id}'
-            with shelve.open(os.path.join(cache_directory, CACHE_FILENAME)) as cache:
+            with shelve.open(cache_filename) as cache:
                 if key in cache:
                     results = cache[key]
                 else:

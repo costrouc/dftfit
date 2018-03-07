@@ -10,20 +10,19 @@ import yaml
 
 from .schema import TrainingSchema
 from .io import MTKReader
-from .config import CACHE_FILENAME
 
 
 class Training:
-    def __init__(self, schema, use_cache=True):
+    def __init__(self, schema, cache_filename=None):
         schema_load, errors = TrainingSchema().load(schema)
         self.schema = schema_load
-        self._gather_calculations(use_cache=use_cache)
+        self._gather_calculations(cache_filename=cache_filename)
 
-    def _gather_calculations(self, use_cache=True):
+    def _gather_calculations(self, cache_filename=None):
         self._calculations = []
         for calculation in self.schema['spec']:
             if calculation['type'] == 'mattoolkit':
-                self._calculations.extend(self.download_mattoolkit_calculations(calculation['selector'], use_cache=True))
+                self._calculations.extend(self.download_mattoolkit_calculations(calculation['selector'], cache_filename=cache_filename))
 
     @property
     def calculations(self):
@@ -35,14 +34,14 @@ class Training:
     def __len__(self):
         return len(self._calculations)
 
-    def download_mattoolkit_calculations(self, selector, use_cache=True):
+    def download_mattoolkit_calculations(self, selector, cache_filename=None):
         from mattoolkit.api import CalculationResourceList
 
-        if use_cache:
-            cache_directory = os.path.expanduser('~/.cache/dftfit/')
+        if cache_filename:
+            cache_directory, filename = os.path.split(cache_filename)
             os.makedirs(cache_directory, exist_ok=True)
             key = f'mattoolkit.calculation.' + '.'.join(selector['labels'])
-            with shelve.open(os.path.join(cache_directory, CACHE_FILENAME)) as cache:
+            with shelve.open(cache_filename) as cache:
                 if key in cache:
                     calc_ids = cache[key]
                 else:
@@ -54,7 +53,7 @@ class Training:
             calculations = CalculationResourceList()
             calculations.get(params={'labels': selector['labels']})
             calc_ids = [c.id for c in calculations.items]
-        return [MTKReader(calc_id, use_cache=use_cache) for calc_id in calc_ids]
+        return [MTKReader(calc_id, cache_filename=cache_filename) for calc_id in calc_ids]
 
     @classmethod
     def from_file(cls, filename, format=None):

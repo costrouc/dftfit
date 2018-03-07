@@ -1,0 +1,9 @@
+* Simple MgO Example
+
+  DFTFIT is a software that is used to produce interatomic potentials
+  for molecular dynamics simulations. The goal of the code is to
+  enable scientists to use more accurate simulation methods to guide
+  the construction of these potentials. For this example we will be
+  using VASP calculations.
+
+  The dft training data consists

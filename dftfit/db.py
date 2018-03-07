@@ -83,7 +83,8 @@ CREATE TABLE IF NOT EXISTS evaluation (
 
 class DatabaseManager:
     def __init__(self, filename=None):
-        self._connection = sqlite.connect(filename or ':memory:', detect_types=sqlite.PARSE_DECLTYPES)
+        self._connection = sqlite.connect(filename or ':memory:',
+                                          detect_types=sqlite.PARSE_DECLTYPES)
         self._connection.row_factory = sqlite.Row
         self.register_types()
         self.create_tables()

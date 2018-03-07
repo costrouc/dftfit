@@ -13,9 +13,8 @@ marshmallow = "*"
 pyyaml = "*"
 mattoolkit = "*"
 pygmo = "*"
-
+scikit-learn = "*"
 
 [dev-packages]
 
-ipykernel = "*"
 pytest = "*"
