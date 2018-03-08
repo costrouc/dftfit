@@ -1,5 +1,12 @@
 *~
 
+# HTML ignore files
+*.html
+
+# DOC ignore files
+*.doc
+*.odt
+
 # Latex ignore files
 *.aux
 *.glo
