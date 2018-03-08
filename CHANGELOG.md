@@ -11,3 +11,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - support for custom cache filename and directory. default is still
    `~/.cache/dftfit/cache.db`. `use_cache` changed to
    `cache_filename`.
+ - adding `MgO` example it is most of the data used for publication
