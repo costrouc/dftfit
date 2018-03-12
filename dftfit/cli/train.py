@@ -1,32 +1,13 @@
-import argparse
-import os
-import yaml
-import json
-
 from ..dftfit import dftfit
-
-
-def filename_type(filename):
-    if not os.path.isfile(filename):
-        raise argparse.ArgumentTypeError(f'path {filename} is not a file')
-    return filename
-
-
-def load_filename(filename):
-    if filename.endswith('.yaml') or filename.endswith('.yml'):
-        return yaml.load(open(filename))
-    elif filename.endswith('.json'):
-        return json.load(open(filename))
-    else:
-        raise argparse.ArgumentError('only json and yaml files supported')
+from .utils import load_filename, is_file_type
 
 
 def add_subcommand_train(subparsers):
     parser = subparsers.add_parser('train', help='train potential model')
     parser.set_defaults(func=handle_subcommand_train)
-    parser.add_argument('-t', '--training', help='training set filename in yaml/json format', type=filename_type, required=True)
-    parser.add_argument('-p', '--potential', help='potential filename in in yaml/json format', type=filename_type, required=True)
-    parser.add_argument('-c', '--config', help='configuration filename in yaml/json format', type=filename_type)
+    parser.add_argument('-t', '--training', help='training set filename in yaml/json format', type=is_file_type, required=True)
+    parser.add_argument('-p', '--potential', help='potential filename in in yaml/json format', type=is_file_type, required=True)
+    parser.add_argument('-c', '--config', help='configuration filename in yaml/json format', type=is_file_type)
     parser.add_argument('-s', '--set', help='set specific features of config files', nargs='+', action='append')
     parser.add_argument('-d', '--database', help='sqlite database filename')
     parser.add_argument('--steps', help='number of steps to preform for fitting', type=int)

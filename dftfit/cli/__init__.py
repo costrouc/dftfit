@@ -2,12 +2,14 @@ import argparse
 import sys
 
 from . import train
+from . import db
 
 
 def init_parser():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
     train.add_subcommand_train(subparsers)
+    db.add_subcommand_db(subparsers)
     return parser
 
 
