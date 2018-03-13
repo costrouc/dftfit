@@ -205,33 +205,30 @@ def select_potential_from_evaluation(dbm, evaluation_id):
     if result is None:
         raise ValueError(f'evaluation_id {evaluation_id} does not exist')
 
-    # Bad design but it works
-    parameter_index = 0
-    initial_parameters = result['initial_parameters']
+    parameters = [value for value in result['initial_parameters']]
+    for i, value, bounds in zip(result['indicies'], result['parameters'], result['bounds']):
+        parameters[i] = {'initial': value, 'bounds': bounds}
 
+    index = 0
     def _walk(value):  # Ordered traversal of dictionary
+        nonlocal index
         if isinstance(value, dict):
             for key in sorted(value.keys()):
                 if isinstance(value[key], str) and value[key] == 'FloatParameter':
-                    value[key] = {'initial': 0.0}
+                    value[key] = parameters[index]
+                    index += 1
                 else:
                     _walk(value[key])
         elif isinstance(value, (list)):
             for i, item in enumerate(value):
                 if isinstance(item, str) and item == 'FloatParameter':
-                    value[i] = {'initial': 0.0}
+                    value[i] = parameters[index]
+                    index += 1
                 else:
                     _walk(item)
     potential_schema = result['schema']
     _walk(potential_schema)
-
-    print(result['initial_parameters'])
-    print(result['indicies'])
-    print(result['parameters'])
-    print(result['bounds'])
-
-    # potential = Potential(potential_schema)
-    # potential._bounds
+    return Potential(potential_schema)
 
 
 def copy_database_to_database(src_dbm, dest_dbm, only_unique=False):
@@ -311,7 +308,7 @@ def copy_database_to_database(src_dbm, dest_dbm, only_unique=False):
                 with dest_dbm.connection:
                     dest_dbm.connection.executemany(INSERT_RUN_EVALUATION, evaluations)
 
-            # Labels
+            # labels
             labels = {row['key']: row['value'] for row in src_dbm.connection.execute(SELECT_RUN_LABELS, (run['id'],))}
             with dest_dbm.connection:
                 _write_labels(dest_dbm, run_id, labels)
