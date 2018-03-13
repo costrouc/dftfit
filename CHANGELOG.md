@@ -16,3 +16,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - fixed bug: parameters are now ordered when using charge constraint
  - adding get potential from evaluation
  - fixed bug: evaluation to potential does not apply charge constraint correctly
+ - fixed bug: filter_(evaluation, potential) working properly to select best, random, worst
