@@ -13,3 +13,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
    `cache_filename`.
  - adding `MgO` example it is most of the data used for publication
  - adding database merge functionallity allowing much easier management of calculations
+ - fixed bug: parameters are now ordered when using charge constraint
