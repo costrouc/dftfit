@@ -7,7 +7,7 @@ import hashlib
 
 import yaml
 import numpy as np
-from pymatgen.core import Composition
+import pymatgen as pmg
 
 from .schema import PotentialSchema
 from .parameter import FloatParameter
@@ -24,11 +24,12 @@ class Potential:
     def _apply_constraints(self):
         for constraint, value in self.schema['spec'].get('constraint', {}).items():
             if constraint == 'charge_balance':
-                composition = Composition(value)
+                composition = pmg.core.Composition(value)
                 charges = self.schema['spec'].get('charge', {})
                 if not {e.symbol for e in composition.keys()} <= charges.keys():
                     raise ValueError('charge ballance constrains requires all elements to be defined in charge')
-                for charge_element, parameter in charges.items():
+                for charge_element in sorted(charges):
+                    parameter = charges[charge_element]
                     if isinstance(parameter, FloatParameter) and not parameter.fixed:
                         break
                 else:
