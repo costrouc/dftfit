@@ -2,6 +2,8 @@ import json
 import hashlib
 import datetime as dt
 
+import pymatgen as pmg
+
 from .potential import Potential
 
 
@@ -228,6 +230,23 @@ def select_potential_from_evaluation(dbm, evaluation_id):
                     _walk(item)
     potential_schema = result['schema']
     _walk(potential_schema)
+
+    # Adding constraints
+    for constraint, value in potential_schema['spec'].get('constraint', {}).items():
+        if constraint == 'charge_balance':
+            composition = pmg.core.Composition(value)
+            charges = potential_schema['spec'].get('charge', {})
+            if not {e.symbol for e in composition.keys()} <= charges.keys():
+                raise ValueError('charge ballance constrains requires all elements to be defined in charge')
+            for charge_element in sorted(charges):
+                parameter = charges[charge_element]
+                if isinstance(parameter, (float, int)):
+                    # will be overwritten so value doesn't matter
+                    charges[charge_element] = {'initial': 1.0, 'bounds': [0.0, 1.0]}
+                    break
+            else:
+                raise ValueError('unable to apply charge constraint no fixed values')
+
     return Potential(potential_schema)
 
 

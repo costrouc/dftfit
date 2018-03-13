@@ -14,3 +14,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - adding `MgO` example it is most of the data used for publication
  - adding database merge functionallity allowing much easier management of calculations
  - fixed bug: parameters are now ordered when using charge constraint
+ - adding get potential from evaluation
+ - fixed bug: evaluation to potential does not apply charge constraint correctly
