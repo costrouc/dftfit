@@ -153,6 +153,10 @@ class Potential:
                         return super().default(obj)
             return json.loads(json.dumps(self.schema, cls=CustomEncoder))
 
+    def write_file(self, filename):
+        with open(filename, 'w') as f:
+            f.write(str(self))
+
     def __copy__(self):
         return type(self)(self.as_dict())
 
