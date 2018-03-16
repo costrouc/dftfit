@@ -12,7 +12,7 @@ def add_subcommand_test(subparsers):
     parser.set_defaults(func=handle_subcommand_test)
     parser.add_argument('-p', '--potential', help='potential filename in in yaml/json format', type=is_file_type, required=True)
     parser.add_argument('-s', '--structure', help='base structure', type=is_file_type, required=True)
-    parser.add_argument('--property', action='append', choices=['lattice', 'elastic'], help='choose properties to test default is all')
+    parser.add_argument('--property', action='append', choices=['lattice', 'elastic', 'static'], help='choose properties to test default is all')
     parser.add_argument('--software', default='lammps', help='md calculator to use')
     parser.add_argument('--command', help='md calculator command has sensible defaults')
     parser.add_argument('--num-workers', default=1, type=int, help='number md calculators to use')
@@ -28,7 +28,7 @@ def get_structure(filename):
 
 
 def handle_subcommand_test(args):
-    properties = set(args.property) if args.property else {'elastic', 'lattice'}
+    properties = set(args.property) if args.property else {'elastic', 'lattice', 'static'}
     default_commands = {
         'lammps': 'lammps'
     }
@@ -42,10 +42,22 @@ def handle_subcommand_test(args):
 
     if 'lattice' in properties:
         old_lattice, new_lattice = predict.lattice_constant(structure, potential)
-        print('Lattice Constants:')
+        print('\nLattice Constants:')
         print('        a: {:6.3f}    b: {:6.3f}     c: {:6.3f}'.format(*new_lattice.abc))
         print('    alpha: {:6.3f} beta: {:6.3f} gamma: {:6.3f}'.format(*new_lattice.angles))
     if 'elastic' in properties:
         elastic = predict.elastic_constant(structure, potential)
-        print('Elastic:')
+        print('\nElastic:')
         print_elastic_information(elastic)
+
+    if 'static' in properties:
+        static = predict.static(structure, potential)
+        print('\nStatic:')
+        print('    Energy: [eV]')
+        print('      {:16.3f}'.format(static['energy']))
+        print('    Forces: [eV/Angstrom]')
+        for row in static['forces']:
+            print('      {:16.3f} {:16.3f} {:16.3f}'.format(*row))
+        print('    Stress: [bars]')
+        for row in static['stress']:
+            print('      {:16.3f} {:16.3f} {:16.3f}'.format(*row))
