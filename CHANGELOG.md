@@ -19,3 +19,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - fixed bug: filter_(evaluation, potential) working properly to select best, random, worst
  - fixed bug: correct bounds for contraints. used to be discarded.
  - adding ability to easily write potential to file
+ - adding ability to easily test potentials for static, lattice, elastic
