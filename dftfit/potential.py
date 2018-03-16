@@ -76,6 +76,52 @@ class Potential:
             with open(filename) as f:
                 return cls(yaml.load(f))
 
+    @classmethod
+    def from_run_evaluation(cls, schema, initial_parameters, optimization_indicies, optimization_parameters, optimization_bounds):
+        parameters = [value for value in initial_parameters]
+        for i, value, bounds in zip(optimization_indicies, optimization_parameters, optimization_bounds):
+            parameters[i] = {'initial': value, 'bounds': bounds}
+
+        index = 0
+        def _walk(value):  # Ordered traversal of dictionary
+            nonlocal index
+            if isinstance(value, dict):
+                for key in sorted(value.keys()):
+                    if isinstance(value[key], str) and value[key] == 'FloatParameter':
+                        value[key] = parameters[index]
+                        index += 1
+                    else:
+                        _walk(value[key])
+            elif isinstance(value, (list)):
+                for i, item in enumerate(value):
+                    if isinstance(item, str) and item == 'FloatParameter':
+                        value[i] = parameters[index]
+                        index += 1
+                    else:
+                        _walk(item)
+        _walk(schema)
+
+        # Adding constraints
+        for constraint, value in schema['spec'].get('constraint', {}).items():
+            if constraint == 'charge_balance':
+                composition = pmg.core.Composition(value)
+                charges = schema['spec'].get('charge', {})
+                if not {e.symbol for e in composition.keys()} <= charges.keys():
+                    raise ValueError('charge ballance constrains requires all elements to be defined in charge')
+                for charge_element in sorted(charges):
+                    parameter = charges[charge_element]
+                    if isinstance(parameter, (float, int)):
+                        # will be overwritten so value doesn't matter
+                        bounds = [
+                            -sum(charges[element.symbol].get('bounds', [0.0, 0.0])[1] * amount for element, amount in composition.items() if element.symbol != charge_element),
+                            -sum(charges[element.symbol].get('bounds', [0.0, 0.0])[0] * amount for element, amount in composition.items() if element.symbol != charge_element)
+                        ]
+                        charges[charge_element] = {'initial': 1.0, 'bounds': bounds}
+                        break
+                else:
+                    raise ValueError('unable to apply charge constraint no fixed values')
+        return cls(schema)
+
     def md5hash(self):
         potential_str = json.dumps(self.as_dict(with_parameters=False), sort_keys=True)
         return hashlib.md5(potential_str.encode('utf-8')).hexdigest()

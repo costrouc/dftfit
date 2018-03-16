@@ -2,8 +2,6 @@ import json
 import hashlib
 import datetime as dt
 
-import pymatgen as pmg
-
 from .potential import Potential
 
 
@@ -206,47 +204,10 @@ def select_potential_from_evaluation(dbm, evaluation_id):
     if result is None:
         raise ValueError(f'evaluation_id {evaluation_id} does not exist')
 
-    parameters = [value for value in result['initial_parameters']]
-    for i, value, bounds in zip(result['indicies'], result['parameters'], result['bounds']):
-        parameters[i] = {'initial': value, 'bounds': bounds}
-
-    index = 0
-    def _walk(value):  # Ordered traversal of dictionary
-        nonlocal index
-        if isinstance(value, dict):
-            for key in sorted(value.keys()):
-                if isinstance(value[key], str) and value[key] == 'FloatParameter':
-                    value[key] = parameters[index]
-                    index += 1
-                else:
-                    _walk(value[key])
-        elif isinstance(value, (list)):
-            for i, item in enumerate(value):
-                if isinstance(item, str) and item == 'FloatParameter':
-                    value[i] = parameters[index]
-                    index += 1
-                else:
-                    _walk(item)
-    potential_schema = result['schema']
-    _walk(potential_schema)
-
-    # Adding constraints
-    for constraint, value in potential_schema['spec'].get('constraint', {}).items():
-        if constraint == 'charge_balance':
-            composition = pmg.core.Composition(value)
-            charges = potential_schema['spec'].get('charge', {})
-            if not {e.symbol for e in composition.keys()} <= charges.keys():
-                raise ValueError('charge ballance constrains requires all elements to be defined in charge')
-            for charge_element in sorted(charges):
-                parameter = charges[charge_element]
-                if isinstance(parameter, (float, int)):
-                    # will be overwritten so value doesn't matter
-                    charges[charge_element] = {'initial': 1.0, 'bounds': [0.0, 1.0]}
-                    break
-            else:
-                raise ValueError('unable to apply charge constraint no fixed values')
-
-    return Potential(potential_schema)
+    return Potential.from_run_evaluation(
+        result['schema'],
+        result['initial_parameters'],
+        result['indicies'], result['parameters'], result['bounds'])
 
 
 def copy_database_to_database(src_dbm, dest_dbm, only_unique=False):
