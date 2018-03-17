@@ -1,7 +1,7 @@
 import os
 import argparse
 
-from .utils import is_file_type
+from .utils import is_file_type, is_not_file_type
 from ..db import DatabaseManager
 from ..db_actions import copy_database_to_database, select_potential_from_evaluation
 
@@ -11,6 +11,8 @@ def add_subcommand_db(subparsers):
     sub_subparsers = parser.add_subparsers()
     add_subcommand_db_merge(sub_subparsers)
     add_subcommand_db_potential(sub_subparsers)
+    add_subcommand_db_progress(sub_subparsers)
+    add_subcommand_db_summary(sub_subparsers)
 
 
 def add_subcommand_db_merge(subparsers):
@@ -27,7 +29,21 @@ def add_subcommand_db_potential(subparsers):
     parser.set_defaults(func=handle_subcommand_db_potential)
     parser.add_argument('database', type=is_file_type, help='database to get potential from')
     parser.add_argument('-e', '--evaluation', type=int, help='use evaluation id')
-    parser.add_argument('-o', '--output-filename', help='output potential filename', required=True)
+    parser.add_argument('-o', '--output-filename', type=is_not_file_type, help='output potential filename', required=True)
+
+
+def add_subcommand_db_progress(subparsers):
+    parser = subparsers.add_parser('progress', help='visualize progress of dftfit run')
+    parser.set_defaults(func=handle_subcommand_db_progress)
+    parser.add_argument('database', type=is_file_type, help='database to get progress from')
+    parser.add_argument('--run-id', type=int, help='run id to plot')
+    parser.add_argument('-o', '--output-filename', type=is_not_file_type, help='output plot to filename')
+
+
+def add_subcommand_db_summary(subparsers):
+    parser = subparsers.add_parser('summary', help='summary of progress made in each run')
+    parser.set_defaults(func=handle_subcommand_db_progress)
+    parser.add_argument('database', type=is_file_type, help='database to summarize')
 
 
 def handle_subcommand_db_merge(args):
@@ -45,5 +61,15 @@ def handle_subcommand_db_merge(args):
 def handle_subcommand_db_potential(args):
     dbm = DatabaseManager(args.database)
     if args.evaluation:
+        print(args.evaluation)
         potential = select_potential_from_evaluation(dbm, args.evaluation)
+        print(potential)
         potential.write_file(args.output_filename)
+
+
+def handle_subcommand_db_progress(args):
+    raise NotImplementedError()
+
+
+def handle_subcommand_db_summary(args):
+    raise NotImplementedError()

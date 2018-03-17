@@ -14,6 +14,7 @@ def add_subcommand_test(subparsers):
     sub_subparsers = parser.add_subparsers()
     add_subcommand_test_properties(sub_subparsers)
     add_subcommand_test_relax(sub_subparsers)
+    add_subcommand_test_training(sub_subparsers)
 
 
 def add_subcommand_test_properties(subparsers):
@@ -35,6 +36,16 @@ def add_subcommand_test_relax(subparsers):
     parser.add_argument('--software', default='lammps', help='md calculator to use')
     parser.add_argument('--command', help='md calculator command has sensible defaults')
     parser.add_argument('-o', '--output-filename', type=is_not_file_type, help='filename to write relaxed structure', required=True)
+
+
+def add_subcommand_test_training(subparsers):
+    parser = subparsers.add_parser('training', help='plot difference between md and training set preditions')
+    parser.set_defaults(func=handle_subcommand_test_training)
+    parser.add_argument('-p', '--potential', help='potential filename in in yaml/json format', type=is_file_type, required=True)
+    parser.add_argument('-t', '--training', help='training set to use for comparison', type=is_file_type, required=True)
+    parser.add_argument('--software', default='lammps', help='md calculator to use')
+    parser.add_argument('--command', help='md calculator command has sensible defaults')
+    parser.add_argument('-o', '--output-filename', type=is_not_file_type, help='filename to write visualization to')
 
 
 def get_structure(filename):
@@ -102,3 +113,7 @@ def handle_subcommand_test_relax(args):
         [s.specie.element for s in conventional_structure.sites],
         [s.frac_coords for s in conventional_structure.sites])
     equilibrium_structure.to(filename=args.output_filename)
+
+
+def handle_subcommand_test_training(args):
+    raise NotImplementedError()

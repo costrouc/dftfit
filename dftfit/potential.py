@@ -111,12 +111,17 @@ class Potential:
                 for charge_element in sorted(charges):
                     parameter = charges[charge_element]
                     if isinstance(parameter, (float, int)):
-                        # will be overwritten so value doesn't matter
-                        bounds = [
-                            -sum(charges[element.symbol].get('bounds', [0.0, 0.0])[1] * amount for element, amount in composition.items() if element.symbol != charge_element),
-                            -sum(charges[element.symbol].get('bounds', [0.0, 0.0])[0] * amount for element, amount in composition.items() if element.symbol != charge_element)
-                        ]
-                        charges[charge_element] = {'initial': 1.0, 'bounds': bounds}
+                        charge = 0
+                        bounds = [0, 0]
+                        for element, amount in composition.items():
+                            if element.symbol != charge_element:
+                                if isinstance(charges[element.symbol], dict):
+                                    charge -= charges[element.symbol]['initial'] * amount
+                                    bounds[0] -= charges[element.symbol].get('bounds', [0.0, 0.0])[1] * amount
+                                    bounds[1] -= charges[element.symbol].get('bounds', [0.0, 0.0])[0] * amount
+                                else:
+                                    charge -= float(charges[element.symbol])
+                        charges[charge_element] = {'initial': charge, 'bounds': bounds}
                         break
                 else:
                     raise ValueError('unable to apply charge constraint no fixed values')
