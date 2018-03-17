@@ -3,7 +3,12 @@ import argparse
 
 from .utils import is_file_type, is_not_file_type
 from ..db import DatabaseManager
-from ..db_actions import copy_database_to_database, select_potential_from_evaluation
+from ..db_actions import (
+    copy_database_to_database,
+    select_potential_from_evaluation,
+    list_runs, run_summary
+)
+from ..visualize import visualize_progress
 
 
 def add_subcommand_db(subparsers):
@@ -36,13 +41,15 @@ def add_subcommand_db_progress(subparsers):
     parser = subparsers.add_parser('progress', help='visualize progress of dftfit run')
     parser.set_defaults(func=handle_subcommand_db_progress)
     parser.add_argument('database', type=is_file_type, help='database to get progress from')
-    parser.add_argument('--run-id', type=int, help='run id to plot')
+    parser.add_argument('--run-id', type=int, help='run id to plot', required=True)
+    parser.add_argument('--window', type=int, default=100, help='window to accumulate stats')
+    parser.add_argument('--hide', dest='show', action='store_false', help='do not show plot')
     parser.add_argument('-o', '--output-filename', type=is_not_file_type, help='output plot to filename')
 
 
 def add_subcommand_db_summary(subparsers):
-    parser = subparsers.add_parser('summary', help='summary of progress made in each run')
-    parser.set_defaults(func=handle_subcommand_db_progress)
+    parser = subparsers.add_parser('summary', help='summary of each run')
+    parser.set_defaults(func=handle_subcommand_db_summary)
     parser.add_argument('database', type=is_file_type, help='database to summarize')
 
 
@@ -68,8 +75,22 @@ def handle_subcommand_db_potential(args):
 
 
 def handle_subcommand_db_progress(args):
-    raise NotImplementedError()
+    dbm = DatabaseManager(args.database)
+    visualize_progress(dbm, args.run_id, args.window, filename=args.output_filename, show=args.show)
 
 
 def handle_subcommand_db_summary(args):
-    raise NotImplementedError()
+    dbm = DatabaseManager(args.database)
+    for run_id in list_runs(dbm):
+        r = run_summary(dbm, run_id)
+        initial_parameters = ', '.join(['{:4.3g}'.format(_) for _ in r['initial_parameters']])
+        final_parameters = ', '.join(['{:4.3g}'.format(_) for _ in r['final_parameters']])
+        print(f'''run: {run_id}
+        algo: {r['algorithm']:16} steps: {r['steps']:10}
+        stats:
+              mean:   {r['stats']['mean']:4.3}
+              median: {r['stats']['median']:4.3}
+              min:    {r['stats']['min']:4.3}
+        final:   {final_parameters}
+        score:   {r['min_score']}
+        ''')

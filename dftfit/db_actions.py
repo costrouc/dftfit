@@ -1,6 +1,8 @@
 import json
 import hashlib
 import datetime as dt
+import numpy as np
+import pandas as pd
 
 from .potential import Potential
 
@@ -291,3 +293,53 @@ def copy_database_to_database(src_dbm, dest_dbm, only_unique=False):
             labels = {row['key']: row['value'] for row in src_dbm.connection.execute(SELECT_RUN_LABELS, (run['id'],))}
             with dest_dbm.connection:
                 _write_labels(dest_dbm, run_id, labels)
+
+
+def list_runs(dbm):
+    SELECT_RUNS = 'SELECT id FROM run'
+    return [row['id'] for row in dbm.connection.execute(SELECT_RUNS)]
+
+
+def list_evaluations(dbm, run_id):
+    SELECT_EVALUATIONS = f'SELECT sq_force_error, sq_stress_error, sq_energy_error, w_f, w_s, w_e FROM evaluation WHERE run_id = {run_id}'
+    df = pd.read_sql(SELECT_EVALUATIONS, dbm.connection)
+    df['score'] = df['w_f'] * df['sq_force_error'] + df['w_s'] * df['sq_stress_error'] + df['w_e'] * df['sq_energy_error']
+    return df
+
+
+def run_summary(dbm, run_id):
+    SELECT_RUN = 'SELECT id, name, potential_id, training_id, configuration, start_time, end_time, initial_parameters, indicies, bounds FROM run WHERE id = ?'
+
+    SELECT_RUN_NUM_EVALUATIONS = 'SELECT count(*) FROM evaluation WHERE run_id = ?'
+    SELECT_RUN_LAST_EVALUATIONS = '''
+    SELECT (e.w_f * e.sq_force_error + e.w_s * e.sq_stress_error + e.w_e * e.sq_energy_error) AS score FROM evaluation e
+    WHERE run_id = ?
+    ORDER BY e.id DESC LIMIT 100
+    '''
+
+    run = dbm.connection.execute(SELECT_RUN, (run_id,)).fetchone()
+    run_summary = {
+        'algorithm': run['configuration']['spec']['algorithm']['name'],
+        'initial_parameters': run['initial_parameters'],
+    }
+    num_evaluations = dbm.connection.execute(SELECT_RUN_NUM_EVALUATIONS, (run_id,)).fetchone()[0]
+    run_summary.update({
+        'steps': num_evaluations
+    })
+    last_scores = [row['score'] for row in dbm.connection.execute(SELECT_RUN_LAST_EVALUATIONS, (run_id,))]
+    if last_scores:
+        run_summary.update({
+            'stats': {'mean': np.mean(last_scores), 'median': np.median(last_scores), 'min': np.min(last_scores)}
+        })
+        min_score = filter_evaluations(dbm, run_id=run_id, condition='best', limit=1).fetchone()
+        run_summary.update({
+            'final_parameters': min_score['parameters'],
+            'min_score': min_score['score']
+        })
+    else:
+        run_summary.update({
+            'stats': {'mean': 0.0, 'median': 0.0, 'min': 0.0},
+            'final_parameters': [],
+            'min_score': 0.0
+        })
+    return run_summary

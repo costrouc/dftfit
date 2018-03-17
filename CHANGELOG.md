@@ -21,3 +21,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - adding ability to easily write potential to file
  - adding ability to easily test potentials for static, lattice, elastic
  - adding feature to generate relaxed structure from potential
+ - visualize progress of run `dftfit db progress --run-id=... database.db`
+ - summarize all of the potential fitting in the database `dftfit db summary database.db`

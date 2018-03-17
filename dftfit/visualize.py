@@ -1,4 +1,4 @@
-from .db_actions import filter_evaluations
+from .db_actions import filter_evaluations, list_evaluations
 
 import numpy as np
 from sklearn import manifold
@@ -31,3 +31,24 @@ def tsne_evaluations(dbm, ax, potential, run_id, limit=1000, condition='best', l
     tsne = manifold.TSNE(n_components=2, init='pca', random_state=0)
     Y = tsne.fit_transform(normalized_parameters)
     return ax.scatter(Y[:, 0], Y[:, 1], c=scores, cmap=plt.cm.Spectral, alpha=0.2)
+
+
+def visualize_progress(dbm, run_id, window=100, title=None, filename=None, show=True):
+    df = list_evaluations(dbm, run_id)
+    title = title or f'Progress for run {run_id}'
+
+    fontsize = 20
+    fig, axes = plt.subplots(1, 3, sharey=True)
+    axes[0].plot(df['score'].rolling(window=window, center=False).mean())
+    axes[0].set_title('mean')
+    axes[1].plot(df['score'].rolling(window=window, center=False).median())
+    axes[1].set_title('median')
+    axes[2].plot(df['score'].rolling(window=window, center=False).min())
+    axes[2].set_title('minimum')
+    fig.set_size_inches((15, 5))
+    fig.suptitle(title, fontsize=fontsize)
+
+    if filename:
+        fig.savefig(filename, transparent=True)
+    if show:
+        plt.show()
