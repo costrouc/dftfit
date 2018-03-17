@@ -6,13 +6,13 @@ import json
 
 
 def is_file_type(filename):
-    if not os.path.isfile(filename):
+    if not os.path.isfile(os.path.expanduser(filename)):
         raise argparse.ArgumentTypeError(f'path {filename} is not a file')
     return filename
 
 
 def is_not_file_type(filename):
-    if os.path.isfile(filename):
+    if os.path.isfile(os.path.expanduser(filename)):
         raise argparse.ArgumentTypeError(f'path {filename} is an existing file')
     return filename
 

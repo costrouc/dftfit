@@ -1,8 +1,10 @@
-from .db_actions import filter_evaluations, list_evaluations
+import itertools
 
 import numpy as np
 from sklearn import manifold
 import matplotlib.pyplot as plt
+
+from .db_actions import filter_evaluations, list_evaluations
 
 
 def normalize_parameters(optimization_bounds, parameters_array):
@@ -52,3 +54,39 @@ def visualize_progress(dbm, run_id, window=100, title=None, filename=None, show=
         fig.savefig(filename, transparent=True)
     if show:
         plt.show()
+
+
+def visualize_single_calculation(dft_calculations, md_calculations):
+    dft_forces = []
+    md_forces = []
+    dft_c_11 = []
+    md_c_11 = []
+    dft_c_22 = []
+    md_c_22 = []
+    dft_c_33 = []
+    md_c_33 = []
+    for dft_calc, md_calc in zip(dft_calculations, md_calculations):
+        dft_forces.extend(np.linalg.norm(dft_calc.forces, axis=1).tolist())
+        md_forces.extend(np.linalg.norm(md_calc.forces, axis=1).tolist())
+        dft_c_11.append(dft_calc.stress[0,0])
+        md_c_11.append(md_calc.stress[0,0])
+        dft_c_22.append(dft_calc.stress[1,1])
+        md_c_22.append(md_calc.stress[1,1])
+        dft_c_33.append(dft_calc.stress[2,2])
+        md_c_33.append(md_calc.stress[2,2])
+
+    dft_rel_energies = []
+    md_rel_energies = []
+    for (dft_calc_i, md_calc_i), (dft_calc_j, md_calc_j) in itertools.combinations(zip(dft_calculations, md_calculations), 2):
+        dft_rel_energies.append(dft_calc_i.energy - dft_calc_j.energy)
+        md_rel_energies.append(md_calc_i.energy - md_calc_j.energy)
+
+
+    fig, axes = plt.subplots(3, 3)
+    axes[0,0].scatter(dft_forces, md_forces)
+    axes[0,1].scatter(dft_rel_energies, md_rel_energies)
+    axes[1,0].scatter(dft_c_11, md_c_11, label='c_11')
+    axes[1,1].scatter(dft_c_22, md_c_22, label='c_22')
+    axes[1,2].scatter(dft_c_33, md_c_33, label='c_33')
+    fig.set_size_inches((12, 15))
+    plt.show()

@@ -1,3 +1,5 @@
+import os
+
 from pymatgen.io.cif import CifParser
 from pymatgen.io.vasp import Poscar
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
@@ -5,8 +7,11 @@ from pymatgen.core import Structure
 
 from .utils import is_file_type, is_not_file_type
 from ..potential import Potential
+from ..training import Training
 from ..predict import Predict
 from ..predict.utils import print_elastic_information
+from ..io.minimal import MinimalMDReader
+from ..visualize import visualize_single_calculation
 
 
 def add_subcommand_test(subparsers):
@@ -45,6 +50,7 @@ def add_subcommand_test_training(subparsers):
     parser.add_argument('-t', '--training', help='training set to use for comparison', type=is_file_type, required=True)
     parser.add_argument('--software', default='lammps', help='md calculator to use')
     parser.add_argument('--command', help='md calculator command has sensible defaults')
+    parser.add_argument('--cache', default='~/.cache/dftfit/cache.db', help='dft cache', type=is_file_type)
     parser.add_argument('-o', '--output-filename', type=is_not_file_type, help='filename to write visualization to')
 
 
@@ -116,4 +122,24 @@ def handle_subcommand_test_relax(args):
 
 
 def handle_subcommand_test_training(args):
-    raise NotImplementedError()
+    default_commands = {
+        'lammps': 'lammps'
+    }
+    command = args.command if args.command else default_commands.get(args.software)
+    cache_filename = os.path.expanduser(args.cache)
+    predict = Predict(calculator=args.software, command=command, num_workers=1)
+    potential = Potential.from_file(args.potential)
+    training = Training.from_file(args.training, cache_filename=cache_filename)
+
+    import warnings
+    warnings.filterwarnings("ignore") # yes I have sinned
+
+    md_calculations = []
+    for dft_calculation in training.calculations:
+        result = predict.static(dft_calculation.structure, potential)
+        md_calculations.append(MinimalMDReader(
+            forces=result['forces'],
+            stress=result['stress'],
+            energy=result['energy'],
+            structure=dft_calculation.structure))
+    visualize_single_calculation(training.calculations, md_calculations)
