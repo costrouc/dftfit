@@ -11,7 +11,7 @@ from ..training import Training
 from ..predict import Predict
 from ..predict.utils import print_elastic_information
 from ..io.minimal import MinimalMDReader
-from ..visualize import visualize_single_calculation
+from ..visualize import visualize_single_calculation, visualize_pair_distribution
 
 
 def add_subcommand_test(subparsers):
@@ -20,6 +20,7 @@ def add_subcommand_test(subparsers):
     add_subcommand_test_properties(sub_subparsers)
     add_subcommand_test_relax(sub_subparsers)
     add_subcommand_test_training(sub_subparsers)
+    add_subcommand_test_pair(sub_subparsers)
 
 
 def add_subcommand_test_properties(subparsers):
@@ -50,6 +51,14 @@ def add_subcommand_test_training(subparsers):
     parser.add_argument('-t', '--training', help='training set to use for comparison', type=is_file_type, required=True)
     parser.add_argument('--software', default='lammps', help='md calculator to use')
     parser.add_argument('--command', help='md calculator command has sensible defaults')
+    parser.add_argument('--cache', default='~/.cache/dftfit/cache.db', help='dft cache', type=is_file_type)
+    parser.add_argument('-o', '--output-filename', type=is_not_file_type, help='filename to write visualization to')
+
+
+def add_subcommand_test_pair(subparsers):
+    parser = subparsers.add_parser('training', help='plot the pair distributions for each pair type')
+    parser.set_defaults(func=handle_subcommand_test_pair)
+    parser.add_argument('-t', '--training', help='training set to use for comparison', type=is_file_type, required=True)
     parser.add_argument('--cache', default='~/.cache/dftfit/cache.db', help='dft cache', type=is_file_type)
     parser.add_argument('-o', '--output-filename', type=is_not_file_type, help='filename to write visualization to')
 
@@ -143,3 +152,7 @@ def handle_subcommand_test_training(args):
             energy=result['energy'],
             structure=dft_calculation.structure))
     visualize_single_calculation(training.calculations, md_calculations)
+
+
+def handle_subcommand_test_pair(args):
+    pass

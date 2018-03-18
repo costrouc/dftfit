@@ -59,21 +59,14 @@ def visualize_progress(dbm, run_id, window=100, title=None, filename=None, show=
 def visualize_single_calculation(dft_calculations, md_calculations):
     dft_forces = []
     md_forces = []
-    dft_c_11 = []
-    md_c_11 = []
-    dft_c_22 = []
-    md_c_22 = []
-    dft_c_33 = []
-    md_c_33 = []
+    dft_c = []
+    md_c = []
+    c_ij = [(0, 0), (1, 1), (2, 2), (0, 1), (0, 2), (1, 2)]
     for dft_calc, md_calc in zip(dft_calculations, md_calculations):
         dft_forces.extend(np.linalg.norm(dft_calc.forces, axis=1).tolist())
         md_forces.extend(np.linalg.norm(md_calc.forces, axis=1).tolist())
-        dft_c_11.append(dft_calc.stress[0,0])
-        md_c_11.append(md_calc.stress[0,0])
-        dft_c_22.append(dft_calc.stress[1,1])
-        md_c_22.append(md_calc.stress[1,1])
-        dft_c_33.append(dft_calc.stress[2,2])
-        md_c_33.append(md_calc.stress[2,2])
+        dft_c.append([dft_calc.stress[ij] for ij in c_ij])
+        md_c.append([md_calc.stress[ij] for ij in c_ij])
 
     dft_rel_energies = []
     md_rel_energies = []
@@ -83,10 +76,18 @@ def visualize_single_calculation(dft_calculations, md_calculations):
 
 
     fig, axes = plt.subplots(3, 3)
-    axes[0,0].scatter(dft_forces, md_forces)
+    axes[0,0].scatter(dft_forces, md_forces, alpha=0.1, s=3)
     axes[0,1].scatter(dft_rel_energies, md_rel_energies)
-    axes[1,0].scatter(dft_c_11, md_c_11, label='c_11')
-    axes[1,1].scatter(dft_c_22, md_c_22, label='c_22')
-    axes[1,2].scatter(dft_c_33, md_c_33, label='c_33')
+    axes[1,0].scatter(dft_c[0], md_c[0], label='c_11')
+    axes[1,1].scatter(dft_c[1], md_c[1], label='c_22')
+    axes[1,2].scatter(dft_c[2], md_c[2], label='c_33')
+    axes[2,0].scatter(dft_c[3], md_c[3], label='c_12')
+    axes[2,1].scatter(dft_c[4], md_c[4], label='c_13')
+    axes[2,2].scatter(dft_c[5], md_c[5], label='c_23')
     fig.set_size_inches((12, 15))
     plt.show()
+
+
+def visualize_pair_distribution(calculations):
+    """visualize the pair distributions for each atom in training set"""
+    pass
