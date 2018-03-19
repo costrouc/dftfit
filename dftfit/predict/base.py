@@ -41,7 +41,7 @@ class Predict:
         result = self.loop.run_until_complete(calculate())
         return {
             'energy': result['results']['energy'],
-            'stress': np.array(result['results']['stress']),
+            'stress': np.array(result['results']['stress']) * 1e-4,  # convert to GPa
             'forces': np.array(result['results']['forces'])
         }
 

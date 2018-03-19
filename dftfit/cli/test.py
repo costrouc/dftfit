@@ -49,16 +49,19 @@ def add_subcommand_test_training(subparsers):
     parser.set_defaults(func=handle_subcommand_test_training)
     parser.add_argument('-p', '--potential', help='potential filename in in yaml/json format', type=is_file_type, required=True)
     parser.add_argument('-t', '--training', help='training set to use for comparison', type=is_file_type, required=True)
+    parser.add_argument('plot', help='what to plot', choices=['energy', 'forces', 'stress'])
     parser.add_argument('--software', default='lammps', help='md calculator to use')
     parser.add_argument('--command', help='md calculator command has sensible defaults')
     parser.add_argument('--cache', default='~/.cache/dftfit/cache.db', help='dft cache', type=is_file_type)
+    parser.add_argument('--hide', dest='show', action='store_false', help='do not show plot')
     parser.add_argument('-o', '--output-filename', type=is_not_file_type, help='filename to write visualization to')
 
 
 def add_subcommand_test_pair(subparsers):
-    parser = subparsers.add_parser('training', help='plot the pair distributions for each pair type')
+    parser = subparsers.add_parser('pair', help='plot the pair distributions for each pair type')
     parser.set_defaults(func=handle_subcommand_test_pair)
     parser.add_argument('-t', '--training', help='training set to use for comparison', type=is_file_type, required=True)
+    parser.add_argument('--distance', default=10.0, help='distance to calculate radial distribution function', type=float)
     parser.add_argument('--cache', default='~/.cache/dftfit/cache.db', help='dft cache', type=is_file_type)
     parser.add_argument('-o', '--output-filename', type=is_not_file_type, help='filename to write visualization to')
 
@@ -151,8 +154,10 @@ def handle_subcommand_test_training(args):
             stress=result['stress'],
             energy=result['energy'],
             structure=dft_calculation.structure))
-    visualize_single_calculation(training.calculations, md_calculations)
+    visualize_single_calculation(training.calculations, md_calculations, plot=args.plot, show=args.show)
 
 
 def handle_subcommand_test_pair(args):
-    pass
+    cache_filename = os.path.expanduser(args.cache)
+    training = Training.from_file(args.training, cache_filename=cache_filename)
+    visualize_pair_distribution(training.calculations, args.distance)
