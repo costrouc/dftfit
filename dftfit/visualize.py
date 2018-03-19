@@ -62,7 +62,7 @@ def visualize_progress(dbm, run_id, window=100, title=None, filename=None, show=
         plt.show()
 
 
-def visualize_single_calculation(dft_calculations, md_calculations, plot='forces', show=True):
+def visualize_single_calculation(dft_calculations, md_calculations, plot='forces', show=True, filename=None):
     dft_forces = []
     md_forces = []
     dft_c = []
@@ -131,12 +131,14 @@ def visualize_single_calculation(dft_calculations, md_calculations, plot='forces
         fig.set_size_inches((12, 15))
         plt.tight_layout()
 
+    if filename:
+        fig.savefig(filename, transparen=True)
     if show:
         plt.show()
     return fig, axes
 
 
-def visualize_pair_distribution(calculations, distance=10):
+def visualize_pair_distribution(calculations, distance=10, filename=None, show=True):
     """visualize the pair distributions for each atom in training set"""
     specie_types = set()
     for calculation in calculations:
@@ -155,5 +157,9 @@ def visualize_pair_distribution(calculations, distance=10):
         ax.set_ylabel('count')
         ax.set_title(f'{pair[0].symbol} - {pair[1].symbol}')
         ax.hist(distances[pair], bins=int(distance*10))
-    fig.set_size_inches((10, len(distances))
-    plt.show()
+    fig.set_size_inches((10, len(distances)*4))
+    if filename:
+        fig.savefig(filename, transparent=True)
+    if show:
+        plt.show()
+    return fig, axes
