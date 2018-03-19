@@ -8,7 +8,7 @@ stages:
   - build_image
 
 unittest:
-  image: registry.aves.io/mattoolkit/docker/pymatgen:2017.7.4 # shorten bulid times
+  image: python:3.6
   stage: test
   script:
     - echo "============== Testing Package ============="
@@ -19,7 +19,7 @@ unittest:
 
 deploy_pypi:
   stage: deploy
-  image: python:3
+  image: python:3.6
   script:
     - echo "======== Deploying Package to PyPi ========="
     - printf "[distutils]\nindex-servers =\n   pypi\n\n[pypi]\nusername=$PYPI_USERNAME\npassword=$PYPI_PASSWORD\n" > ~/.pypirc
