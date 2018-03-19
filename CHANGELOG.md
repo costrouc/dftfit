@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## v0.3.0
+
  - cache filename and database filename now expand home directory `~/`
  - support for custom cache filename and directory. default is still
    `~/.cache/dftfit/cache.db`. `use_cache` changed to
