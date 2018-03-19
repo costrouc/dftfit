@@ -3,19 +3,18 @@ variables:
     PYPI_PASSWORD: SECURE
 
 stages:
-  - test
+#  - test
   - deploy
-  - build_image
 
-unittest:
-  image: python:3.6
-  stage: test
-  script:
-    - echo "============== Testing Package ============="
-    - python --version
-    - pip install . # quieter
-    - python setup.py test -a '-m "not mattoolkit and not lammps"'
-    - echo "============================================"
+# unittest:
+#   image: python:3.6
+#   stage: test
+#   script:
+#     - echo "============== Testing Package ============="
+#     - python --version
+#     - pip install . # quieter
+#     - python setup.py test -a '-m "not mattoolkit and not lammps"'
+#     - echo "============================================"
 
 deploy_pypi:
   stage: deploy
