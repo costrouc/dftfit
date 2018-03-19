@@ -33,7 +33,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 
-version='0.1.8'
+version='0.2.0'
 setup(
     name='dftfit',
     version=version,
