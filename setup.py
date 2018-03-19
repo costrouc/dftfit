@@ -50,7 +50,15 @@ setup(
     keywords='materials dft molecular dynamics lammps science hpc',
     download_url='https://gitlab.aves.io/costrouc/dftfit/repository/archive.zip?ref=v%s' % version,
     packages=find_packages(exclude=('tests', 'docs', 'notebooks', 'examples')),
-    install_requires=['pymatgen==2017.7.4', 'pymatgen-lammps', 'marshmallow', 'pyyaml', 'pygmo'],
+    install_requires=[
+        'pymatgen==2017.7.4',
+        'pymatgen-lammps',
+        'marshmallow',
+        'pyyaml',
+        'pygmo'
+        'pandas',
+        'matplotlib'
+    ],
     extras_require={
         'mattoolkit': 'mattoolkit',
     },
