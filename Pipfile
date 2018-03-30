@@ -11,15 +11,11 @@ pymatgen = "==2017.7.4"
 pymatgen-lammps = "*"
 marshmallow = "*"
 pyyaml = "*"
-mattoolkit = "*"
 pygmo = "*"
-scikit-learn = "*"
-ipykernel = "*"
 pandas = "*"
-
+scikit-learn = "*"
 
 [dev-packages]
 
-pytest = "*"
 sphinx = "*"
-sphinx-rtd-theme = "*"
+sphinx_rtd_theme = "*"

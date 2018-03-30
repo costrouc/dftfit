@@ -39,7 +39,7 @@ setup(
         'pyyaml',
         'pygmo',
         'pandas',
-        'matplotlib'
+        'scikit-learn',
     ],
     setup_requires=['pytest-runner', 'setuptools>=38.6.0'],  # >38.6.0 needed for markdown README.md
     tests_require=['pytest'],
