@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+ - adding move towards modern deployment following https://costrouc-python-package-template.readthedocs.io/en/latest/
+
 ## v0.3.0
 
  - cache filename and database filename now expand home directory `~/`

@@ -1,35 +1,13 @@
+# Always prefer setuptools over distutils
 from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
 # To use a consistent encoding
 from codecs import open
 from os import path
-import sys
-import shlex
-
-
-class PyTest(TestCommand):
-    user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
-
-    def initialize_options(self):
-        TestCommand.initialize_options(self)
-        self.pytest_args = []
-
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        #import here, cause outside the eggs aren't loaded
-        import pytest
-        if isinstance(self.pytest_args, str):
-            self.pytest_args = shlex.split(self.pytest_args)
-        errno = pytest.main(self.pytest_args)
-        sys.exit(errno)
 
 here = path.abspath(path.dirname(__file__))
 
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+# Get the long description from the README file
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 
@@ -39,17 +17,21 @@ setup(
     version=version,
     description='Ab-Initio Molecular Dynamics Potential Development',
     long_description=long_description,
-    url='https://gitlab.aves.io/costrouc/dftfit',
+    long_description_content_type="text/markdown",
+    url='https://gitlab.com/costrouc/dftfit',
     author='Chris Ostrouchov',
     author_email='chris.ostrouchov+dftfit@gmail.com',
+    license='MIT',
     classifiers=[
-        'Programming Language :: Python :: 3.5',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: Implementation :: CPython',
     ],
-    cmdclass = {'test': PyTest},
     keywords='materials dft molecular dynamics lammps science hpc',
-    download_url='https://gitlab.aves.io/costrouc/dftfit/repository/archive.zip?ref=v%s' % version,
-    packages=find_packages(exclude=('tests', 'docs', 'notebooks', 'examples')),
+    download_url='https://gitlab.com/costrouc/dftfit/repository/archive.zip?ref=v%s' % version,
+    packages=find_packages(exclude=('tests', 'docs', 'examples', 'test_files')),
     install_requires=[
         'pymatgen==2017.7.4',
         'pymatgen-lammps',
@@ -59,14 +41,14 @@ setup(
         'pandas',
         'matplotlib'
     ],
+    setup_requires=['pytest-runner', 'setuptools>=38.6.0'],  # >38.6.0 needed for markdown README.md
+    tests_require=['pytest'],
     extras_require={
         'mattoolkit': 'mattoolkit',
     },
-    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             'dftfit=dftfit.__main__:main'
         ]
     },
-    license='LGPLv2.1+',
 )
