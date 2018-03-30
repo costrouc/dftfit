@@ -21,3 +21,5 @@ pandas = "*"
 [dev-packages]
 
 pytest = "*"
+sphinx = "*"
+sphinx-rtd-theme = "*"

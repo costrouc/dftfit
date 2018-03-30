@@ -12,7 +12,6 @@ stages:
 #   stage: test
 #   script:
 #     - echo "============== Testing Package ============="
-#     - python --version
 #     - pip install . # quieter
 #     - python setup.py test -a '-m "not mattoolkit and not lammps"'
 #     - echo "============================================"
