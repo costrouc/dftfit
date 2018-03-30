@@ -22,7 +22,7 @@ Our algorithm follows a
 [highly cited publication](http://dx.doi.org/10.1063/1.1513312) that
 proposes a method for determining a new potential for Silicon using the force matching of DFT calcultions.
 
-![Optimization Equation](docs/images/eqs.png)
+![Optimization Equation](https://gitlab.com/costrouc/dftfit/raw/master/docs/images/equations.png)
 
 ### Parameters
 
