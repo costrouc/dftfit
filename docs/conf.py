@@ -19,6 +19,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 
 # Mock all package imports that depend on C Libraries
+# https://docs.readthedocs.io/en/latest/faq.html?highlight=setup.py%20install#i-get-import-errors-on-libraries-that-depend-on-c-modules
 import sys
 from unittest.mock import MagicMock
 
@@ -27,7 +28,7 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
         return MagicMock()
 
-MOCK_MODULES = ['argparse', 'pygmo', 'numpy', 'scipy', 'pandas', 'pyyaml', 'sklearn']
+MOCK_MODULES = ['argparse', 'pygmo', 'numpy', 'scipy', 'pandas', 'yaml', 'sklearn']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
