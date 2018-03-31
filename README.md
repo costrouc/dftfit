@@ -53,7 +53,7 @@ pip install dftfit
 
 # Documentation
 
-The official documentation is hosted on readthedocs.org: https://dftfit.readthedocs.org/
+The official documentation is hosted on readthedocs.org: https://dftfit.readthedocs.io/en/latest/
 
 # Running
 
