@@ -6,7 +6,7 @@ import numpy as np
 from lammps.inputs import LammpsScript
 from lammps.sets import MODULE_DIR
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
-from pymatgen.core import Lattice
+from pymatgen.core import Lattice, Structure
 from pymatgen.analysis.elasticity import DeformedStructureSet, ElasticTensor, Stress, Strain
 
 from ..io.lammps import LammpsLocalCalculator
@@ -44,6 +44,26 @@ class Predict:
             'stress': np.array(result['results']['stress']) * 1e-4,  # convert to GPa
             'forces': np.array(result['results']['forces'])
         }
+
+    def pair(self, specie_a, specie_b, potential, separations):
+        max_r = np.max(separations)
+        lattice = Lattice.from_parameters(10*max_r, 10*max_r, 10*max_r, 90, 90, 90)
+        async def calculate():
+            futures = []
+            for sep in separations:
+                coord_a = (lattice.a*0.5-(sep/2), lattice.b*0.5, lattice.c*0.5)
+                coord_b = (lattice.a*0.5+(sep/2), lattice.b*0.5, lattice.c*0.5)
+                structure = Structure(
+                    lattice,
+                    [specie_a, specie_b],
+                    [coord_a, coord_b], coords_are_cartesian=True)
+                futures.append(await self.calculator.submit(
+                    structure, potential,
+                    properties={'energy'},
+                    lammps_set=load_lammps_set('static')))
+            return await asyncio.gather(*futures)
+        results = self.loop.run_until_complete(calculate())
+        return np.array([r['results']['energy'] for r in results])
 
     def lattice_constant(self, structure, potential, supercell=(1, 1, 1), etol=1e-6, ftol=1e-6):
         conventional_structure = self.conventional_structure(structure)

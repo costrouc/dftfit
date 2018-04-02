@@ -172,7 +172,7 @@ structures close to equilibrium indicated by the sharp peaks.
 
 .. code-block:: shell
 
-   dftfit test pair -t test_files/training/training-full-mgo.yaml
+   dftfit test radial -t test_files/training/training-full-mgo.yaml
 
 .. image images/mgo-training-set-pair-distribution-201803.png
 
@@ -194,3 +194,14 @@ line indicates a one to one match between the data.
                                -t test_files/training/training-full-mgo.yaml
 
 .. image:: images/dft-vs-md-force-error-201803.png
+
+------------------------
+Visualize Pair Potential
+------------------------
+
+Often times complex pair potentials are used in combination with three
+body and n body terms. This leads to a complicated pair potential
+interaction. This command will visualize the resulting pair potential
+from the model for each pair of atoms. This method just does a simple
+evaluation of the pair of atoms at different separations in a large
+periodic box (much larger than separation).

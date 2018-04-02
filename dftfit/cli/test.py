@@ -4,6 +4,7 @@ from pymatgen.io.cif import CifParser
 from pymatgen.io.vasp import Poscar
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.core import Structure
+import numpy as np
 
 from .utils import is_file_type, is_not_file_type
 from ..potential import Potential
@@ -11,7 +12,7 @@ from ..training import Training
 from ..predict import Predict
 from ..predict.utils import print_elastic_information
 from ..io.minimal import MinimalMDReader
-from ..visualize import visualize_single_calculation, visualize_pair_distribution
+from ..visualize import visualize_single_calculation, visualize_radial_pair_distribution, visualize_pair_energies
 
 
 def add_subcommand_test(subparsers):
@@ -20,6 +21,7 @@ def add_subcommand_test(subparsers):
     add_subcommand_test_properties(sub_subparsers)
     add_subcommand_test_relax(sub_subparsers)
     add_subcommand_test_training(sub_subparsers)
+    add_subcommand_test_radial(sub_subparsers)
     add_subcommand_test_pair(sub_subparsers)
 
 
@@ -57,14 +59,26 @@ def add_subcommand_test_training(subparsers):
     parser.add_argument('-o', '--output-filename', type=is_not_file_type, help='filename to write visualization to')
 
 
-def add_subcommand_test_pair(subparsers):
-    parser = subparsers.add_parser('pair', help='plot the pair distributions for each pair type')
-    parser.set_defaults(func=handle_subcommand_test_pair)
+def add_subcommand_test_radial(subparsers):
+    parser = subparsers.add_parser('radial', help='plot the radial pair distributions for each atom pair type')
+    parser.set_defaults(func=handle_subcommand_test_radial)
     parser.add_argument('-t', '--training', help='training set to use for comparison', type=is_file_type, required=True)
     parser.add_argument('--distance', default=10.0, help='distance to calculate radial distribution function', type=float)
     parser.add_argument('--cache', default='~/.cache/dftfit/cache.db', help='dft cache', type=is_file_type)
     parser.add_argument('--hide', dest='show', action='store_false', help='do not show plot')
     parser.add_argument('-o', '--output-filename', type=is_not_file_type, help='filename to write visualization to')
+
+
+def add_subcommand_test_pair(subparsers):
+    parser = subparsers.add_parser('pair', help='plot potential energy for each atom pair type in potential')
+    parser.set_defaults(func=handle_subcommand_test_pair)
+    parser.add_argument('-p', '--potential', help='potential filename in in yaml/json format', type=is_file_type, required=True)
+    parser.add_argument('--min', default=0.1, type=float, help='minimum distance')
+    parser.add_argument('--max', default=10.0, type=float, help='maximum distance to test potential')
+    parser.add_argument('--samples', default=100, type=int, help='number of samples of potential')
+    parser.add_argument('--software', default='lammps', help='md calculator to use')
+    parser.add_argument('--command', help='md calculator command has sensible defaults')
+
 
 
 def get_structure(filename):
@@ -158,7 +172,19 @@ def handle_subcommand_test_training(args):
     visualize_single_calculation(training.calculations, md_calculations, plot=args.plot, show=args.show, filename=args.output_filename)
 
 
-def handle_subcommand_test_pair(args):
+def handle_subcommand_test_radial(args):
     cache_filename = os.path.expanduser(args.cache)
     training = Training.from_file(args.training, cache_filename=cache_filename)
-    visualize_pair_distribution(training.calculations, distance=args.distance, show=args.show, filename=args.output_filename)
+    visualize_radial_pair_distribution(training.calculations, distance=args.distance, show=args.show, filename=args.output_filename)
+
+
+def handle_subcommand_test_pair(args):
+    default_commands = {
+        'lammps': 'lammps'
+    }
+    command = args.command if args.command else default_commands.get(args.software)
+    predict = Predict(calculator=args.software, command=command, num_workers=1)
+    potential = Potential.from_file(args.potential)
+    seperations = np.linspace(args.min, args.max, args.samples)
+    energies = predict.pair('Mg', 'O', potential, seperations)
+    visualize_pair_energies(seperations, {'Mg-O': energies})

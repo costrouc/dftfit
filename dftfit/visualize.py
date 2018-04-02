@@ -138,8 +138,8 @@ def visualize_single_calculation(dft_calculations, md_calculations, plot='forces
     return fig, axes
 
 
-def visualize_pair_distribution(calculations, distance=10, filename=None, show=True):
-    """visualize the pair distributions for each atom in training set"""
+def visualize_radial_pair_distribution(calculations, distance=10, filename=None, show=True):
+    """visualize the radial pair distributions for each atom in training set"""
     specie_types = set()
     for calculation in calculations:
         specie_types.update(calculation.structure.types_of_specie)
@@ -163,3 +163,10 @@ def visualize_pair_distribution(calculations, distance=10, filename=None, show=T
     if show:
         plt.show()
     return fig, axes
+
+
+def visualize_pair_energies(separations, pair_energies, filename=None, show=True):
+    # raise NotImplementedError()
+    fig, ax = plt.subplots()
+    ax.plot(separations, pair_energies['Mg-O'])
+    plt.show()
