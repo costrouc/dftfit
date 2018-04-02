@@ -39,6 +39,9 @@ setup(
         'pyyaml',
         'pygmo',
         'pandas',
+        'scipy',
+        'mattoolkit',
+        'numpy',
         'scikit-learn'
     ],
     setup_requires=['pytest-runner', 'setuptools>=38.6.0'],  # >38.6.0 needed for markdown README.md

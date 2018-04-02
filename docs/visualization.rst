@@ -5,4 +5,6 @@ Visualization
 DFTFIT has many tools for visualizing the progress and results from
 potential fitting.
 
-TODO document.
+For now the visualization is mostly in the commands documentation.
+
+TODO
