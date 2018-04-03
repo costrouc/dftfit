@@ -4,6 +4,7 @@ import collections
 import numpy as np
 from sklearn import manifold
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import pymatgen as pmg
 
 from .db_actions import filter_evaluations, list_evaluations
@@ -169,8 +170,11 @@ def visualize_pair_energies(separations, pair_energies, filename=None, show=True
     fig, axes = plt.subplots(len(pair_energies), 1, sharex=True, sharey=True)
     for ax, (label, energies) in zip(np.ravel(axes), pair_energies.items()):
         ax.plot(separations, energies)
+        ax.axhline(y=0, c='k', linewidth=1, linestyle='dotted')
         ax.set_ylabel('Energy [eV]')
         ax.set_yscale('symlog')
+        while len(ax.get_yticks()) > 5: # would be nice if i could just specify 5...
+            ax.set_yticks(ax.get_yticks()[::2])
         ax.set_title(label)
     axes[-1].set_xlabel(r'Separation [$\AA$]')
     plt.show()
