@@ -1,4 +1,5 @@
 import os
+import itertools
 
 from pymatgen.io.cif import CifParser
 from pymatgen.io.vasp import Poscar
@@ -185,7 +186,10 @@ def handle_subcommand_test_pair(args):
     command = args.command if args.command else default_commands.get(args.software)
     predict = Predict(calculator=args.software, command=command, num_workers=1)
     potential = Potential.from_file(args.potential)
-    print(potential.elements)
+
     seperations = np.linspace(args.min, args.max, args.samples)
-    energies = predict.pair('Mg', 'O', potential, seperations)
-    visualize_pair_energies(seperations, {'Mg-O': energies})
+    pair_energies = {}
+    for element_a, element_b in itertools.combinations_with_replacement(potential.elements, 2):
+        energies = predict.pair(element_a, element_b, potential, seperations)
+        pair_energies['%s-%s' % (element_a, element_b)] = energies
+    visualize_pair_energies(seperations, pair_energies)

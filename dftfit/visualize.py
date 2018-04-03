@@ -166,11 +166,11 @@ def visualize_radial_pair_distribution(calculations, distance=10, filename=None,
 
 
 def visualize_pair_energies(separations, pair_energies, filename=None, show=True):
-    fig, axes = plt.subplots(len(pair_energies), 1)
+    fig, axes = plt.subplots(len(pair_energies), 1, sharex=True, sharey=True)
     for ax, (label, energies) in zip(np.ravel(axes), pair_energies.items()):
-        ax.plot(separations, pair_energies['Mg-O'])
-        ax.set_xlabel(r'Separation [$\AA$]')
+        ax.plot(separations, energies)
         ax.set_ylabel('Energy [eV]')
         ax.set_yscale('symlog')
         ax.set_title(label)
+    axes[-1].set_xlabel(r'Separation [$\AA$]')
     plt.show()

@@ -4,6 +4,7 @@ import asyncio
 import functools
 
 import numpy as np
+from pymatgen.core import Element
 from lammps.output import LammpsRun, LammpsData
 from lammps.inputs import LammpsInput, LammpsScript
 from lammps.calculator.client import LammpsLocalClient
@@ -71,6 +72,17 @@ lammps_dftfit_set = OrderedDict([
 def modify_input_for_potential(lammps_input, potential):
     symbol_indicies = {element_type_to_symbol(s): i for s, i in lammps_input.lammps_data.symbol_indicies.items()}
 
+    # Ensure that even if element missing from structure
+    # element is included in lammps script and lammps data
+    max_indicie = max(symbol_indicies.values())
+    for element in potential.elements:
+        if element not in symbol_indicies:
+            max_indicie += 1
+            elem = Element(element)
+            lammps_input.lammps_data.symbol_indicies[elem] = max_indicie
+            lammps_input.lammps_data.masses[elem] = elem.atomic_mass
+            symbol_indicies[element] = max_indicie
+
     def charge(potential):
         spec = potential.schema['spec']
         set_commands = []
@@ -117,7 +129,8 @@ def modify_input_for_potential(lammps_input, potential):
                 symbols_to_indicies = lambda symbols: [symbol_indicies[s] for s in symbols]
                 pair_coeffs = []
                 for coeff in spec['pair']['parameters']:
-                    pair_coeffs.append(' '.join(list(map(str, symbols_to_indicies(coeff['elements']) + coeff['coefficients']))))
+                    # lammps requires that indicies be accending
+                    pair_coeffs.append(' '.join(list(map(str, sorted(symbols_to_indicies(coeff['elements'])) + coeff['coefficients']))))
                 return ('pair_coeff', pair_coeffs)
             elif spec['pair']['type'] == 'tersoff':
                 return '* * potential.tersoff Si C Si'; # TODO: find out how to determine

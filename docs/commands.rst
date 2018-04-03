@@ -205,3 +205,9 @@ interaction. This command will visualize the resulting pair potential
 from the model for each pair of atoms. This method just does a simple
 evaluation of the pair of atoms at different separations in a large
 periodic box (much larger than separation).
+
+.. code-block:: shell
+
+   dftfit test pair -p test_files/potential/mgo.yaml
+
+.. image:: images/mgo-pair-potential-energies-201803.png
