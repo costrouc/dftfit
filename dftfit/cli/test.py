@@ -185,6 +185,7 @@ def handle_subcommand_test_pair(args):
     command = args.command if args.command else default_commands.get(args.software)
     predict = Predict(calculator=args.software, command=command, num_workers=1)
     potential = Potential.from_file(args.potential)
+    print(potential.elements)
     seperations = np.linspace(args.min, args.max, args.samples)
     energies = predict.pair('Mg', 'O', potential, seperations)
     visualize_pair_energies(seperations, {'Mg-O': energies})

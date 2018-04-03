@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
  - adding move towards modern deployment following https://costrouc-python-package-template.readthedocs.io/en/latest/
+ - adding feature to print specie in potential
+ - adding feature to plot pair potentials of potential
 
 ## v0.3.0
 

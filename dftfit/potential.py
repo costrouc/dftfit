@@ -204,6 +204,18 @@ class Potential:
     def optimization_parameter_indicies(self):
         return np.array(self._optimization_parameter_indicies)
 
+    @property
+    def elements(self):
+        """ Return a set of the elements that potential applies to
+        """
+        elements = set()
+        for element in self.schema['spec'].get('charge', {}):
+            elements.add(element)
+        for parameter in self.schema['spec'].get('pair', {}).get('parameters', []):
+            for element in parameter.get('elements', []):
+                elements.add(element)
+        return elements
+
     def __repr__(self):
         return self.__str__()
 
