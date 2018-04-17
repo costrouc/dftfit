@@ -32,6 +32,7 @@ class SiestaReader(DFTReader):
         for atom in xml_structures[step]:
             symbols.append(atom.attrib["elementType"])
             coordinates.append([atom.attrib["x3"], atom.attrib["y3"], atom.attrib["z3"]])
+        coordinates = np.array(coordinates).reshape(-1, 3).astype(float)
 
         XML_LATTICE = './/xml:crystal[@title="Lattice Parameters"]'
         xml_lattices = root.findall(XML_LATTICE, namespaces=self._namespaces)
