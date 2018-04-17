@@ -4,17 +4,17 @@ variables:
     TWINE_REPOSITORY_URL: https://upload.pypi.org/legacy/
 
 stages:
-#  - test
+  - test
   - deploy
 
-# test:
-#   image: python:3.6
-#   stage: test
-#   script:
-#     - echo "============== Testing Package ============="
-#     - pip install . # quieter
-#     - python setup.py test -a '-m "not mattoolkit and not lammps"'
-#     - echo "============================================"
+test:
+  image: python:3.6
+  stage: test
+  script:
+    - echo "============== Testing Package ============="
+    - pip install . # quieter
+    - python setup.py test --addopts '-m "not mattoolkit and not lammps"'
+    - echo "============================================"
 
 
 deploy:
