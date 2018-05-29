@@ -1,3 +1,7 @@
+**All issues and contributions should be done on
+[Gitlab](https://gitlab.com/costrouc/dftfit). Github is used only as a
+mirror for visibility**
+
 # DFTFIT
 
 DFTFIT is a python code that used Ab Initio data from DFT calculations
@@ -67,7 +71,10 @@ One example for DFTFIT is included for MgO.
 
 # Contributing
 
-All contributions, bug reports, bug fixes, documentation improvements, enhancements and ideas are welcome.
+All contributions, bug reports, bug fixes, documentation improvements,
+enhancements and ideas are welcome. These should be submitted at the
+[Gitlab repository](https://gitlab.com/costrouc/lammps-cython). Github
+is only used for visibility.
 
 # License
 
