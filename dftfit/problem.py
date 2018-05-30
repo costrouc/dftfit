@@ -52,7 +52,6 @@ class DFTFITProblemBase:
             )
         return [convert_to_reader(_) for _ in lammps_results]
 
-
     def get_bounds(self):
         return tuple(zip(*self.potential.optimization_bounds.tolist()))
 
