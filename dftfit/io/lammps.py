@@ -5,9 +5,9 @@ import functools
 
 import numpy as np
 from pymatgen.core import Element
-from lammps.output import LammpsRun, LammpsData
-from lammps.inputs import LammpsInput, LammpsScript
-from lammps.calculator.client import LammpsLocalClient
+from pmg_lammps.output import LammpsRun, LammpsData
+from pmg_lammps.inputs import LammpsInput, LammpsScript
+from pmg_lammps.calculator.client import LammpsLocalClient
 
 from .base import MDReader, MDCalculator
 from .utils import element_type_to_symbol

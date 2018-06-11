@@ -51,6 +51,18 @@ class MDReader:
         return self._structure
 
 
+class DFTFITCalculator:
+    def __init__(self, structures):
+        raise NotImplementedError()
+
+    async def create(self):
+        raise NotImplementedError()
+
+    async def submit(self, potential, properties=None):
+        properties = properties or {'stress', 'energy', 'forces'}
+        raise NotImplementedError()
+
+
 class MDCalculator:
     async def submit(self, structure, potential):
         raise NotImplementedError()

@@ -3,8 +3,8 @@ import os
 import json
 
 import numpy as np
-from lammps.inputs import LammpsScript
-from lammps.sets import MODULE_DIR
+from pmg_lammps.inputs import LammpsScript
+from pmg_lammps.sets import MODULE_DIR
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.core import Lattice, Structure
 from pymatgen.analysis.elasticity import DeformedStructureSet, ElasticTensor, Stress, Strain

@@ -14,9 +14,11 @@ pyyaml = "*"
 pygmo = "*"
 pandas = "*"
 scikit-learn = "*"
+pytest = "*"
+
 
 [dev-packages]
 
 sphinx = "*"
-sphinx_rtd_theme = "*"
+sphinx-rtd-theme = "*"
 ipykernel = "*"

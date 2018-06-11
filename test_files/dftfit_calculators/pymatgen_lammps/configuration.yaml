@@ -8,8 +8,8 @@ metadata:
 spec:
   logging: INFO
   database: "/tmp/dftfit/database.db"
-  steps: 5
-  population: 10
+  steps: 2
+  population: 7
   algorithm:
     name: 'pygmo.sade'
   problem:
@@ -20,4 +20,4 @@ spec:
     w_s: 0.6
     w_e: 0.1
   training:
-    cache_filename: "./cache/cache.db"
+    cache_filename: "test_files/dftfit_calculators/cache/cache.db"
