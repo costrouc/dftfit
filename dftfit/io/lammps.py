@@ -9,7 +9,7 @@ from pmg_lammps.output import LammpsRun, LammpsData
 from pmg_lammps.inputs import LammpsInput, LammpsScript
 from pmg_lammps.calculator.client import LammpsLocalClient
 
-from .base import MDReader, MDCalculator
+from .base import MDReader, MDCalculator, DFTFITCalculator
 from .utils import element_type_to_symbol
 
 
@@ -145,7 +145,42 @@ def modify_input_for_potential(lammps_input, potential):
     lammps_input.additional_files.extend(tersoff_file(potential))
 
 
-class LammpsLocalCalculator(MDCalculator):
+class LammpsLocalDFTFITCalculator(DFTFITCalculator):
+    def __init__(self, structures, command='lammps_ubuntu', num_workers=1):
+        self.num_cores = 1
+        self.command = command
+        self.lammps_local_client = LammpsLocalClient(command=command, num_workers=num_workers)
+
+    async def create(self):
+        await self.lammps_local_client.create()
+
+    def _convert_to_reader(lammps_result, structure):
+            return MDReader(
+                forces=np.array(lammps_result['results']['forces']),
+                stress=np.array(lammps_result['results']['stress']),
+                energy=lammps_result['results']['energy'],
+                structure=structure
+            )
+
+    async def submit(self, potential, properties=None):
+        lammps_set = lammps_dftfit_set
+        properties = properties or {'stress', 'energy', 'forces'}
+
+        futures = []
+        for structure in self.structures:
+            lammps_input = LammpsInput(
+                LammpsScript(lammps_set),
+                LammpsData.from_structure(structure))
+            modify_input_for_potential(lammps_input, potential)
+            data_filename = lammps_input.lammps_script.data_filenames[0]
+            stdin = str(lammps_input.lammps_script)
+            files = {data_filename: str(lammps_input.lammps_data)}
+            futures.append(await self.lammps_local_client.submit(
+                stdin, files, properties))
+        results = await asyncio.gather(futures)
+        return [self._convert_to_reader(_) for _ in zip(self.structures, results)]
+
+class LammpsLocalMDCalculator(MDCalculator):
     def __init__(self, command='lammps_ubuntu', num_workers=1):
         self.num_cores = 1
         self.command = command

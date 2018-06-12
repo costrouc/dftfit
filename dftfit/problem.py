@@ -5,7 +5,7 @@ import logging
 
 import numpy as np
 
-from .io.lammps import LammpsLocalCalculator
+from .io.lammps import LammpsLocalMDCalculator
 from .io.base import MDReader
 from .db import DatabaseManager
 from .db_actions import write_evaluation
@@ -17,7 +17,7 @@ class DFTFITProblemBase:
     def __init__(self, potential, calculator='lammps', dbm=None, run_id=None, loop=None, **kwargs):
         self.loop = loop or asyncio.get_event_loop()
         calculator_mapper = {
-            'lammps': LammpsLocalCalculator
+            'lammps': LammpsLocalMDCalculator
         }
         self.calculator = calculator_mapper[calculator](**kwargs)
         self.loop.run_until_complete(self.calculator.create())

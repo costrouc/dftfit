@@ -1,5 +1,6 @@
 from dftfit.potential import Potential
 
+
 def test_potential_lammps():
     schema = {
         'version': 'v1',
@@ -23,11 +24,11 @@ def test_potential_lammps():
             }
         }
     }
-    potential = Potential(schema)
+    Potential(schema)
 
 
 def test_potential_from_file():
-    potential = Potential.from_file('test_files/potential/mgo.yaml')
+    Potential.from_file('test_files/potential/mgo.yaml')
 
 
 def test_potential_from_file_read_parameters():

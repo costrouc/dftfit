@@ -28,3 +28,4 @@ def dftfit(configuration_schema, potential_schema, training_schema):
         print(f'\nShutting down DFTFIT\nIf using database all completed evaluations are written')
     finally:
         write_run_final(configuration.dbm, run_id)
+    return run_id

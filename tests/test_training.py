@@ -3,7 +3,9 @@ import pytest
 from dftfit.training import Training
 
 
-# I don't really have plans to make mattoolkit available in the future
+# mattoolkit is not running (so should not run these tests
+
 # @pytest.mark.mattoolkit
 # def test_potential_from_file():
-#     potential = Training.from_file('test_files/training/training-mgo.yaml')
+#     base_directory = 'test_files/training/'
+#     Training.from_file(base_directory + 'training-mattoolkit-mgo.yaml')

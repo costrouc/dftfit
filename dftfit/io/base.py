@@ -52,6 +52,10 @@ class MDReader:
 
 
 class DFTFITCalculator:
+    """DFTFIT interface. Should have a simple api. Only `__init__`
+    interface may change.
+
+    """
     def __init__(self, structures):
         raise NotImplementedError()
 
