@@ -151,11 +151,13 @@ class LammpsLocalDFTFITCalculator(DFTFITCalculator):
         self.num_cores = 1
         self.command = command
         self.lammps_local_client = LammpsLocalClient(command=command, num_workers=num_workers)
+        self.structures = structures
 
     async def create(self):
         await self.lammps_local_client.create()
 
-    def _convert_to_reader(lammps_result, structure):
+    @staticmethod
+    def _convert_to_reader(structure, lammps_result):
             return MDReader(
                 forces=np.array(lammps_result['results']['forces']),
                 stress=np.array(lammps_result['results']['stress']),
@@ -178,8 +180,13 @@ class LammpsLocalDFTFITCalculator(DFTFITCalculator):
             files = {data_filename: str(lammps_input.lammps_data)}
             futures.append(await self.lammps_local_client.submit(
                 stdin, files, properties))
-        results = await asyncio.gather(futures)
-        return [self._convert_to_reader(_) for _ in zip(self.structures, results)]
+        results = await asyncio.gather(*futures)
+        return [self._convert_to_reader(s, r) for s, r in zip(self.structures, results)]
+
+    def shutdown(self):
+        self.lammps_local_client.shutdown()
+
+
 
 class LammpsLocalMDCalculator(MDCalculator):
     def __init__(self, command='lammps_ubuntu', num_workers=1):

@@ -5,23 +5,24 @@ import logging
 
 import numpy as np
 
-from .io.lammps import LammpsLocalMDCalculator
-from .io.base import MDReader
-from .db import DatabaseManager
+from .io.lammps import LammpsLocalDFTFITCalculator
 from .db_actions import write_evaluation
 
 logger = logging.getLogger(__name__)
 
 
 class DFTFITProblemBase:
-    def __init__(self, potential, calculator='lammps', dbm=None, run_id=None, loop=None, **kwargs):
+    def __init__(self, potential, dft_calculations, calculator='lammps', dbm=None, run_id=None, loop=None, **kwargs):
+        self.dft_calculations = dft_calculations
         self.loop = loop or asyncio.get_event_loop()
         calculator_mapper = {
-            'lammps': LammpsLocalMDCalculator
+            'lammps': LammpsLocalDFTFITCalculator
         }
-        self.calculator = calculator_mapper[calculator](**kwargs)
+        structures = [c.structure for c in dft_calculations]
+        self.calculator = calculator_mapper[calculator](structures=structures, **kwargs)
         self.loop.run_until_complete(self.calculator.create())
         self.potential = potential
+
         self.dbm = dbm
         self._run_id = run_id
         if self.dbm and not isinstance(self._run_id, int):
@@ -37,30 +38,14 @@ class DFTFITProblemBase:
     def __del__(self):
         self.calculator.shutdown()
 
-    async def _fitness(self, dft_calculations, potential):
-        md_calculation_futures = []
-        for dft_calculation in dft_calculations:
-            md_calculation_futures.append(await self.calculator.submit(dft_calculation.structure, potential))
-        lammps_results = await asyncio.gather(*md_calculation_futures)
-
-        def convert_to_reader(lammps_result):
-            return MDReader(
-                forces=np.array(lammps_result['results']['forces']),
-                stress=np.array(lammps_result['results']['stress']),
-                energy=lammps_result['results']['energy'],
-                structure=dft_calculation.structure
-            )
-        return [convert_to_reader(_) for _ in lammps_results]
-
     def get_bounds(self):
         return tuple(zip(*self.potential.optimization_bounds.tolist()))
 
 
 class DFTFITSingleProblem(DFTFITProblemBase):
-    def __init__(self, dft_calculations, w_f, w_s, w_e, **kwargs):
+    def __init__(self, w_f, w_s, w_e, **kwargs):
         super().__init__(**kwargs)
         self.weights = {'forces': w_f, 'stress': w_s, 'energy': w_e}
-        self.dft_calculations = dft_calculations
 
     def get_nobj(self):
         return 1
@@ -68,7 +53,7 @@ class DFTFITSingleProblem(DFTFITProblemBase):
     def fitness(self, parameters):
         potential = self.potential.copy()
         potential.optimization_parameters = parameters
-        md_calculations = self.loop.run_until_complete(self._fitness(self.dft_calculations, potential))
+        md_calculations = self.loop.run_until_complete(self.calculator.submit(potential))
         result = singleobjective_function(self.dft_calculations, md_calculations, self.weights)
         self.store_evaluation(potential, result)
         logger.info(f'evaluation: {result["score"]}')
@@ -76,9 +61,8 @@ class DFTFITSingleProblem(DFTFITProblemBase):
 
 
 class DFTFITMultiProblem(DFTFITProblemBase):
-    def __init__(self, dft_calculations, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.dft_calculations = dft_calculations
 
     def get_nobj(self):
         return 3
@@ -86,7 +70,7 @@ class DFTFITMultiProblem(DFTFITProblemBase):
     def fitness(self, parameters):
         potential = self.potential.copy()
         potential.optimization_parameters = parameters
-        md_calculations = self.loop.run_until_complete(self._fitness(self.dft_calculations, potential))
+        md_calculations = self.loop.run_until_complete(self.calculator.submit(potential))
         result = multiobjective_function(self.dft_calculations, md_calculations)
         self.store_evaluation(potential, result)
         logger.info(f'evaluation: {result["score"]}')

@@ -4,7 +4,9 @@ import numpy as np
 from pymatgen import Lattice, Specie, Structure
 
 from pmg_lammps import LammpsInput, LammpsData, LammpsScript
-from dftfit.io.lammps import LammpsReader, lammps_dftfit_set, modify_input_for_potential
+from dftfit.io.lammps import (
+    LammpsReader, lammps_dftfit_set, modify_input_for_potential
+)
 from dftfit.potential import Potential
 
 
@@ -19,8 +21,11 @@ def test_lammps_reader():
     assert set(s.symbol for s in structure.species) == {'Mg', 'O'}
 
 
-
 def test_lammps_writer_buckingham():
+    """Tests that given a structure and potential that a certain lammps
+    input script is created.
+
+    """
     # Create structure
     supercell = (2, 2, 2)
     a = 4.1990858 # From evaluation of potential
@@ -93,5 +98,4 @@ def test_lammps_writer_buckingham():
         ('thermo_style', 'custom step etotal pxx pyy pzz pxy pxz pyz'),
         ('run', 0)
     ]
-
     assert OrderedDict(output_script) == lammps_input.lammps_script

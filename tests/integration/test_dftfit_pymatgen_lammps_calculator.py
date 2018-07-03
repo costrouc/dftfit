@@ -2,7 +2,6 @@ import pytest
 
 from dftfit.cli.utils import load_filename
 from dftfit.dftfit import dftfit
-from dftfit.db import DatabaseManager
 from dftfit.config import Configuration
 
 
