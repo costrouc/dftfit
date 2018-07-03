@@ -15,6 +15,9 @@ pygmo = "*"
 pandas = "*"
 scikit-learn = "*"
 pytest = "*"
+lammps-cython = "*"
+"mpi4py" = "*"
+cython = "*"
 
 
 [dev-packages]

@@ -8,10 +8,15 @@ from dftfit.config import Configuration
 @pytest.mark.pymatgen_lammps
 def test_pymatgen_lammps_calculator():
     # Read in configuration information
-    base_directory = 'test_files/dftfit_calculators/pymatgen_lammps/'
+    base_directory = 'test_files/dftfit_calculators/'
     training_schema = load_filename(base_directory + 'training.yaml')
     potential_schema = load_filename(base_directory + 'potential.yaml')
     configuration_schema = load_filename(base_directory + 'configuration.yaml')
+    configuration_schema['spec']['problem'].update({
+        'calculator': 'lammps',
+        'command': 'lammps',
+        'num_workers': 2
+    })
 
     # Run optimization
     run_id = dftfit(training_schema=training_schema,

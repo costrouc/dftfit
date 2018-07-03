@@ -1,12 +1,13 @@
 import math
 
 import lammps
+import numpy as np
 import pymatgen as pmg
 
-from .base import MDCalculator, MDReader
+from .base import DFTFITCalculator, MDReader
 
 
-class LammpsCythonCalculator(MDCalculator):
+class LammpsCythonDFTFITCalculator(DFTFITCalculator):
     """This is not a general purpose lammps calculator. Only for dftfit
     evaluations. For now there are not plans to generalize it.
     """
@@ -39,7 +40,8 @@ class LammpsCythonCalculator(MDCalculator):
     def _apply_potential(self, lmp, potential):
         pass
 
-    def _apply_potential_charges(self
+    def _apply_potential_charges(self):
+        pass
 
     async def submit(self, potential, properties=None):
         properties = properties or {'stress', 'energy', 'forces'}

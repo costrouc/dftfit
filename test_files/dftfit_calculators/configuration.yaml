@@ -13,9 +13,7 @@ spec:
   algorithm:
     name: 'pygmo.sade'
   problem:
-    calculator: 'lammps'
-    command: 'lammps'
-    num_workers: 2
+    # specified calculator is intentionally left out.
     w_f: 0.3
     w_s: 0.6
     w_e: 0.1

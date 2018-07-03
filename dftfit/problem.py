@@ -6,6 +6,7 @@ import logging
 import numpy as np
 
 from .io.lammps import LammpsLocalDFTFITCalculator
+from .io.lammps_cython import LammpsCythonDFTFITCalculator
 from .db_actions import write_evaluation
 
 logger = logging.getLogger(__name__)
@@ -16,7 +17,8 @@ class DFTFITProblemBase:
         self.dft_calculations = dft_calculations
         self.loop = loop or asyncio.get_event_loop()
         calculator_mapper = {
-            'lammps': LammpsLocalDFTFITCalculator
+            'lammps': LammpsLocalDFTFITCalculator,
+            'lammps_cython': LammpsCythonDFTFITCalculator,
         }
         structures = [c.structure for c in dft_calculations]
         self.calculator = calculator_mapper[calculator](structures=structures, **kwargs)
