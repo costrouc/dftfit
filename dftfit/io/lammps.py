@@ -86,8 +86,9 @@ def modify_input_for_potential(lammps_input, potential):
     def charge(potential):
         spec = potential.schema['spec']
         set_commands = []
-        for element, charge in spec.get('charge', {}).items():
-            set_commands.append('type %d charge %f' % (symbol_indicies[element], float(charge)))
+        element_index_charge = sorted([(symbol_indicies[element], float(charge)) for element, charge in spec.get('charge', {}).items()], key=lambda e: e[0])
+        for element_index, charge in element_index_charge:
+            set_commands.append('type %d charge %f' % (element_index, charge))
         return ('set', set_commands)
 
     def kspace_style(potential):

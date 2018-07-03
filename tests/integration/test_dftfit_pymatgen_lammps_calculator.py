@@ -10,12 +10,9 @@ from dftfit.config import Configuration
 def test_pymatgen_lammps_calculator():
     # Read in configuration information
     base_directory = 'test_files/dftfit_calculators/pymatgen_lammps/'
-    training_schema = load_filename(
-        base_directory + 'training.yaml')
-    potential_schema = load_filename(
-        base_directory + 'potential.yaml')
-    configuration_schema = load_filename(
-        base_directory + 'configuration.yaml')
+    training_schema = load_filename(base_directory + 'training.yaml')
+    potential_schema = load_filename(base_directory + 'potential.yaml')
+    configuration_schema = load_filename(base_directory + 'configuration.yaml')
 
     # Run optimization
     run_id = dftfit(training_schema=training_schema,

@@ -8,7 +8,7 @@ metadata:
 spec:
   logging: INFO
   database: "/tmp/dftfit/database.db"
-  steps: 2
+  steps: 1
   population: 7
   algorithm:
     name: 'pygmo.sade'
