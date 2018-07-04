@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "60d92fc44531385b66128630270ca111a46828cd2e3677ddf0e8ecbba2e3191a"
+            "sha256": "7eb77061063d189e970130d4a566510dde4f362bab8e5f67e84ca124f3a41b2b"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -294,6 +294,12 @@
             ],
             "version": "==1.5.4"
         },
+        "py-cpuinfo": {
+            "hashes": [
+                "sha256:6615d4527118d4ea1db4d86dac4340725b3906aa04bf36b7902f7af4425fb25f"
+            ],
+            "version": "==4.0.0"
+        },
         "pydispatcher": {
             "hashes": [
                 "sha256:5570069e1b1769af1fe481de6dd1d3a388492acddd2cdad7a3bde145615d5caf",
@@ -349,6 +355,13 @@
                 "sha256:8ea01fc4fcc8e1b1e305252b4bc80a1528019ab99fd3b88666c9dc38d754406c"
             ],
             "version": "==3.6.2"
+        },
+        "pytest-benchmark": {
+            "hashes": [
+                "sha256:3549545f1a051a789d956a4a9b176583cd6b847e621b788471e6c04b7d8d0e3c",
+                "sha256:185526b10b7cf1804cb0f32ac0653561ef2f233c6e50a9b3d8066a9757e36480"
+            ],
+            "version": "==3.1.1"
         },
         "python-dateutil": {
             "hashes": [

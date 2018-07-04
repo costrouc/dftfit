@@ -18,6 +18,7 @@ pytest = "*"
 lammps-cython = "*"
 "mpi4py" = "*"
 cython = "*"
+pytest-benchmark = "*"
 
 
 [dev-packages]
