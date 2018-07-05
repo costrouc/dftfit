@@ -19,6 +19,7 @@ lammps-cython = "*"
 "mpi4py" = "*"
 cython = "*"
 pytest-benchmark = "*"
+snakeviz = "*"
 
 
 [dev-packages]
