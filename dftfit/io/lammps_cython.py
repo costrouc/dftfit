@@ -52,7 +52,6 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
 
     def _apply_buckingham_charge(self, lmp, elements, potential):
         element_map = {e.symbol: i for i, e in enumerate(elements, start=1)}
-        print(element_map)
         spec = potential.schema['spec']
         lmp.command('kspace_style %s %f' % (
             spec['kspace']['type'], spec['kspace']['tollerance']))
