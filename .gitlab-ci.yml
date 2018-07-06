@@ -13,7 +13,7 @@ test:
   script:
     - echo "============== Testing Package ============="
     - pip install . # quieter
-    - python setup.py test --addopts '-m "not mattoolkit and not lammps"'
+    - python setup.py test --addopts '-m "not calculator"'
     - echo "============================================"
 
 

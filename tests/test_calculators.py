@@ -1,14 +1,18 @@
 import asyncio
 
+import pymatgen as pmg
+import numpy as np
+import pytest
+
 from dftfit.cli.utils import load_filename
 from dftfit.potential import Potential
 from dftfit.io.lammps import LammpsLocalDFTFITCalculator
 from dftfit.io.lammps_cython import LammpsCythonDFTFITCalculator
 
-import pymatgen as pmg
-import numpy as np
 
-
+@pytest.mark.pymatgen_lammps
+@pytest.mark.lammps_cython
+@pytest.mark.calculator
 def test_calculator_equivalency():
     # Create structure
     supercell = (2, 2, 2)

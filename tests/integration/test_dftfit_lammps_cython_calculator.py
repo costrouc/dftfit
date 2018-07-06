@@ -5,6 +5,8 @@ from dftfit.dftfit import dftfit
 from dftfit.config import Configuration
 
 
+@pytest.mark.lammps_cython
+@pytest.mark.calculator
 def test_lammps_cython_calculator(benchmark):
     # Read in configuration information
     base_directory = 'test_files/dftfit_calculators/'
@@ -30,7 +32,9 @@ def test_lammps_cython_calculator(benchmark):
         steps = configuration_schema['spec']['steps']
         assert query[0] == population * (steps + 1) # because one initial run is done before calculation
 
-@pytest.mark.benchmark
+
+@pytest.mark.lammps_cython
+@pytest.mark.calculator
 def test_lammps_cython_calculator_benchmark(benchmark):
     # Read in configuration information
     base_directory = 'test_files/dftfit_calculators/'

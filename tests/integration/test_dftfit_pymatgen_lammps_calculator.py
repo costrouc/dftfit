@@ -6,6 +6,7 @@ from dftfit.config import Configuration
 
 
 @pytest.mark.pymatgen_lammps
+@pytest.mark.calculator
 def test_pymatgen_lammps_calculator():
     # Read in configuration information
     base_directory = 'test_files/dftfit_calculators/'
@@ -34,7 +35,8 @@ def test_pymatgen_lammps_calculator():
         assert query[0] == population * (steps + 1) # because one initial run is done before calculation
 
 
-@pytest.mark.benchmark
+@pytest.mark.pymatgen_lammps
+@pytest.mark.calculator
 def test_pymatgen_lammps_calculator_benchmark(benchmark):
     # Read in configuration information
     base_directory = 'test_files/dftfit_calculators/'
