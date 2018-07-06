@@ -18,17 +18,32 @@ test_calculator_pymatgen_lammps:
   image: costrouc/lammps:patch_11May2018-debian-serial-all
   stage: test
   script:
-    - apt update; apt install python3 python3-pip -y
-    - pip3 install .[pymatgen_lammps]
-    - python setup.py test --addopts '-m "pymatgen_lammps"'
+    # install python3.6...
+    - apt update
+    - apt install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev -y
+    - wget https://www.python.org/ftp/python/3.6.6/Python-3.6.6.tar.xz
+    - tar xf Python-3.6.6.tar.xz
+    - cd Python-3.6.6
+    - ./configure && make && make install
+    - cd ..
+    - python3.6 -m pip install .[pymatgen_lammps]
+    - python3.6 setup.py test --addopts '-m "pymatgen_lammps"'
 
 test_calculator_lammps_cython:
   image: costrouc/lammps:patch_11May2018-debian-mpi-all
   stage: test
   script:
-    - apt update; apt install python3 python3-pip -y
-    - pip3 install .[lammps-cython]
-    - python3 setup.py test --addopts '-m "lammps_cython"'
+    # install python3.6...
+    - apt update
+    - apt install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev -y
+    - wget https://www.python.org/ftp/python/3.6.6/Python-3.6.6.tar.xz
+    - tar xf Python-3.6.6.tar.xz
+    - cd Python-3.6.6
+    - ./configure && make && make install
+    - cd ..
+    - python3.6 -m pip install numpy cython mpi4py
+    - python3.6 -m pip install .[lammps-cython]
+    - python3.6 setup.py test --addopts '-m "lammps_cython"'
 
 deploy:
   stage: deploy
