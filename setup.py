@@ -34,7 +34,6 @@ setup(
     packages=find_packages(exclude=('tests', 'docs', 'examples', 'test_files')),
     install_requires=[
         'pymatgen==2017.7.4',
-        'pymatgen-lammps',
         'marshmallow',
         'pyyaml',
         'pygmo',
@@ -48,6 +47,8 @@ setup(
     tests_require=['pytest', 'pytest-benchmark'],
     extras_require={
         'mattoolkit': 'mattoolkit',
+        'pymatgen_lammps': 'pymatgen_lammps',
+        'lammps-cython': 'lammps-cython'
     },
     entry_points={
         'console_scripts': [

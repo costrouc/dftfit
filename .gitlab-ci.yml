@@ -7,15 +7,28 @@ stages:
   - test
   - deploy
 
-test:
+test_not_calculators:
   image: python:3.6
   stage: test
   script:
-    - echo "============== Testing Package ============="
-    - pip install . # quieter
+    - pip install .
     - python setup.py test --addopts '-m "not calculator"'
-    - echo "============================================"
 
+test_calculator_pymatgen_lammps:
+  image: costrouc/lammps:patch_11May2018-debian-serial-all
+  stage: test
+  script:
+    - apt update; apt install python3 python3-pip -y
+    - pip install .[pymatgen_lammps]
+    - python setup.py test --addopts '-m "pymatgen_lammps"'
+
+test_calculator_lammps_cython:
+  image: costrouc/lammps:patch_11May2018-debian-mpi-all
+  stage: test
+  script:
+    - apt update; apt install python3 python3-pip -y
+    - pip install .[lammps-cython]
+    - python setup.py test --addopts '-m "lammps_cython"'
 
 deploy:
   stage: deploy
