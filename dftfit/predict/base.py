@@ -3,15 +3,16 @@ import os
 import json
 
 import numpy as np
-from pmg_lammps.inputs import LammpsScript
-from pmg_lammps.sets import MODULE_DIR
+
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.core import Lattice, Structure
 from pymatgen.analysis.elasticity import DeformedStructureSet, ElasticTensor, Stress, Strain
 
 
-
 def load_lammps_set(config_filename):
+    from pmg_lammps.sets import MODULE_DIR
+    from pmg_lammps.inputs import LammpsScript
+
     with open(os.path.join(MODULE_DIR, 'sets', config_filename + ".json")) as f:
         return json.load(f, object_pairs_hook=LammpsScript)
 
