@@ -19,7 +19,7 @@ test_calculator_pymatgen_lammps:
   stage: test
   script:
     - apt update; apt install python3 python3-pip -y
-    - pip install .[pymatgen_lammps]
+    - pip3 install .[pymatgen_lammps]
     - python setup.py test --addopts '-m "pymatgen_lammps"'
 
 test_calculator_lammps_cython:
@@ -27,8 +27,8 @@ test_calculator_lammps_cython:
   stage: test
   script:
     - apt update; apt install python3 python3-pip -y
-    - pip install .[lammps-cython]
-    - python setup.py test --addopts '-m "lammps_cython"'
+    - pip3 install .[lammps-cython]
+    - python3 setup.py test --addopts '-m "lammps_cython"'
 
 deploy:
   stage: deploy
