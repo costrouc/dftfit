@@ -2,15 +2,18 @@ from collections import OrderedDict
 
 import numpy as np
 from pymatgen import Lattice, Specie, Structure
+import pytest
 
-from pmg_lammps import LammpsInput, LammpsData, LammpsScript
-from dftfit.io.lammps import (
-    LammpsReader, lammps_dftfit_set, modify_input_for_potential
-)
 from dftfit.potential import Potential
 
-
+@pytest.mark.pymatgen_lammps
+@pytest.mark.calculators
 def test_lammps_reader():
+    from pmg_lammps import LammpsInput, LammpsData, LammpsScript
+    from dftfit.io.lammps import (
+        LammpsReader, lammps_dftfit_set, modify_input_for_potential
+    )
+
     base_directory = 'test_files/lammps/'
     lammps = LammpsReader(base_directory + 'mgo')
     assert np.all(np.isclose(lammps.forces, np.zeros((8, 3))))
@@ -20,12 +23,18 @@ def test_lammps_reader():
     assert len(structure) == 8
     assert set(s.symbol for s in structure.species) == {'Mg', 'O'}
 
-
+@pytest.mark.pymatgen_lammps
+@pytest.mark.calculators
 def test_lammps_writer_buckingham():
     """Tests that given a structure and potential that a certain lammps
     input script is created.
 
     """
+    from pmg_lammps import LammpsInput, LammpsData, LammpsScript
+    from dftfit.io.lammps import (
+        LammpsReader, lammps_dftfit_set, modify_input_for_potential
+    )
+
     # Create structure
     supercell = (2, 2, 2)
     a = 4.1990858 # From evaluation of potential
