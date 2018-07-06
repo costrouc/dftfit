@@ -36,6 +36,7 @@ def test_lammps_cython_calculator():
 @pytest.mark.lammps_cython
 @pytest.mark.calculator
 @pytest.mark.long
+@pytest.mark.benchmark(min_rounds=1)
 def test_lammps_cython_calculator_benchmark(benchmark):
     # Read in configuration information
     base_directory = 'test_files/dftfit_calculators/'
@@ -45,7 +46,7 @@ def test_lammps_cython_calculator_benchmark(benchmark):
     configuration_schema['spec']['problem'].update({
         'calculator': 'lammps_cython',
     })
-    configuration_schema['spec']['steps'] = 5
+    configuration_schema['spec']['steps'] = 2
 
     @benchmark
     def test_speed():

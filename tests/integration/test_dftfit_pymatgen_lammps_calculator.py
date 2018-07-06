@@ -16,7 +16,7 @@ def test_pymatgen_lammps_calculator():
     configuration_schema['spec']['problem'].update({
         'calculator': 'lammps',
         'command': 'lammps',
-        'num_workers': 2
+        'num_workers': 1
     })
 
     # Run optimization
@@ -38,6 +38,7 @@ def test_pymatgen_lammps_calculator():
 @pytest.mark.pymatgen_lammps
 @pytest.mark.calculator
 @pytest.mark.long
+@pytest.mark.benchmark(min_rounds=1)
 def test_pymatgen_lammps_calculator_benchmark(benchmark):
     # Read in configuration information
     base_directory = 'test_files/dftfit_calculators/'
@@ -49,7 +50,7 @@ def test_pymatgen_lammps_calculator_benchmark(benchmark):
         'command': 'lammps',
         'num_workers': 1,
     })
-    configuration_schema['spec']['steps'] = 5
+    configuration_schema['spec']['steps'] = 2
 
     @benchmark
     def test_speed():
