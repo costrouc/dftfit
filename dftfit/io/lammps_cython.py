@@ -2,7 +2,6 @@ import math
 
 import lammps
 import numpy as np
-import pymatgen as pmg
 
 from .base import DFTFITCalculator, MDReader
 

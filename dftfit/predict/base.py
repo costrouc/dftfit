@@ -9,7 +9,6 @@ from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.core import Lattice, Structure
 from pymatgen.analysis.elasticity import DeformedStructureSet, ElasticTensor, Stress, Strain
 
-from ..io.lammps import LammpsLocalMDCalculator
 
 
 def load_lammps_set(config_filename):
@@ -19,6 +18,7 @@ def load_lammps_set(config_filename):
 
 class Predict:
     def __init__(self, calculator='lammps', loop=None, **kwargs):
+        from ..io.lammps import LammpsLocalMDCalculator
         calculator_mapper = {
             'lammps': LammpsLocalMDCalculator
         }

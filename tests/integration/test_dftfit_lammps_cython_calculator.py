@@ -7,7 +7,7 @@ from dftfit.config import Configuration
 
 @pytest.mark.lammps_cython
 @pytest.mark.calculator
-def test_lammps_cython_calculator(benchmark):
+def test_lammps_cython_calculator():
     # Read in configuration information
     base_directory = 'test_files/dftfit_calculators/'
     training_schema = load_filename(base_directory + 'training.yaml')
@@ -35,6 +35,7 @@ def test_lammps_cython_calculator(benchmark):
 
 @pytest.mark.lammps_cython
 @pytest.mark.calculator
+@pytest.mark.long
 def test_lammps_cython_calculator_benchmark(benchmark):
     # Read in configuration information
     base_directory = 'test_files/dftfit_calculators/'

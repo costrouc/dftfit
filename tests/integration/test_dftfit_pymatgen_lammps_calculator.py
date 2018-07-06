@@ -37,6 +37,7 @@ def test_pymatgen_lammps_calculator():
 
 @pytest.mark.pymatgen_lammps
 @pytest.mark.calculator
+@pytest.mark.long
 def test_pymatgen_lammps_calculator_benchmark(benchmark):
     # Read in configuration information
     base_directory = 'test_files/dftfit_calculators/'

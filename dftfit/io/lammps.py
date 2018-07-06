@@ -1,7 +1,6 @@
 from pathlib import Path
 from collections import OrderedDict
 import asyncio
-import functools
 
 import numpy as np
 from pymatgen.core import Element
