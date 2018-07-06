@@ -7,7 +7,7 @@ import pytest
 from dftfit.potential import Potential
 
 @pytest.mark.pymatgen_lammps
-@pytest.mark.calculators
+@pytest.mark.calculator
 def test_lammps_reader():
     from pmg_lammps import LammpsInput, LammpsData, LammpsScript
     from dftfit.io.lammps import (
