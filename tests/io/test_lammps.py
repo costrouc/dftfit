@@ -24,7 +24,7 @@ def test_lammps_reader():
     assert set(s.symbol for s in structure.species) == {'Mg', 'O'}
 
 @pytest.mark.pymatgen_lammps
-@pytest.mark.calculators
+@pytest.mark.calculator
 def test_lammps_writer_buckingham():
     """Tests that given a structure and potential that a certain lammps
     input script is created.
