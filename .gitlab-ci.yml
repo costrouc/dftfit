@@ -26,6 +26,8 @@ test_calculator_pymatgen_lammps:
     - cd Python-3.6.6
     - ./configure && make && make install
     - cd ..
+    - rm -rf Python-3.6.6
+    # now run tests
     - python3.6 -m pip install .[pymatgen_lammps]
     - python3.6 setup.py test --addopts '-m "pymatgen_lammps"'
 
@@ -41,6 +43,8 @@ test_calculator_lammps_cython:
     - cd Python-3.6.6
     - ./configure && make && make install
     - cd ..
+    - rm -rf Python-3.6.6
+    # now run tests
     - python3.6 -m pip install numpy cython mpi4py
     - python3.6 -m pip install .[lammps-cython]
     - python3.6 setup.py test --addopts '-m "lammps_cython"'
