@@ -41,14 +41,14 @@ setup(
         'scipy',
         'mattoolkit',
         'numpy',
-        'scikit-learn'
+        'scikit-learn',
+        'lammps-cython',
+        'pymatgen_lammps',
     ],
     setup_requires=['pytest-runner', 'setuptools>=38.6.0'],  # >38.6.0 needed for markdown README.md
     tests_require=['pytest', 'pytest-benchmark'],
     extras_require={
         'mattoolkit': 'mattoolkit',
-        'pymatgen_lammps': 'pymatgen_lammps',
-        'lammps-cython': 'lammps-cython'
     },
     entry_points={
         'console_scripts': [

@@ -7,30 +7,21 @@ stages:
   - test
   - deploy
 
-test_not_calculators:
-  image: python:3.6
+test:
+  image: registry.gitlab.com/costrouc/dftfit/base:patch_11May2018
   stage: test
   script:
-    - pip install .
-    - python setup.py test --addopts '-m "not calculator"'
-
-test_calculators:
-  image: costrouc/lammps:patch_11May2018-debian-mpi-all
-  stage: test
-  script:
-    # install python3.6...
-    - apt update
-    - apt install libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev -y
-    - wget https://www.python.org/ftp/python/3.6.6/Python-3.6.6.tar.xz
-    - tar xf Python-3.6.6.tar.xz
-    - cd Python-3.6.6
-    - ./configure && make && make install
-    - cd ..
-    - rm -rf Python-3.6.6
-    # now run tests
     - python3.6 -m pip install numpy cython mpi4py
-    - python3.6 -m pip install . lammps-cython pymatgen_lammps
-    - python3.6 setup.py test --addopts '-m "calculator"'
+    - pip install .
+    - python setup.py test --addopts '-m "not benchmark"'
+
+test_benchmark:
+  image: registry.gitlab.com/costrouc/dftfit/base:patch_11May2018
+  stage: test
+  script:
+    - python3.6 -m pip install numpy cython mpi4py
+    - pip install .
+    - python setup.py test --addopts '-m "benchmark"'
 
 deploy_pypi:
   stage: deploy
