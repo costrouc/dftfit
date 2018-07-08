@@ -32,7 +32,7 @@ test_calculators:
     - python3.6 -m pip install . lammps-cython pymatgen_lammps
     - python3.6 setup.py test --addopts '-m "calculator"'
 
-deploy:
+deploy_pypi:
   stage: deploy
   image: python:3.6
   script:
@@ -45,3 +45,17 @@ deploy:
     - echo "============================================"
   only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
+
+
+deploy_docker_dftfit_base:
+  image: docker:git
+  services:
+    - docker:dind
+  script:
+    - export PKG_VERSION=${CI_COMMIT_TAG:12}
+    - export GITLAB_IMAGE="$CI_REGISTRY/$CI_PROJECT_PATH/base"
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build -t $GITLAB_IMAGE:$PKG_VERSION -f Dockerfile.base --build-arg VERSION=$PKG_VERSION .
+    - docker push $GITLAB_IMAGE:$PKG_VERSION
+  only:
+    - /^dftfit_base_[A-Za-z]+_\d+[A-Za-z]+\d+$/
