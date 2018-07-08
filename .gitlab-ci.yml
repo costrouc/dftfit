@@ -22,7 +22,6 @@ deploy_docker_dftfit_base:
   only:
     - /^dftfit_base_[A-Za-z]+_\d+[A-Za-z]+\d+$/
 
-
 test:
   image: registry.gitlab.com/costrouc/dftfit/base:patch_11May2018
   stage: test
@@ -43,13 +42,9 @@ deploy_pypi:
   stage: deploy
   image: python:3.6
   script:
-    - pip install -U twine setuptools
-    - pip list
+    - python -m pip install twine setuptools numpy cython mpi4py
     - python setup.py sdist bdist_wheel
-    - echo "======== Deploying Package to PyPi ========="
-    - twine upload dist/*.tar.gz
-    - twine upload dist/*.whl
-    - echo "============================================"
+    - twine upload dist/*
   only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
 
