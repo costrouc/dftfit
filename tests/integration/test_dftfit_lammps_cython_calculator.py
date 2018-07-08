@@ -36,7 +36,7 @@ def test_lammps_cython_calculator():
 @pytest.mark.lammps_cython
 @pytest.mark.calculator
 @pytest.mark.long
-@pytest.mark.benchmark(min_rounds=2)
+@pytest.mark.benchmark(min_rounds=1)
 def test_lammps_cython_calculator_benchmark(benchmark):
     # Read in configuration information
     base_directory = 'test_files/dftfit_calculators/'
