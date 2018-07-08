@@ -11,16 +11,16 @@ test:
   image: registry.gitlab.com/costrouc/dftfit/base:patch_11May2018
   stage: test
   script:
-    - python3.6 -m pip install numpy cython mpi4py
-    - pip install .
-    - python setup.py test --addopts '-m "not benchmark"'
+    - python3 -m pip install numpy cython mpi4py
+    - python3 -m pip install .
+    - python3 setup.py test --addopts '-m "not benchmark"'
 
 test_benchmark:
   image: registry.gitlab.com/costrouc/dftfit/base:patch_11May2018
   stage: test
   script:
-    - python3.6 -m pip install numpy cython mpi4py
-    - pip install .
+    - python3 -m pip install numpy cython mpi4py
+    - python3 -m pip install .
     - python setup.py test --addopts '-m "benchmark"'
 
 deploy_pypi:
