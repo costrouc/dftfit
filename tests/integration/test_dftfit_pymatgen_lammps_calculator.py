@@ -50,7 +50,7 @@ def test_pymatgen_lammps_calculator_benchmark(benchmark):
         'command': 'lammps',
         'num_workers': 1,
     })
-    configuration_schema['spec']['steps'] = 5
+    configuration_schema['spec']['steps'] = 3
 
     @benchmark
     def test_speed():

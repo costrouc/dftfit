@@ -1,0 +1,5 @@
+FROM registry.gitlab.com/costrouc/dftfit/base:patch_11May2018
+MAINTAINER Chris Ostrouchov "chris.ostrouchov@gmail.com"
+
+RUN python -m pip install numpy cython mpi4py && \
+    python -m pip install .
