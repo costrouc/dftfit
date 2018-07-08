@@ -4,26 +4,40 @@ variables:
     TWINE_REPOSITORY_URL: https://upload.pypi.org/legacy/
 
 stages:
+  - test_base
   - test
   - deploy
+
+deploy_docker_dftfit_base:
+  image: docker:git
+  stage: test_base
+  services:
+    - docker:dind
+  script:
+    - export PKG_VERSION=${CI_COMMIT_TAG:12}
+    - export GITLAB_IMAGE="$CI_REGISTRY/$CI_PROJECT_PATH/base"
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build -t $GITLAB_IMAGE:$PKG_VERSION -f Dockerfile.base --build-arg VERSION=$PKG_VERSION .
+    - docker push $GITLAB_IMAGE:$PKG_VERSION
+  only:
+    - /^dftfit_base_[A-Za-z]+_\d+[A-Za-z]+\d+$/
+
 
 test:
   image: registry.gitlab.com/costrouc/dftfit/base:patch_11May2018
   stage: test
   script:
-    - apt update; apt install python3-tk python3-gdbm -y
-    - python3 -m pip install numpy cython mpi4py
-    - python3 -m pip install .
-    - python3 setup.py test --addopts '-m "not benchmark"'
+    - python -m pip install numpy cython mpi4py
+    - python -m pip install .
+    - python setup.py test --addopts '-m "not benchmark"'
 
 test_benchmark:
   image: registry.gitlab.com/costrouc/dftfit/base:patch_11May2018
   stage: test
   script:
-    - apt update; apt install python3-tk python3-gdbm -y
-    - python3 -m pip install numpy cython mpi4py
-    - python3 -m pip install .
-    - python3 setup.py test --addopts '-m "benchmark"'
+    - python -m pip install numpy cython mpi4py
+    - python -m pip install .
+    - python setup.py test --addopts '-m "benchmark"'
 
 deploy_pypi:
   stage: deploy
@@ -38,17 +52,3 @@ deploy_pypi:
     - echo "============================================"
   only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
-
-
-deploy_docker_dftfit_base:
-  image: docker:git
-  services:
-    - docker:dind
-  script:
-    - export PKG_VERSION=${CI_COMMIT_TAG:12}
-    - export GITLAB_IMAGE="$CI_REGISTRY/$CI_PROJECT_PATH/base"
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker build -t $GITLAB_IMAGE:$PKG_VERSION -f Dockerfile.base --build-arg VERSION=$PKG_VERSION .
-    - docker push $GITLAB_IMAGE:$PKG_VERSION
-  only:
-    - /^dftfit_base_[A-Za-z]+_\d+[A-Za-z]+\d+$/
