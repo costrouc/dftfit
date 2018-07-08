@@ -4,15 +4,16 @@ import pymatgen as pmg
 import numpy as np
 import pytest
 
+from dftfit.io.lammps import LammpsLocalDFTFITCalculator
+from dftfit.io.lammps_cython import LammpsCythonDFTFITCalculator
 from dftfit.cli.utils import load_filename
 from dftfit.potential import Potential
+
 
 @pytest.mark.pymatgen_lammps
 @pytest.mark.lammps_cython
 @pytest.mark.calculator
 def test_calculator_equivalency():
-    from dftfit.io.lammps import LammpsLocalDFTFITCalculator
-    from dftfit.io.lammps_cython import LammpsCythonDFTFITCalculator
 
     # Create structure
     supercell = (2, 2, 2)

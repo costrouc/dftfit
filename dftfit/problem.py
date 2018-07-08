@@ -6,15 +6,14 @@ import logging
 import numpy as np
 
 from .db_actions import write_evaluation
+from .io.lammps import LammpsLocalDFTFITCalculator
+from .io.lammps_cython import LammpsCythonDFTFITCalculator
 
 logger = logging.getLogger(__name__)
 
 
 class DFTFITProblemBase:
     def __init__(self, potential, dft_calculations, calculator='lammps', dbm=None, run_id=None, loop=None, **kwargs):
-        from .io.lammps import LammpsLocalDFTFITCalculator
-        from .io.lammps_cython import LammpsCythonDFTFITCalculator
-
         calculator_mapper = {
             'lammps': LammpsLocalDFTFITCalculator,
             'lammps_cython': LammpsCythonDFTFITCalculator,
