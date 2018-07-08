@@ -40,7 +40,7 @@ test_benchmark:
 
 deploy_pypi:
   stage: deploy
-  image: python:3.6
+  image: registry.gitlab.com/costrouc/dftfit/base:patch_11May2018
   script:
     - python -m pip install twine setuptools numpy cython mpi4py
     - python setup.py sdist bdist_wheel
@@ -49,6 +49,7 @@ deploy_pypi:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
 
 deploy_docker:
+  image: docker:git
   stage: deploy
   services:
     - docker:dind
