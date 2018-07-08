@@ -11,7 +11,7 @@ test:
   image: registry.gitlab.com/costrouc/dftfit/base:patch_11May2018
   stage: test
   script:
-    - apt install python3-tk -y
+    - apt update; apt install python3-tk -y
     - python3 -m pip install numpy cython mpi4py
     - python3 -m pip install .
     - python3 setup.py test --addopts '-m "not benchmark"'
@@ -20,7 +20,7 @@ test_benchmark:
   image: registry.gitlab.com/costrouc/dftfit/base:patch_11May2018
   stage: test
   script:
-    - apt install python3-tk -y
+    - apt update; apt install python3-tk -y
     - python3 -m pip install numpy cython mpi4py
     - python3 -m pip install .
     - python3 setup.py test --addopts '-m "benchmark"'
