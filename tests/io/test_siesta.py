@@ -9,7 +9,7 @@ from dftfit.io.siesta import SiestaReader
 def test_siesta_reader():
     filename = 'd3_o_20ev.xml'
     directory = 'test_files/siesta'
-    calculation = SiestaReader(directory, filename)
+    calculation = SiestaReader.from_file(directory, filename)
     assert np.all(np.isclose(calculation.energy, -104742.133616))
 
     first_row_forces = np.array([-5.014637520260e-1, -4.224890317363e-1, -1.420257672235e-1])

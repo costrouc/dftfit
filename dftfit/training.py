@@ -9,7 +9,8 @@ import os
 import yaml
 
 from .schema import TrainingSchema
-from .io import MTKReader
+from .io.mattoolkit import MTKReader
+from .io.siesta import SiestaReader
 
 
 class Training:
@@ -23,6 +24,8 @@ class Training:
         for calculation in self.schema['spec']:
             if calculation['type'] == 'mattoolkit':
                 self._calculations.extend(self.download_mattoolkit_calculations(calculation['selector'], cache_filename=cache_filename))
+            elif calculation['type'] == 'Siesta':
+                self._calculations.extend(SiestaReader.from_selector(calculation['selector']))
 
     @property
     def calculations(self):

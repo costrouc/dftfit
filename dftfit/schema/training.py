@@ -4,6 +4,7 @@ from .base import BaseSchema
 from .fields import PolyField
 
 
+# Material Toolkit
 class MTKSelectorSchema(BaseSchema):
     labels = fields.List(fields.String(), required=True)
 
@@ -13,23 +14,38 @@ class MTKTrainingSetSchema(BaseSchema):
     selector = fields.Nested(MTKSelectorSchema, required=True)
 
 
+# Siesta
+class SiestaSelectorSchema(BaseSchema):
+    filename = fields.String(required=True)
+    num_samples = fields.Integer(
+        default=-1, validate=validate.Range(min=-1), required=False)
+    strategy = fields.String(default='max-separation',
+                             validate=validate.OneOf(['max-separation', 'all']),
+                             required=False)
+
+
+class SiestaTrainingSetSchema(BaseSchema):
+    type = fields.String(required=True, validate=validate.Equal('Siesta'))
+    selector = fields.Nested(SiestaSelectorSchema, required=True)
+
+
+_TYPE_TO_SCHEMA = {
+    'mattoolkit': MTKTrainingSetSchema,
+    'Siesta': SiestaTrainingSetSchema,
+}
+
+
 def training_property_schema_serialization_disambiguation(base_object, obj):
-    type_to_schema = {
-        'mattoolkit': MTKTrainingSetSchema,
-    }
     try:
-        return type_to_schema[obj.mode]()
+        return _TYPE_TO_SCHEMA[obj.mode]()
     except KeyError:
         pass
     raise TypeError("Could not detect type did you specify a type?")
 
 
 def trainging_property_schema_deserialization_disambiguation(object_dict, data):
-    type_to_schema = {
-        'mattoolkit': MTKTrainingSetSchema,
-    }
     try:
-        return type_to_schema[object_dict['type']]()
+        return _TYPE_TO_SCHEMA[object_dict['type']]()
     except KeyError:
         pass
     raise TypeError("Could not detect type did you specify a type?")

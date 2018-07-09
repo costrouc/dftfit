@@ -19,4 +19,4 @@ spec:
     w_s: 0.1
     w_e: 0.1
   training:
-    use_cache: true
+    use_cache: 'test_files/mattoolkit/cache/cache.db'

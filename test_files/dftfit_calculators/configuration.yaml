@@ -18,4 +18,4 @@ spec:
     w_s: 0.6
     w_e: 0.1
   training:
-    cache_filename: "test_files/dftfit_calculators/cache/cache.db"
+    cache_filename: "test_files/mattoolkit/cache/cache.db"
