@@ -1,0 +1,9 @@
+version: v1
+kind: Training
+spec:
+  - type: Siesta
+    filename: test_files/training/siesta/d1_li_20ev.xml
+  - type: Siesta
+    filename: test_files/training/siesta/d1_o_30ev.xml
+  - type: Siesta
+    filename: test_files/training/siesta/d1_ta_20ev.xml
