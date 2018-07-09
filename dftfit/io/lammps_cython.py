@@ -1,4 +1,5 @@
 import math
+import itertools
 
 import lammps
 import numpy as np
@@ -43,11 +44,39 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
         Wish that this was more generic. But I have found that simpler
         implementation is better for now.
         """
-        # buckingham + charge
+
         spec = potential.schema['spec']
-        if 'charge' in spec and 'kspace' in spec and 'pair' in spec and \
-           spec['pair']['type'] == 'buckingham':
+
+        if ('charge' in spec) and ('kspace' in spec) and ('pair' in spec) and \
+           (spec['pair']['type'] == 'buckingham') and (spec['nbody']['type'] == 'harmonic'):
+            # self._apply_buckingham_charge_harmonic(lmp, elements, potential)
+            raise ValueError('Sadly lammps cannot implement 3-body angle with differingg species')
+        elif ('charge' in spec) and ('kspace' in spec) and ('pair' in spec) and \
+             (spec['pair']['type'] == 'buckingham'):
             self._apply_buckingham_charge(lmp, elements, potential)
+
+    # def _write_harmonic_file(self, spec, elements, filename='/tmp/nb3b.harmonic'):
+    #     with open(
+
+    # def _apply_buckingham_charge_harmonic(self, lmp, elements, potential):
+    #     # perfect example: https://github.com/lammps/lammps/blob/master/examples/nb3b
+    #     element_map = {e.symbol: i for i, e in enumerate(elements, start=1)}
+    #     spec = potential.schema['spec']
+    #     lmp.command('kspace_style %s %f' % (
+    #         spec['kspace']['type'], spec['kspace']['tollerance']))
+    #     lmp.command('hybrid/overlay nb3b/harmonic buck/coul/long %f' % spec['pair']['cutoff'])
+    #     harmonic_filename = '/tmp/nb3b.harmonic'
+    #     self._write_harmonic_file(spec['nbody'], elements, filename)
+    #     lmp.command('pair_coeff * *  nb3b/harmonic %s %s' % (filename, ' '.join(elements)))
+    #     lmp.command('mix arithmetic')
+    #     for parameter in spec['pair']['parameters']:
+    #         ij = sorted([element_map[parameter['elements'][0]],
+    #                      element_map[parameter['elements'][1]]])
+    #         lmp.command('pair_coeff %d %d buck/coul/long %s' % (
+    #             ij[0], ij[1],
+    #             ' '.join([str(float(coeff)) for coeff in parameter['coefficients']])))
+    #     for element, charge in spec['charge'].items():
+    #         lmp.command('set type %d charge %f' % (element_map[element], float(charge)))
 
     def _apply_buckingham_charge(self, lmp, elements, potential):
         element_map = {e.symbol: i for i, e in enumerate(elements, start=1)}

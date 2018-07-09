@@ -1,0 +1,35 @@
+# Based on: LiNbO3 2005 buckingham, shell, angle - Jackson
+# Ignore shell charge
+version: v1
+kind: Potential
+spec:
+  constraint:
+    change_balance: LiNbO3
+  charge:
+    Li: 1
+    Nb: 5
+    O: -2
+  pair:
+    type: buckingham
+    cutoff: 10.0
+    parameters:
+      - elements: ['Nb', 'O']
+        coefficients: [1425.0, 0.3650, 0.0]
+      - elements: ['Li', 'O']
+        coefficients: [950.0, 0.2610, 0.0]
+      - elements: ['O', 'O']
+        coefficients: [22764.0, 0.1490, 27.88]
+      # zeros
+      - elements: ['Nb', 'Nb']
+        coefficients: [0.0, 0.0, 0.0]
+      - elements: ['Li', 'Li']
+        coefficients: [0.0, 0.0, 0.0]
+      - elements: ['Nb', 'Li']
+        coefficients: [0.0, 0.0, 0.0]
+  nbody:
+    type: harmonic
+    cutoff: 2.0
+    parameters:
+      - elements: ['O', 'Nb', 'O']
+        # units: force constant [eV rad^{-2}] ,equilibrium angle [degrees]
+        coefficients: [0.5776, 90]

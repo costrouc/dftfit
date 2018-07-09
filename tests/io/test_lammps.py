@@ -1,19 +1,20 @@
 from collections import OrderedDict
 
 import numpy as np
-from pymatgen import Lattice, Specie, Structure
+import pymatgen as pmg
+
 import pytest
+from pmg_lammps import LammpsInput, LammpsData, LammpsScript
 
 from dftfit.potential import Potential
+from dftfit.io.lammps import (
+    LammpsReader, lammps_dftfit_set, modify_input_for_potential
+)
+
 
 @pytest.mark.pymatgen_lammps
 @pytest.mark.calculator
 def test_lammps_reader():
-    from pmg_lammps import LammpsInput, LammpsData, LammpsScript
-    from dftfit.io.lammps import (
-        LammpsReader, lammps_dftfit_set, modify_input_for_potential
-    )
-
     base_directory = 'test_files/lammps/'
     lammps = LammpsReader(base_directory + 'mgo')
     assert np.all(np.isclose(lammps.forces, np.zeros((8, 3))))
@@ -30,20 +31,15 @@ def test_lammps_writer_buckingham():
     input script is created.
 
     """
-    from pmg_lammps import LammpsInput, LammpsData, LammpsScript
-    from dftfit.io.lammps import (
-        LammpsReader, lammps_dftfit_set, modify_input_for_potential
-    )
-
-    # Create structure
+    # Create Structure
     supercell = (2, 2, 2)
     a = 4.1990858 # From evaluation of potential
-    lattice = Lattice.from_parameters(a, a, a, 90, 90, 90)
-    mg = Specie('Mg', 1.4)
-    o = Specie('O', -1.4)
+    lattice = pmg.Lattice.from_parameters(a, a, a, 90, 90, 90)
+    mg = pmg.Specie('Mg', 1.4)
+    o = pmg.Specie('O', -1.4)
     atoms = [mg, o]
     sites = [[0, 0, 0], [0.5, 0.5, 0.5]]
-    structure = Structure.from_spacegroup(225, lattice, atoms, sites)
+    structure = pmg.Structure.from_spacegroup(225, lattice, atoms, sites)
 
     # Create Potential
     potential = Potential({

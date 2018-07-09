@@ -14,7 +14,6 @@ from dftfit.potential import Potential
 @pytest.mark.lammps_cython
 @pytest.mark.calculator
 def test_calculator_equivalency():
-
     # Create structure
     supercell = (2, 2, 2)
     a = 4.1990858 # From evaluation of potential
@@ -27,8 +26,8 @@ def test_calculator_equivalency():
 
     base_directory = 'test_files/dftfit_calculators/'
     potential_schema = load_filename(base_directory + 'potential.yaml')
-    potential_schema['spec']['charge']['Mg']['initial'] = 1.6
-    potential_schema['spec']['charge']['O']['initial'] = -1.6
+    potential_schema['spec']['charge']['Mg']['initial'] = 1.4
+    potential_schema['spec']['charge']['O']['initial'] = -1.4
     potential = Potential(potential_schema)
 
     calculators = [
