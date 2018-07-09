@@ -11,7 +11,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 
-version='0.4.4'
+version='0.4.5'
 setup(
     name='dftfit',
     version=version,
@@ -23,11 +23,11 @@ setup(
     author_email='chris.ostrouchov+dftfit@gmail.com',
     license='MIT',
     classifiers=[
+        'Development Status :: 4 - Beta',
+        'Natural Language :: English',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: 3.7',
     ],
     keywords='materials dft molecular dynamics lammps science hpc',
     download_url='https://gitlab.com/costrouc/dftfit/repository/archive.zip?ref=v%s' % version,
