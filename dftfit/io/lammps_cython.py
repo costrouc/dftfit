@@ -47,7 +47,7 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
 
         spec = potential.schema['spec']
 
-        if ('charge' in spec) and ('kspace' in spec) and ('pair' in spec) and \
+        if ('charge' in spec) and ('kspace' in spec) and ('pair' in spec) and ('nbody' in spec) and \
            (spec['pair']['type'] == 'buckingham') and (spec['nbody']['type'] == 'harmonic'):
             raise ValueError('Sadly lammps cannot implement 3-body angle with differingg species')
         elif ('charge' in spec) and ('kspace' in spec) and ('pair' in spec) and \
