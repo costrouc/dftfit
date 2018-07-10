@@ -100,7 +100,7 @@ first neighbor shell only.
 # Stillinger Weber Potentials
 
 ```math
-E = \sum_i \sum_{j > i} \phi_2(r_{ij}) + \sum_i \sum_{j \ne i}{k > j} \phi_3(r_{ij}, r_{ik}, \theta_{ijk})
+E = \sum_i \sum_{j > i} \phi_2(r_{ij}) + \sum_i \sum_{j \ne i} \sum_{k > j} \phi_3(r_{ij}, r_{ik}, \theta_{ijk})
 ```
 
 ```math
