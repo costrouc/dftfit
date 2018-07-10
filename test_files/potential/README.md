@@ -6,7 +6,7 @@ your potential in one of the following forms. DFTFIT can optimize it.
 # Buckingham Potential
 
 ```math
-\psi(r) = A \exp{-\frac{r}{\rho}} - \frac{C}{r^6}
+\psi(r) = A \exp^{-\frac{r}{\rho}} - \frac{C}{r^6}
 ```
 
 # Tersoff Potentials
@@ -57,7 +57,7 @@ Three body terms (6): $`m_i, \gamma_{ik}, \lambda_{3, ij}, c_i, d_i, \theta_{0, 
 
 Terms that only depend on primary atom (6): $`n_i, \beta_i, m_i, c_i, d_i, \theta_{0, i}`$
 
-Usually Fixed Terms $`m, \gamma, \Beta`$
+Usually Fixed Terms $`m, \gamma, \beta`$
 
 Mixing Terms $`\lambda, A, B, R, D`$
 
