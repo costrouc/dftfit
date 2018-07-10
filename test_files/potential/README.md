@@ -57,6 +57,10 @@ Three body terms (6): $`m_i, \gamma_{ik}, \lambda_{3, ij}, c_i, d_i, \theta_{0, 
 
 Terms that only depend on primary atom (6): $`n_i, \beta_i, m_i, c_i, d_i, \theta_{0, i}`$
 
+Usually Fixed Terms $`m, \gamma, \Beta`$
+
+Mixing Terms $`\lambda, A, B, R, D`$
+
 __m must be 3 or 1__
 
 Original tersoff [1] form achieved when $`m = 3`$ and $`\gamma = 1`$
