@@ -99,6 +99,18 @@ first neighbor shell only.
 
 # Stillinger Weber Potentials
 
+```math
+E = \sum_i \sum_{j > i} \phi_2(r_{ij}) + \sum_i \sum_{j \ne i}{k > j} \phi_3(r_{ij}, r_{ik}, \theta_{ijk})
+```
+
+```math
+\phi_2(r_{ij}) = A_{ij} \epsilon_{ij} \left[ B_{ij} \left( \frac{\sigma_{ij}{r_{ij}} \right)^{p_{ij}} - \left( \frac{\sigma_{ij}}{r_{ij}} \right)^{q_{ij}} \right] \exp\left( \frac{\sigma_{ij}}{r_{ij} - a_{ij}\sigma_{ij}}\right) 
+```
+
+```math
+\phi_3(r_{ij}, r_{ik}, \theta_{ijk}) = \lambda_{ijk} \epsilon_{ijk} \left[ cos \theta_{ijk} - cos \theta_{0ijk} \right]^2 exp \left( \frac{\gamma_{ij} \sigma_{ij}}{r_{ij} - a_{ij}\sigma_{ij}} \right) exp \left( \frac{\gamma_{ij} \sigma_{ik}}{r_{ik} - a_{ik}\sigma_{ik}} \right)
+```
+
 Parameters: epsilon, sigma, a, lambda, gamma, cosheta0, A, B, p, q, tol
 
 ## Mixing Rules
