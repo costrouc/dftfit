@@ -111,7 +111,9 @@ E = \sum_i \sum_{j > i} \phi_2(r_{ij}) + \sum_i \sum_{j \ne i} \sum_{k > j} \phi
 \phi_3(r_{ij}, r_{ik}, \theta_{ijk}) = \lambda_{ijk} \epsilon_{ijk} \left[ cos \theta_{ijk} - cos \theta_{0ijk} \right]^2 exp \left( \frac{\gamma_{ij} \sigma_{ij}}{r_{ij} - a_{ij}\sigma_{ij}} \right) exp \left( \frac{\gamma_{ij} \sigma_{ik}}{r_{ik} - a_{ik}\sigma_{ik}} \right)
 ```
 
-Parameters: epsilon, sigma, a, lambda, gamma, cosheta0, A, B, p, q, tol
+Parameters: $`\epsilon, \sigma, a, \lambda, \gamma, costheta0, A, B, p, q, tol`$
+
+Mixing terms: $`\sigma, \epsilon`$
 
 ## Mixing Rules
 
