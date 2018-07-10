@@ -1,5 +1,6 @@
 from pathlib import Path
 from xml.etree import ElementTree
+import glob
 
 import numpy as np
 import pymatgen as pmg
@@ -25,7 +26,20 @@ class SiestaReader(DFTReader):
 
     @classmethod
     def from_selector(cls, selector):
-        filename = Path(selector['filename'])
+        data = []
+        if 'filename' in selector:
+            filename = selector['filename']
+            data.extend(cls._from_selector_with_filename(filename, selector))
+        elif 'fileglob' in selector:
+            for filename in glob.glob(selector['fileglob'], recursive=True):
+                data.extend(cls._from_selector_with_filename(filename, selector))
+        else:
+            raise ValueError('no way for selector to select data need filename or fileglob')
+        return data
+
+    @classmethod
+    def _from_selector_with_filename(cls, filename, selector):
+        filename = Path(filename)
         if not filename.is_file():
             raise ValueError('path %s must exist and be file' % filename)
 

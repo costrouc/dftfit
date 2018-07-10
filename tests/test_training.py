@@ -14,8 +14,16 @@ def test_training_mattoolkit_from_file():
 
 
 @pytest.mark.siesta
-def test_training_siesta_from_file():
+def test_training_siesta_from_filenames():
     base_directory = 'test_files/training/'
     dft_calculations = Training.from_file(
-        base_directory + 'training-subset-linbo3.yaml')
+        base_directory + 'training-subset-litao3.yaml')
     assert len(dft_calculations.calculations) == 12
+
+
+@pytest.mark.siesta
+def test_training_siesta_from_fileglob():
+    base_directory = 'test_files/training/'
+    dft_calculations = Training.from_file(
+        base_directory + 'training-full-litao3.yaml')
+    assert len(dft_calculations.calculations) == 16

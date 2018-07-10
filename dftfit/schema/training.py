@@ -1,4 +1,4 @@
-from marshmallow import fields, validate, ValidationError
+from marshmallow import fields, validate, ValidationError, validates
 
 from .base import BaseSchema
 from .fields import PolyField
@@ -16,12 +16,18 @@ class MTKTrainingSetSchema(BaseSchema):
 
 # Siesta
 class SiestaSelectorSchema(BaseSchema):
-    filename = fields.String(required=True)
+    filename = fields.String(required=False)
+    fileglob = fields.String(required=False)
     num_samples = fields.Integer(
         default=-1, validate=validate.Range(min=-1), required=False)
     strategy = fields.String(default='max-separation',
                              validate=validate.OneOf(['max-separation', 'all']),
                              required=False)
+
+    @validates
+    def validate_schema(self, data):
+        if 'filename' not in data and 'fileglob' not in data:
+            raise ValidationError('filename or fileglob must be specified')
 
 
 class SiestaTrainingSetSchema(BaseSchema):
