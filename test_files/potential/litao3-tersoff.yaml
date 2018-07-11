@@ -2,14 +2,20 @@ version: v1
 kind: Potential
 spec:
   pair:
-    type: tersoff
+    type: tersoff-2
+    mixing:
+      - elements: ['Li', 'Ta']
+        value: 1.0
+      - elements: ['Li', 'O']
+        value: 1.0
+      - elements: ['Ta', 'O']
+        value: 1.0
     parameters:
-      # Based on: S. Mumetoh et al, Comp Mat Sci, 39, 334-339 (2007)
-      # m, gamma, lambda3, c, d, costheta0, n, beta, lambda2, B, R, D, lambda1, A
+      # c, d, costheta0, n, beta, lambda2, B, R, D, lambda1, A
       - elements: ['O']
-        coefficients: [3.0, 1.0, 0.0, 64692.1 ,4.11127 ,-.845922, 1.04968, 0.00000011632, 2.35692, 218.787, 1.85, 0.15, 4.17108, 1882.55]
+        coefficients: [64692.1 ,4.11127 ,-.845922, 1.04968, 0.00000011632, 2.35692, 218.787, 1.85, 0.15, 4.17108, 1882.55]
       # Guesses
       - elements: ['Li']
-        coefficients: [3.0, 1.0, 0.0, 64692.1 ,4.11127 ,-.845922, 1.04968, 0.00000011632, 2.35692, 218.787, 1.85, 0.15, 4.17108, 1882.55]
+        coefficients: [64692.1 ,4.11127 ,-.845922, 1.04968, 0.00000011632, 2.35692, 218.787, 1.85, 0.15, 4.17108, 1882.55]
       - elements: ['Ta']
-        coefficients: [3.0, 1.0, 0.0, 64692.1 ,4.11127 ,-.845922, 1.04968, 0.00000011632, 2.35692, 218.787, 1.85, 0.15, 4.17108, 1882.55]
+        coefficients: [64692.1 ,4.11127 ,-.845922, 1.04968, 0.00000011632, 2.35692, 218.787, 1.85, 0.15, 4.17108, 1882.55]
