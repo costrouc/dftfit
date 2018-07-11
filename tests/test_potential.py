@@ -1,7 +1,9 @@
+import pytest
+
 from dftfit.potential import Potential
 
 
-def test_potential_lammps():
+def test_potential_from_schema():
     schema = {
         'version': 'v1',
         'kind': 'Potential',
@@ -27,11 +29,12 @@ def test_potential_lammps():
     Potential(schema)
 
 
-def test_potential_from_file():
-    Potential.from_file('test_files/potential/mgo.yaml')
-
-
-def test_potential_from_file_read_parameters():
-    potential = Potential.from_file('test_files/potential/mgo-fitting.yaml')
-    assert len(potential.parameters) == 13
-    assert len(potential.optimization_parameters) == 8
+@pytest.mark.parametrize('filename, num_opt_params, num_params', [
+    ('test_files/potential/mgo.yaml', 0, 13),
+    ('test_files/potential/mgo-fitting.yaml', 8, 13),
+#    ('test_files/potential/litao3-tersoff.yaml', 0), # not added to schema yet
+])
+def test_potential_from_file(filename, num_opt_params, num_params):
+    p = Potential.from_file(filename)
+    assert len(p.optimization_parameters) == num_opt_params
+    assert len(p.parameters) == num_params

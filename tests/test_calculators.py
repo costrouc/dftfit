@@ -13,16 +13,13 @@ from dftfit.potential import Potential
 @pytest.mark.pymatgen_lammps
 @pytest.mark.lammps_cython
 @pytest.mark.calculator
-def test_calculator_equivalency():
-    # Create structure
-    supercell = (2, 2, 2)
-    a = 4.1990858 # From evaluation of potential
-    lattice = pmg.Lattice.from_parameters(a, a, a, 90, 90, 90)
-    mg = pmg.Specie('Mg', 1.4)
-    o = pmg.Specie('O', -1.4)
-    atoms = [mg, o]
-    sites = [[0, 0, 0], [0.5, 0.5, 0.5]]
-    structure = pmg.Structure.from_spacegroup(225, lattice, atoms, sites)
+def test_calculator_equivalency(structure):
+    target_a = 4.1990858
+    s = structure('test_files/structure/MgO.cif')
+    s.apply_strain(target_a / s.lattice.a - 1)
+    assert np.all(np.isclose(s.lattice.abc, (target_a, target_a, target_a)))
+    s = s * (2, 2, 2)
+    assert len(s) == 64
 
     base_directory = 'test_files/dftfit_calculators/'
     potential_schema = load_filename(base_directory + 'potential.yaml')
@@ -31,8 +28,8 @@ def test_calculator_equivalency():
     potential = Potential(potential_schema)
 
     calculators = [
-        LammpsLocalDFTFITCalculator(structures=[structure], command='lammps', num_workers=1),
-        LammpsCythonDFTFITCalculator(structures=[structure])
+        LammpsLocalDFTFITCalculator(structures=[s], command='lammps', num_workers=1),
+        LammpsCythonDFTFITCalculator(structures=[s])
     ]
 
     loop = asyncio.get_event_loop()

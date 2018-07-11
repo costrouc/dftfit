@@ -24,59 +24,23 @@ def test_lammps_reader():
     assert len(structure) == 8
     assert set(s.symbol for s in structure.species) == {'Mg', 'O'}
 
+
 @pytest.mark.pymatgen_lammps
 @pytest.mark.calculator
-def test_lammps_writer_buckingham():
+def test_lammps_writer_buckingham(structure, potential):
     """Tests that given a structure and potential that a certain lammps
     input script is created.
 
     """
-    # Create Structure
-    supercell = (2, 2, 2)
-    a = 4.1990858 # From evaluation of potential
-    lattice = pmg.Lattice.from_parameters(a, a, a, 90, 90, 90)
-    mg = pmg.Specie('Mg', 1.4)
-    o = pmg.Specie('O', -1.4)
-    atoms = [mg, o]
-    sites = [[0, 0, 0], [0.5, 0.5, 0.5]]
-    structure = pmg.Structure.from_spacegroup(225, lattice, atoms, sites)
+    s = structure('test_files/structure/MgO.cif', conventional=True) * (2, 2, 2)
+    assert len(s) == 64
 
-    # Create Potential
-    potential = Potential({
-        'version': 'v1',
-        'kind': 'Potential',
-        'spec': {
-            'charge': {
-                'Mg': 1.4, 'O': -1.4
-            },
-            'kspace': {
-                'type': 'pppm', 'tollerance': 1e-5
-            },
-            'pair': {
-                'type': 'buckingham',
-                'cutoff': 10.0,
-                'parameters': [
-                    {
-                        'elements': ['Mg', 'Mg'],
-                        'coefficients': [1309362.2766468062, 0.104, 0.0]
-                    },
-                    {
-                        'elements': ['Mg', 'O'],
-                        'coefficients': [9892.357, 0.20199, 0.0]
-                    },
-                    {
-                        'elements': ['O', 'O'],
-                        'coefficients': [2145.7345, 0.3, 30.2222]
-                    }
-                ]
-            }
-        }
-    })
+    p = potential('test_files/potential/mgo.yaml')
 
     lammps_input = LammpsInput(
         LammpsScript(lammps_dftfit_set),
-        LammpsData.from_structure(structure))
-    modify_input_for_potential(lammps_input, potential)
+        LammpsData.from_structure(s))
+    modify_input_for_potential(lammps_input, p)
 
     output_script = [
         ('echo', 'both'),
