@@ -16,8 +16,8 @@ def test_potential_buck_charge(benchmark, structure, potential):
     loop.run_until_complete(calculator.create())
 
     # using calculator internals
-    lmp, elements = calculator.lammps_systems[-1]
+    lmp = calculator.lammps_systems[-1]
 
     @benchmark
     def f():
-        calculator._apply_potential(lmp, elements, p)
+        calculator._apply_potential(lmp, p)
