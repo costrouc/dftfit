@@ -40,7 +40,6 @@ def test_potential_lammps_cython_tersoff_2_file(benchmark, structure, potential)
     @benchmark
     def f():
         calculator._apply_potential_files(p)
-        calculator._apply_potential(lmp, p)
 
 
 @pytest.mark.benchmark(group='apply-potential', min_rounds=10)

@@ -95,13 +95,16 @@ def multiobjective_function(md_calculations, dft_calculations):
         n_stress_sq_error += np.sum((md_calculation.stress - dft_calculation.stress)**2.0)
         d_stress_sq_error += np.sum(dft_calculation.stress**2.0)
 
-    for (md_calc_i, dft_calc_i), (md_calc_j, dft_calc_j) in combinations(zip(md_calculations, dft_calculations), 2):
-        n_energy_sq_error += ((md_calc_i.energy - md_calc_j.energy) - (dft_calc_i.energy - dft_calc_j.energy))**2.0
-        d_energy_sq_error += (dft_calc_i.energy - dft_calc_j.energy)**2.0
+    if len(md_calculations) > 1:  # cannot calculate energy error if only one set of calculations
+        for (md_calc_i, dft_calc_i), (md_calc_j, dft_calc_j) in combinations(zip(md_calculations, dft_calculations), 2):
+            n_energy_sq_error += ((md_calc_i.energy - md_calc_j.energy) - (dft_calc_i.energy - dft_calc_j.energy))**2.0
+            d_energy_sq_error += (dft_calc_i.energy - dft_calc_j.energy)**2.0
+        energy_sq_error = math.sqrt(n_energy_sq_error / d_energy_sq_error)
+    else:
+        energy_sq_error = 0.0
 
     force_sq_error = math.sqrt(n_force_sq_error / d_force_sq_error)
     stress_sq_error = math.sqrt(n_stress_sq_error / d_stress_sq_error)
-    energy_sq_error = math.sqrt(n_energy_sq_error / d_energy_sq_error)
 
     parts = {'forces': force_sq_error, 'stress': stress_sq_error, 'energy': energy_sq_error}
     score = (force_sq_error, stress_sq_error, energy_sq_error)

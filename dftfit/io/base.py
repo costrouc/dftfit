@@ -1,6 +1,3 @@
-import subprocess
-
-
 class DFTReader:
     @property
     def forces(self):
