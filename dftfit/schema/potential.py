@@ -59,7 +59,7 @@ class ParametersSchema(BaseSchema):
 
 
 class PairPotentialSchema(BaseSchema):
-    PAIR_POTENTIALS = {'buckingham'}
+    PAIR_POTENTIALS = {'buckingham', 'tersoff-2'}
 
     type = fields.String(required=True, validate=validate.OneOf(PAIR_POTENTIALS))
     cutoff = FloatParameterField(required=False, validate=validate.Range(min=1e-6))

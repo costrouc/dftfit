@@ -23,15 +23,20 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
             '-log', 'none', '-screen', 'none'
         ])
         lmp.command('atom_modify map yes')
-
         atom_types = np.array([self.elements.index(atom.specie)+1 for atom in structure], dtype=np.intc)
-        lmp.box.from_lattice_const(
+
+        # lammps does not handle non-orthogonal cells well
+        if not structure.lattice.is_orthogonal:
+            lmp.command('box tilt large')
+        rotation_matrix, origin = lmp.box.from_lattice_const(
             len(self.elements),
             np.array(structure.lattice.abc),
             np.array(structure.lattice.angles) * (math.pi/180))
         for element, atom_type in zip(self.elements, lmp.system.atom_types):
             atom_type.mass = element.atomic_mass
-        lmp.system.create_atoms(atom_types, structure.cart_coords+1e-8)
+
+        cart_coords = lammps.core.transform_cartesian_vector_to_lammps_vector(structure.cart_coords, rotation_matrix, origin)
+        lmp.system.create_atoms(atom_types, cart_coords+1e-8)
         lmp.thermo.add('my_ke', 'ke', 'all')
         return lmp
 
@@ -50,9 +55,38 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
         to write files once per submit
         """
         spec = potential.schema['spec']
-        pass
-        # if ('pair' in spec) and (spec['pair']['type'] == 'tersoff-2'):
-        #     self._apply_file_tersoff_2(potential)
+        if ('pair' in spec) and (spec['pair']['type'] == 'tersoff-2'):
+            self._apply_file_tersoff_2(potential)
+
+    def _apply_file_tersoff_2(self, potential, filename='/tmp/lammps.tersoff-2'):
+        spec = potential.schema['spec']
+        element_values = {p['elements'][0]: p['coefficients'] for p in spec['pair']['parameters'] if len(p['elements']) == 1}
+        mixing_values = {tuple(sorted(p['elements'])): p['coefficients'] for p in spec['pair']['parameters'] if len(p['elements']) == 2}
+
+        def mixing_params_from_singles(e1, e2):
+            p1 = [float(_) for _ in element_values[e1]]
+            p2 = [float(_) for _ in element_values[e2]]
+            mixing = float(mixing_values.get(tuple(sorted([e1, e2])), [1.0])[0])
+            return [
+                3.0,                                # m
+                1.0,                                # gamma
+                0.0,                                # lambda3
+                p1[0],                              # c
+                p1[1],                              # d
+                p1[2],                              # costheta0
+                p1[3],                              # n
+                p1[4],                              # beta
+                (p1[5] + p2[5]) / 2,                # lambda2
+                mixing * math.sqrt(p1[6] * p2[6]),  # B
+                math.sqrt(p1[7] * p2[7]),           # R
+                math.sqrt(p1[8] * p2[8]),           # D
+                (p1[9] + p2[9]) / 2,                # lambda1
+                math.sqrt(p1[10] * p2[10]),         # A
+            ]
+
+        with open(filename, 'w') as f:
+            for e1, e2, e3 in itertools.product(element_values, repeat=3):
+                f.write(' '.join([e1, e2, e3] + ['{:16.8g}'.format(_) for _ in  mixing_params_from_singles(e1, e2)]) + '\n')
 
     def _apply_potential(self, lmp, potential):
         """Apply specific potential
@@ -69,6 +103,8 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
         elif ('charge' in spec) and ('kspace' in spec) and ('pair' in spec) and \
              (spec['pair']['type'] == 'buckingham'):
             self._apply_buckingham_charge(lmp, potential)
+        elif ('pair' in spec) and (spec['pair']['type'] == 'tersoff-2'):
+            self._apply_tersoff_2(lmp, potential)
 
     def _apply_buckingham_charge(self, lmp, potential):
         element_map = {e.symbol: i for i, e in enumerate(self.elements, start=1)}
@@ -84,6 +120,10 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
                 ' '.join([str(float(coeff)) for coeff in parameter['coefficients']])))
         for element, charge in spec['charge'].items():
             lmp.command('set type %d charge %f' % (element_map[element], float(charge)))
+
+    def _apply_tersoff_2(self, lmp, potential):
+        lmp.command('pair_style tersoff')
+        lmp.command('pair_coeff * * /tmp/lammps.tersoff-2 %s' % ' '.join(str(e) for e in self.elements))
 
     async def submit(self, potential, properties=None):
         properties = properties or {'stress', 'energy', 'forces'}
