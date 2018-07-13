@@ -22,21 +22,7 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
         lmp = lammps.Lammps(units='metal', style='full', args=[
             '-log', 'none', '-screen', 'none'
         ])
-        lmp.command('atom_modify map yes')
-        atom_types = np.array([self.elements.index(atom.specie)+1 for atom in structure], dtype=np.intc)
-
-        # lammps does not handle non-orthogonal cells well
-        if not structure.lattice.is_orthogonal:
-            lmp.command('box tilt large')
-        rotation_matrix, origin = lmp.box.from_lattice_const(
-            len(self.elements),
-            np.array(structure.lattice.abc),
-            np.array(structure.lattice.angles) * (math.pi/180))
-        for element, atom_type in zip(self.elements, lmp.system.atom_types):
-            atom_type.mass = element.atomic_mass
-
-        cart_coords = lammps.core.transform_cartesian_vector_to_lammps_vector(structure.cart_coords, rotation_matrix, origin)
-        lmp.system.create_atoms(atom_types, cart_coords+1e-8)
+        lmp.system.add_pymatgen_structure(structure, self.elements)
         lmp.thermo.add('my_ke', 'ke', 'all')
         return lmp
 
