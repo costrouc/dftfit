@@ -5,7 +5,8 @@ import lammps
 from lammps.potential import (
     write_table_pair_potential,
     write_tersoff_potential,
-    write_stillinger_weber_potential
+    write_stillinger_weber_potential,
+    write_gao_weber_potential
 )
 import numpy as np
 
@@ -128,6 +129,13 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
                     'pair_coeff': [('* *', 'sw', '%s %s' % (
                         filename, ' '.join(str(e) for e in self.elements)))],
                 })
+            elif pair_potential['type'] == 'gao-weber':
+                filename = '/tmp/lammps.%d.gw' % i
+                potentials.append({
+                    'pair_style': 'gw',
+                    'pair_coeff': [('* *', 'gw', '%s %s' % (
+                        filename, ' '.join(str(e) for e in self.elements)))],
+                })
             else:
                 raise ValueError('pair potential %s not implemented yet!' % (
                     pair_potential['type']))
@@ -176,7 +184,12 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
                 for parameter in pair_potential['parameters']:
                     parameters[tuple(parameter['elements'])] = parameter['coefficients']
                 write_stillinger_weber_potential(parameters, filename=filename)
-
+            elif pair_potential['type'] == 'gao-weber':
+                filename = '/tmp/lammps.%d.gw' % i
+                parameters = {}
+                for parameter in pair_potential['parameters']:
+                    parameters[tuple(parameter['elements'])] = parameter['coefficients']
+                write_gao_weber_potential(parameters, filename=filename)
 
     async def submit(self, potential, properties=None):
         properties = properties or {'stress', 'energy', 'forces'}
