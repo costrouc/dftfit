@@ -12,21 +12,21 @@ spec:
     type: pppm
     tollerance: 1e-5
   pair:
-    type: buckingham
-    cutoff: 10.0
-    parameters:
-      - elements: ['Mg', 'Mg']
-        coefficients:
-           - {'initial': 0.1, 'bounds': [1e-6, 1000]}
-           - {'initial': 0.1, 'bounds': [1e-6, 1e2]}
-           - 0.0
-      - elements: ['Mg', 'O']
-        coefficients:
-           - {'initial': 821.61, 'bounds': [10, 1e4]}
-           - {'initial': 0.324199, 'bounds': [1e-6, 1e2]}
-           - 0.0
-      - elements: ['O', 'O']
-        coefficients:
-          - {'initial': 22764.915, 'bounds': [1e3, 1e6]}
-          - {'initial': 0.14899, 'bounds': [1e-3, 1e2]}
-          - {'initial': 20.3705, 'bounds': [1, 1e3]}
+    - type: buckingham
+      cutoff: 10.0
+      parameters:
+        - elements: ['Mg', 'Mg']
+          coefficients:
+             - {'initial': 0.1, 'bounds': [1e-6, 1000]}
+             - {'initial': 0.1, 'bounds': [1e-6, 1e2]}
+             - 0.0
+        - elements: ['Mg', 'O']
+          coefficients:
+             - {'initial': 821.61, 'bounds': [10, 1e4]}
+             - {'initial': 0.324199, 'bounds': [1e-6, 1e2]}
+             - 0.0
+        - elements: ['O', 'O']
+          coefficients:
+            - {'initial': 22764.915, 'bounds': [1e3, 1e6]}
+            - {'initial': 0.14899, 'bounds': [1e-3, 1e2]}
+            - {'initial': 20.3705, 'bounds': [1, 1e3]}

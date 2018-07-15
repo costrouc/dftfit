@@ -35,7 +35,7 @@ def test_lammps_writer_buckingham(structure, potential):
     s = structure('test_files/structure/MgO.cif', conventional=True) * (2, 2, 2)
     assert len(s) == 64
 
-    p = potential('test_files/potential/mgo.yaml')
+    p = potential('test_files/potential/MgO-charge-buck.yaml')
 
     lammps_input = LammpsInput(
         LammpsScript(lammps_dftfit_set),

@@ -2,6 +2,7 @@ import pathlib
 
 import pytest
 import pymatgen as pmg
+from pymatgen.io.cif import CifParser
 
 from dftfit.potential import Potential
 
@@ -14,7 +15,7 @@ def structure():
             raise ValueError(f'given filename "{filename}" is not a file')
 
         if filename.suffix == '.cif':
-            s = pmg.io.cif.CifParser(str(filename)).get_structures()[0]
+            s = CifParser(str(filename)).get_structures()[0]
         elif filename.stem == 'POSCAR':
             s = pmg.io.vasp.inputs.Poscar(str(filename)).structure
         else:

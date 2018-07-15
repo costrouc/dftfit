@@ -98,25 +98,15 @@ def modify_input_for_potential(lammps_input, potential):
             return ('kspace_style', '%s %f' % (style, float(tollerance)))
         return ('kspace_style', [])
 
-    def tersoff_file(potential):
-        spec = potential.schema['spec']
-        if 'pair' in spec and spec['pair']['type'] == 'tersoff':
-            lines = []
-            for parameter in spec['pair']['parameters']:
-                lines.append(' '.join(parameter['elements'] + [float(c) for c in parameter['coefficients']]))
-            return ('\n'.join(lines), 'potential.tersoff')
-        return []
-
     def pair_style(potential):
         pair_map = {
             'buckingham': ('buck', '{style} {cutoff}'),
-            'tersoff': ('tersoff', '{style}')
         }
 
         spec = potential.schema['spec']
-        if 'pair' in spec:
-            style, pair_style_format = pair_map[spec['pair']['type']]
-            cutoff = spec['pair'].get('cutoff', 10) # angstroms
+        if 'pair' in spec and len(spec['pair']) == 1:
+            style, pair_style_format = pair_map[spec['pair'][0]['type']]
+            cutoff = spec['pair'][0].get('cutoff', 10) # angstroms
             if 'kspace'in spec and spec['kspace']['type'] in {'ewald', 'pppm'}:
                 style += '/coul/long'
             return ('pair_style', pair_style_format.format(**{'style': style, 'cutoff': float(cutoff)}))
@@ -124,17 +114,18 @@ def modify_input_for_potential(lammps_input, potential):
 
     def pair_coeff(potential):
         spec = potential.schema['spec']
-        if 'pair' in spec:
-            if spec['pair']['type'] in ['buckingham']:
+        if 'pair' in spec and len(spec['pair']) == 1:
+            if spec['pair'][0]['type'] in ['buckingham']:
                 symbols_to_indicies = lambda symbols: [symbol_indicies[s] for s in symbols]
                 pair_coeffs = []
-                for coeff in spec['pair']['parameters']:
+                for coeff in spec['pair'][0]['parameters']:
                     # lammps requires that indicies be accending
                     pair_coeffs.append(' '.join(list(map(str, sorted(symbols_to_indicies(coeff['elements'])) + coeff['coefficients']))))
                 return ('pair_coeff', pair_coeffs)
-            elif spec['pair']['type'] == 'tersoff':
-                return '* * potential.tersoff Si C Si'; # TODO: find out how to determine
         return ('pair_coeff', [])
+
+    if len(potential.schema['spec'].get('pair', [])) > 1:
+        raise ValueError('pymatgen-lammps calculator only supports 1 potential (buckingham), lammps-cython calculator is much much much more robust (only here for legacy reasons')
 
     lammps_input.lammps_script.update([
         charge(potential),
@@ -142,7 +133,6 @@ def modify_input_for_potential(lammps_input, potential):
         pair_style(potential),
         pair_coeff(potential)
     ])
-    lammps_input.additional_files.extend(tersoff_file(potential))
 
 
 class LammpsLocalDFTFITCalculator(DFTFITCalculator):
@@ -184,7 +174,6 @@ class LammpsLocalDFTFITCalculator(DFTFITCalculator):
 
     def shutdown(self):
         self.lammps_local_client.shutdown()
-
 
 
 class LammpsLocalMDCalculator(MDCalculator):
