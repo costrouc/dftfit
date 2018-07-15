@@ -20,7 +20,7 @@ def test_potential_from_schema():
             },
             'pair': [{
                 'type': 'buckingham',
-                'cutoff': 10.0,
+                'cutoff': [10.0],
                 'parameters': [{
                     'elements': ['O', 'Mg'],
                     'coefficients': [1.0, 0.0, 3.0]

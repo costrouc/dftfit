@@ -105,7 +105,7 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
                         element_map[parameter['elements'][1]]])])
                     pair_coeffs.append((ij, 'buck', ' '.join([str(float(coeff)) for coeff in parameter['coefficients']])))
                 potentials.append({
-                    'pair_style': 'buck %f' % pair_potential.get('cutoff', 10.0),
+                    'pair_style': 'buck %f' % pair_potential.get('cutoff', [10.0])[-1],
                     'pair_coeff': pair_coeffs
                 })
             elif pair_potential['type'] == 'tersoff-2':

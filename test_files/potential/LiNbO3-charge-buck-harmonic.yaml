@@ -11,7 +11,7 @@ spec:
     O: -2
   pair:
     - type: buckingham
-      cutoff: 10.0
+      cutoff: [10.0]
       parameters:
         - elements: ['Nb', 'O']
           coefficients: [1425.0, 0.3650, 0.0]
@@ -29,7 +29,7 @@ spec:
     # sadly not implemented correctly in lammps
     # see (todo find lammps issue that states this)
     - type: harmonic
-      cutoff: 2.0
+      cutoff: [2.0]
       parameters:
         # units: force constant [eV rad^{-2}] ,equilibrium angle [degrees]
         - elements: ['O', 'Nb', 'O']

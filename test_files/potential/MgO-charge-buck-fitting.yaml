@@ -11,7 +11,7 @@ spec:
     tollerance: 1e-5
   pair:
     - type: buckingham
-      cutoff: 10.0
+      cutoff: [10.0]
       parameters:
         - elements: ['Mg', 'Mg']
           coefficients:

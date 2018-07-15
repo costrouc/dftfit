@@ -106,7 +106,7 @@ def modify_input_for_potential(lammps_input, potential):
         spec = potential.schema['spec']
         if 'pair' in spec and len(spec['pair']) == 1:
             style, pair_style_format = pair_map[spec['pair'][0]['type']]
-            cutoff = spec['pair'][0].get('cutoff', 10) # angstroms
+            cutoff = spec['pair'][0].get('cutoff', [10.0])[-1]  # angstroms
             if 'kspace'in spec and spec['kspace']['type'] in {'ewald', 'pppm'}:
                 style += '/coul/long'
             return ('pair_style', pair_style_format.format(**{'style': style, 'cutoff': float(cutoff)}))
