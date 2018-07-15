@@ -38,6 +38,7 @@ def test_potential_from_schema():
     ('MgO-charge-buck.yaml', 0, 13),
     ('MgO-charge-buck-fitting.yaml', 8, 13),
     ('LiTaO3-tersoff-2.yaml', 0, 36),
+    ('LiTaO3-tersoff-2-charge.yaml', 0, 40),
     ('LiNbO3-charge-buck-harmonic.yaml', 0, 25),
     ('SiC-tersoff.yaml', 0, 112),
     ('SiC-gao-weber.yaml', 0, 112),
