@@ -121,11 +121,17 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
                     'pair_coeff': [('* *', 'tersoff', '%s %s' % (
                         filename, ' '.join(str(e) for e in self.elements)))],
                 })
+            elif pair_potential['type'] == 'stillinger-weber':
+                filename = '/tmp/lammps.%d.sw' % i
+                potentials.append({
+                    'pair_style': 'sw',
+                    'pair_coeff': [('* *', 'sw', '%s %s' % (
+                        filename, ' '.join(str(e) for e in self.elements)))],
+                })
             else:
                 raise ValueError('pair potential %s not implemented yet!' % (
                     pair_potential['type']))
 
-        print(potentials)
         if len(potentials) == 0:
             pass
         elif len(potentials) == 1:  # no need for overlay
@@ -164,6 +170,12 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
                 for parameter in pair_potential['parameters']:
                     parameters[tuple(parameter['elements'])] = parameter['coefficients']
                 write_tersoff_potential(parameters, filename=filename)
+            elif pair_potential['type'] == 'stillinger-weber':
+                filename = '/tmp/lammps.%d.sw' % i
+                parameters = {}
+                for parameter in pair_potential['parameters']:
+                    parameters[tuple(parameter['elements'])] = parameter['coefficients']
+                write_stillinger_weber_potential(parameters, filename=filename)
 
 
     async def submit(self, potential, properties=None):
