@@ -1,0 +1,27 @@
+version: v1
+kind: Potential
+spec:
+  constraint:
+    charge_balance: MgO
+  charge:
+    Mg: 1.4
+    O: -1.4
+  kspace:
+    type: pppm
+    tollerance: 1e-5
+  pair:
+    - type: python-function
+      cutoff: [1.0, 10.0]
+      samples: 1000
+      function: |
+        import numpy as np
+
+        def potential(r, A, p, C):
+            return A * np.exp(-r/p) - C / (r**6)
+      parameters:
+        - elements: ['Mg', 'Mg']
+          coefficients: [1309362.2766468062, 0.104, 0.0]
+        - elements: ['Mg', 'O']
+          coefficients: [9892.357, 0.20199, 0.0]
+        - elements: ['O', 'O']
+          coefficients: [2145.7345, 0.3, 30.2222]

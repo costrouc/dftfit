@@ -60,6 +60,7 @@ class ParametersSchema(BaseSchema):
 
 class PairPotentialSchema(BaseSchema):
     PAIR_POTENTIALS = {
+        'python-function',
         'lennard-jones',
         'buckingham',
         'harmonic',
@@ -72,6 +73,8 @@ class PairPotentialSchema(BaseSchema):
     type = fields.String(required=True, validate=validate.OneOf(PAIR_POTENTIALS))
     cutoff = fields.List(FloatParameterField(validate=validate.Range(min=1e-6)), required=False)
     parameters = fields.Nested(ParametersSchema, required=True, many=True)
+    samples = fields.Integer(required=False, validate=validate.Range(min=1))
+    function = fields.String(required=False)
 
 
 class PotentialSpecSchema(BaseSchema):
