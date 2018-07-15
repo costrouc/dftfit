@@ -41,23 +41,11 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
         for structure in self.structures:
             self.lammps_systems.append(self._initialize_lammps(structure))
 
-    def _apply_potential_files(self, potential):
-        """Since potential do not change between all structures we only need
-        to write files once per submit
-        """
-        spec = potential.schema['spec']
-        if ('pair' in spec) and (spec['pair']['type'] == 'tersoff-2'):
-            self._apply_file_tersoff_2(potential)
-
-    def _tersoff_2_to_tersoff(self, potential):
-        spec = potential.schema['spec']
-        element_values = {p['elements'][0]: p['coefficients'] for p in spec['pair']['parameters'] if len(p['elements']) == 1}
-        mixing_values = {tuple(sorted(p['elements'])): p['coefficients'] for p in spec['pair']['parameters'] if len(p['elements']) == 2}
-
-        def mixing_params_from_singles(e1, e2):
-            p1 = [float(_) for _ in element_values[e1]]
-            p2 = [float(_) for _ in element_values[e2]]
-            mixing = float(mixing_values.get(tuple(sorted([e1, e2])), [1.0])[0])
+    def _tersoff_2_to_tersoff(self, element_parameters, mixing_parameters):
+        def mixing_params_from_singles(e1, e2, mixing_value):
+            p1 = [float(_) for _ in element_parameters[e1]]
+            p2 = [float(_) for _ in element_parameters[e2]]
+            mixing = float(mixing_value)
             return [
                 3.0,                                # m
                 1.0,                                # gamma
@@ -76,8 +64,15 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
             ]
 
         parameters = {}
-        for e1, e2, e3 in itertools.product(element_values, repeat=3):
-            parameters[(e1, e2, e3)] = mixing_params_from_singles(e1, e2)
+        for e1, e2, e3 in itertools.product(element_parameters, repeat=3):
+            if e1 == e2:
+                mixing_value = 1.0
+            else:
+                sorted_e1_e2 = tuple(sorted([e1, e2]))
+                mixing_value = mixing_parameters.get(sorted_e1_e2)
+                if mixing_value is None:
+                    continue
+            parameters[(e1, e2, e3)] = mixing_params_from_singles(e1, e2, mixing_value)
         return parameters
 
     def _apply_potential(self, lmp, potential):
@@ -87,48 +82,89 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
         implementation is better for now.
         """
         spec = potential.schema['spec']
+        element_map = {e.symbol: i for i, e in enumerate(self.elements, start=1)}
 
         # collect potentials in spec
         potentials = []
         if ('charge' in spec) and ('kspace' in spec):
-            potentials.append(('charge', {
-                'pair_style': ['coul/long', 10.0]
-                'kspace_style': ['%s' % spec['kspace']['pppm'], '%f' %  spec['kspace']['tollerance']]
+            lmp.command('kspace_style %s %f' % (spec['kspace']['type'], spec['kspace']['tollerance']))
+            for element, charge in spec['charge'].items():
+                lmp.command('set type %d charge %f' % (element_map[element], float(charge)))
+            potentials.append(({
+                'pair_style': 'coul/long %f' % 10.0,
+                'pair_coeff': [('* *', 'coul/long', '')]
             }))
 
-        for pair in spce.get('pair', []):
+        for i, pair_potential in enumerate(spec.get('pair', [])):
+            if pair_potential['type'] == 'buckingham':
+                pair_coeffs = []
+                for parameter in pair_potential['parameters']:
+                    ij = ' '.join([str(_) for _ in sorted([
+                        element_map[parameter['elements'][0]],
+                        element_map[parameter['elements'][1]]])])
+                    pair_coeffs.append((ij, 'buck', ' '.join([str(float(coeff)) for coeff in parameter['coefficients']])))
+                potentials.append({
+                    'pair_style': 'buck %f' % pair_potential.get('cutoff', 10.0),
+                    'pair_coeff': pair_coeffs
+                })
+            elif pair_potential['type'] == 'tersoff-2':
+                filename = '/tmp/lammps.%d.tersoff' % i
+                potentials.append({
+                    'pair_style': 'tersoff',
+                    'pair_coeff': [('* *', 'tersoff', '%s %s' % (
+                        filename, ' '.join(str(e) for e in self.elements)))],
+                })
+            elif pair_potential['type'] == 'tersoff':
+                filename = '/tmp/lammps.%d.tersoff' % i
+                potentials.append({
+                    'pair_style': 'tersoff',
+                    'pair_coeff': [('* *', 'tersoff', '%s %s' % (
+                        filename, ' '.join(str(e) for e in self.elements)))],
+                })
+            else:
+                raise ValueError('pair potential %s not implemented yet!' % (
+                    pair_potential['type']))
 
+        print(potentials)
+        if len(potentials) == 0:
+            pass
+        elif len(potentials) == 1:  # no need for overlay
+            potential = potentials[0]
+            lmp.command('pair_style %s' % potential['pair_style'])
+            for pair_coeff in potential['pair_coeff']:
+                lmp.command('pair_coeff ' + pair_coeff[0] + ' ' + pair_coeff[2])
+        else:  # use hybrid/overlay to join all potentials
+            lmp.command('pair_style hybrid/overlay ' + ' '.join(potential['pair_style'] for potential in potentials))
+            for potential in potentials:
+                for pair_coeff in potential.get('pair_coeff', []):
+                    print(pair_coeff)
+                    print('pair_coeff ' + ' '.join(pair_coeff))
+                    lmp.command('pair_coeff ' + ' '.join(pair_coeff))
 
-        if ('charge' in spec) and ('kspace' in spec) and ('pair' in spec) and ('nbody' in spec) and \
-           (spec['pair']['type'] == 'buckingham') and (spec['nbody']['type'] == 'harmonic'):
-            raise ValueError('Sadly lammps cannot implement 3-body angle with differing species')
-        elif ('charge' in spec) and ('kspace' in spec) and ('pair' in spec) and \
-             (spec['pair']['type'] == 'buckingham'):
-            self._apply_buckingham_charge(lmp, potential)
-        elif ('pair' in spec) and (spec['pair']['type'] == 'tersoff-2'):
-            self._apply_tersoff_2(lmp, potential)
-
-    def _apply_pair_coeff(self, e1, e2, elements, args):
-
-
-    def _apply_buckingham_charge(self, lmp, potential):
-        element_map = {e.symbol: i for i, e in enumerate(self.elements, start=1)}
+    def _apply_potential_files(self, potential):
+        """Since potential do not change between all structures we only need
+        to write files once per submit
+        """
         spec = potential.schema['spec']
-        lmp.command('kspace_style %s %f' % (
-            spec['kspace']['type'], spec['kspace']['tollerance']))
-        lmp.command('pair_style buck/coul/long %f' % spec['pair']['cutoff'])
-        for parameter in spec['pair']['parameters']:
-            ij = sorted([element_map[parameter['elements'][0]],
-                         element_map[parameter['elements'][1]]])
-            lmp.command('pair_coeff %d %d %s' % (
-                ij[0], ij[1],
-                ' '.join([str(float(coeff)) for coeff in parameter['coefficients']])))
-        for element, charge in spec['charge'].items():
-            lmp.command('set type %d charge %f' % (element_map[element], float(charge)))
+        for i, pair_potential in enumerate(spec.get('pair', [])):
+            if pair_potential['type'] == 'tersoff-2':
+                filename = '/tmp/lammps.%d.tersoff' % i
+                element_parameters = {}
+                mixing_parameters = {}
+                for parameter in pair_potential['parameters']:
+                    if len(parameter['elements']) == 1:
+                        element_parameters[parameter['elements'][0]] = parameter['coefficients']
+                    elif len(parameter['elements']) == 2:
+                        mixing_parameters[tuple(sorted(parameter['elements']))] = parameter['coefficients'][0]
+                parameters = self._tersoff_2_to_tersoff(element_parameters, mixing_parameters)
+                write_tersoff_potential(parameters, filename=filename)
+            elif pair_potential['type'] == 'tersoff':
+                filename = '/tmp/lammps.%d.tersoff' % i
+                parameters = {}
+                for parameter in pair_potential['parameters']:
+                    parameters[tuple(parameter['elements'])] = parameter['coefficients']
+                write_tersoff_potential(parameters, filename=filename)
 
-    def _apply_tersoff_2(self, lmp, potential):
-        lmp.command('pair_style tersoff')
-        lmp.command('pair_coeff * * /tmp/lammps.tersoff-2 %s' % ' '.join(str(e) for e in self.elements))
 
     async def submit(self, potential, properties=None):
         properties = properties or {'stress', 'energy', 'forces'}

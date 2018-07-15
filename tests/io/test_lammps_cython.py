@@ -9,7 +9,7 @@ from dftfit.io.lammps_cython import LammpsCythonDFTFITCalculator
 @pytest.mark.benchmark(group='apply-potential', min_rounds=10)
 def test_potential_lammps_cython_buck_charge(benchmark, structure, potential):
     s = structure('test_files/structure/MgO.cif') * (2, 2, 2)
-    p = potential('test_files/potential/mgo-fitting.yaml')
+    p = potential('test_files/potential/MgO-charge-buck-fitting.yaml')
 
     calculator = LammpsCythonDFTFITCalculator([s])
     loop = asyncio.get_event_loop()
@@ -28,7 +28,7 @@ def test_potential_lammps_cython_tersoff_2_file(benchmark, structure, potential)
     s = structure('test_files/structure/LiTaO3.cif', conventional=True)
     assert len(s) == 30
 
-    p = potential('test_files/potential/litao3-tersoff.yaml')
+    p = potential('test_files/potential/LiTaO3-tersoff-2.yaml')
 
     calculator = LammpsCythonDFTFITCalculator([s])
     loop = asyncio.get_event_loop()
@@ -47,7 +47,7 @@ def test_potential_lammps_cython_tersoff_2_potential(benchmark, structure, poten
     s = structure('test_files/structure/LiTaO3.cif', conventional=True)
     assert len(s) == 30
 
-    p = potential('test_files/potential/litao3-tersoff.yaml')
+    p = potential('test_files/potential/LiTaO3-tersoff-2.yaml')
 
     calculator = LammpsCythonDFTFITCalculator([s])
     loop = asyncio.get_event_loop()
