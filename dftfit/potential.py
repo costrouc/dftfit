@@ -211,9 +211,10 @@ class Potential:
         elements = set()
         for element in self.schema['spec'].get('charge', {}):
             elements.add(element)
-        for parameter in self.schema['spec'].get('pair', {}).get('parameters', []):
-            for element in parameter.get('elements', []):
-                elements.add(element)
+        for pair in self.schema['spec'].get('pair', []):
+            for parameter in pair.get('parameters', []):
+                for element in parameter.get('elements', []):
+                    elements.add(element)
         return elements
 
     def __repr__(self):

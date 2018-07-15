@@ -1,0 +1,13 @@
+version: v1
+kind: Potential
+spec:
+  pair:
+    - type: lennard-jones
+      cutoff: 10.0
+      parameters:
+        - elements: ['Ne']
+          # from: https://doi.org/10.1080/00268976.2016.1246760
+          # Also provides potentials for Ne, Ar, Kr, Xe
+          # metal units
+          # epsilon, sigma
+          coefficients: [33.921, 2.801]

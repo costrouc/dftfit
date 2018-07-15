@@ -59,7 +59,15 @@ class ParametersSchema(BaseSchema):
 
 
 class PairPotentialSchema(BaseSchema):
-    PAIR_POTENTIALS = {'buckingham', 'tersoff-2'}
+    PAIR_POTENTIALS = {
+        'lennard-jones',
+        'buckingham',
+        'harmonic',
+        'tersoff',
+        'tersoff-2',
+        'stillinger-weber',
+        'gao-weber'
+    }
 
     type = fields.String(required=True, validate=validate.OneOf(PAIR_POTENTIALS))
     cutoff = FloatParameterField(required=False, validate=validate.Range(min=1e-6))
@@ -70,7 +78,7 @@ class PotentialSpecSchema(BaseSchema):
     constraint = fields.Nested(ConstraintSchema)
     charge = fields.Nested(ChargesSchema)
     kspace = fields.Nested(KspaceSchema)
-    pair = fields.Nested(PairPotentialSchema)
+    pair = fields.Nested(PairPotentialSchema, many=True)
 
 
 class PotentialSchema(BaseSchema):

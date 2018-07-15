@@ -2,6 +2,11 @@ import math
 import itertools
 
 import lammps
+from lammps.potential import (
+    write_table_pair_potential,
+    write_tersoff_potential,
+    write_stillinger_weber_potential
+)
 import numpy as np
 
 from .base import DFTFITCalculator, MDReader
@@ -44,7 +49,7 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
         if ('pair' in spec) and (spec['pair']['type'] == 'tersoff-2'):
             self._apply_file_tersoff_2(potential)
 
-    def _apply_file_tersoff_2(self, potential, filename='/tmp/lammps.tersoff-2'):
+    def _tersoff_2_to_tersoff(self, potential):
         spec = potential.schema['spec']
         element_values = {p['elements'][0]: p['coefficients'] for p in spec['pair']['parameters'] if len(p['elements']) == 1}
         mixing_values = {tuple(sorted(p['elements'])): p['coefficients'] for p in spec['pair']['parameters'] if len(p['elements']) == 2}
@@ -70,9 +75,10 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
                 math.sqrt(p1[10] * p2[10]),         # A
             ]
 
-        with open(filename, 'w') as f:
-            for e1, e2, e3 in itertools.product(element_values, repeat=3):
-                f.write(' '.join([e1, e2, e3] + ['{:16.8g}'.format(_) for _ in  mixing_params_from_singles(e1, e2)]) + '\n')
+        parameters = {}
+        for e1, e2, e3 in itertools.product(element_values, repeat=3):
+            parameters[(e1, e2, e3)] = mixing_params_from_singles(e1, e2)
+        return parameters
 
     def _apply_potential(self, lmp, potential):
         """Apply specific potential
@@ -80,8 +86,18 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
         Wish that this was more generic. But I have found that simpler
         implementation is better for now.
         """
-
         spec = potential.schema['spec']
+
+        # collect potentials in spec
+        potentials = []
+        if ('charge' in spec) and ('kspace' in spec):
+            potentials.append(('charge', {
+                'pair_style': ['coul/long', 10.0]
+                'kspace_style': ['%s' % spec['kspace']['pppm'], '%f' %  spec['kspace']['tollerance']]
+            }))
+
+        for pair in spce.get('pair', []):
+
 
         if ('charge' in spec) and ('kspace' in spec) and ('pair' in spec) and ('nbody' in spec) and \
            (spec['pair']['type'] == 'buckingham') and (spec['nbody']['type'] == 'harmonic'):
@@ -91,6 +107,9 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
             self._apply_buckingham_charge(lmp, potential)
         elif ('pair' in spec) and (spec['pair']['type'] == 'tersoff-2'):
             self._apply_tersoff_2(lmp, potential)
+
+    def _apply_pair_coeff(self, e1, e2, elements, args):
+
 
     def _apply_buckingham_charge(self, lmp, potential):
         element_map = {e.symbol: i for i, e in enumerate(self.elements, start=1)}
