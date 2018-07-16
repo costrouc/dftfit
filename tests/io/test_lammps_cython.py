@@ -16,6 +16,8 @@ from dftfit.io.lammps_cython import LammpsCythonDFTFITCalculator
     ('3C-SiC.cif', (2, 2, 2), 64, 'SiC-tersoff.yaml'),              # tersoff
     ('3C-SiC.cif', (2, 2, 2), 64, 'SiC-vashishta.yaml'),            # vashishta
     ('CdTe.cif', (2, 2, 2), 64, 'CdTe-stillinger-weber.yaml'),      # stillinger-weber
+    ('SiO2.cif', (2, 2, 2), 96, 'SiO2-comb.yaml'),                  # comb
+    # ('Ti4Cu2O.cif', (1, 1, 1), 112, 'Ti4Cu2O-comb-3.yaml')        # comb-3 (comb-3 freezes...)
 ])
 @pytest.mark.benchmark(group='apply-potential', min_rounds=10)
 def test_potential_lammps_cython(

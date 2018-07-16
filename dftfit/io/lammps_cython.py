@@ -7,7 +7,9 @@ from lammps.potential import (
     write_tersoff_potential,
     write_stillinger_weber_potential,
     write_gao_weber_potential,
-    write_vashishta_potential
+    write_vashishta_potential,
+    write_comb_potential,
+    write_comb_3_potential
 )
 import numpy as np
 
@@ -50,7 +52,6 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
 
     def _apply_potential_files(self, potential):
         lammps_files = write_potential_files(potential, elements=self.elements, unique_id=1)
-        print(list(lammps_files.keys()))
         for filename, content in lammps_files.items():
             with open(filename, 'w') as f:
                 f.write(content)
@@ -114,7 +115,7 @@ def tersoff_2_to_tersoff(element_parameters, mixing_parameters):
 
 
 PAIR_POTENTIALS_WITHOUT_FILE = {'lennard-jones', 'beck', 'buckingham', 'zbl'}
-PAIR_POTENTIALS_WITH_FILE = {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber', 'vashishta'}
+PAIR_POTENTIALS_WITH_FILE = {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber', 'vashishta', 'comb', 'comb-3'}
 LAMMPS_POTENTIAL_NAME_MAPPING = {
     'lennard-jones': 'lj/cut',
     'beck': 'beck',
@@ -125,6 +126,8 @@ LAMMPS_POTENTIAL_NAME_MAPPING = {
     'stillinger-weber': 'sw',
     'gao-weber': 'gw',
     'vashishta': 'vashishta',
+    'comb': 'comb',
+    'comb-3': 'comb3'
 }
 
 
@@ -153,7 +156,7 @@ def write_potential_files(potential, elements, unique_id=1):
                 elif len(parameter['elements']) == 2:
                     mixing_parameters[tuple(sorted(parameter['elements']))] = parameter['coefficients'][0]
             parameters = tersoff_2_to_tersoff(element_parameters, mixing_parameters)
-        elif pair_potential['type'] in {'tersoff', 'stillinger-weber', 'gao-weber', 'vashishta'}:
+        elif pair_potential['type'] in (PAIR_POTENTIALS_WITH_FILE - {'tersoff-2'}):
             parameters = {}
             for parameter in pair_potential['parameters']:
                 parameters[tuple(parameter['elements'])] = [float(_) for _ in parameter['coefficients']]
@@ -167,6 +170,10 @@ def write_potential_files(potential, elements, unique_id=1):
             lammps_files[filename] = write_gao_weber_potential(parameters)
         elif pair_potential['type'] == 'vashishta':
             lammps_files[filename] = write_vashishta_potential(parameters)
+        elif pair_potential['type'] == 'comb':
+            lammps_files[filename] = write_comb_potential(parameters)
+        elif pair_potential['type'] == 'comb-3':
+            lammps_files[filename] = write_comb_3_potential(parameters)
     return lammps_files
 
 
@@ -231,8 +238,12 @@ def write_potential(potential, elements, unique_id=1):
             })
         elif pair_potential['type'] in PAIR_POTENTIALS_WITH_FILE:
             filename = '/tmp/lammps.%d.%d.%s' % (i, unique_id, potential_lammps_name)
+            if pair_potential['type'] == 'comb-3':
+                pair_style = '%s polar_off' % (potential_lammps_name)
+            else:
+                pair_style = potential_lammps_name
             potentials.append({
-                'pair_style': potential_lammps_name,
+                'pair_style': pair_style,
                 'pair_coeff': [('* *', potential_lammps_name, '%s %s' % (
                     filename, ' '.join(str(e) for e in elements)))],
             })

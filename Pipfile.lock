@@ -159,9 +159,9 @@
         },
         "lammps-cython": {
             "hashes": [
-                "sha256:98564de106666af89398b1b17b39b8c2506a588c56049c77254fd744754e8be2"
+                "sha256:7b722d0f566f99320a5cbd35541d83213be67a2257503526442a1e4b28dd925e"
             ],
-            "version": "==0.5.6"
+            "version": "==0.5.7"
         },
         "marshmallow": {
             "hashes": [

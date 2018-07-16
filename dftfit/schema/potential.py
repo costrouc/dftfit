@@ -71,6 +71,8 @@ class PairPotentialSchema(BaseSchema):
         'stillinger-weber',
         'gao-weber',
         'vashishta',
+        'comb',
+        'comb-3'
     }
 
     type = fields.String(required=True, validate=validate.OneOf(PAIR_POTENTIALS))

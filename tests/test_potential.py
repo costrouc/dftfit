@@ -48,7 +48,9 @@ def test_potential_from_schema():
     ('SiC-vashishta.yaml', 0, 112),
     ('SiCGe-tersoff-2.yaml', 0, 44),
     ('SiCGe-tersoff.yaml', 0, 210),
-    ('CdTe-stillinger-weber.yaml', 0, 88)
+    ('CdTe-stillinger-weber.yaml', 0, 88),
+    ('SiO2-comb.yaml', 0, 368),
+    ('Ti4Cu2O-comb-3.yaml', 0, 1917)
 ])
 def test_potential_from_file(filename, num_opt_params, num_params):
     filename = os.path.join('test_files/potential', filename)
