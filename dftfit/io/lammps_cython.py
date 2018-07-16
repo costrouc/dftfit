@@ -42,154 +42,16 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
         for structure in self.structures:
             self.lammps_systems.append(self._initialize_lammps(structure))
 
-    def _tersoff_2_to_tersoff(self, element_parameters, mixing_parameters):
-        def mixing_params_from_singles(e1, e2, mixing_value):
-            p1 = [float(_) for _ in element_parameters[e1]]
-            p2 = [float(_) for _ in element_parameters[e2]]
-            mixing = float(mixing_value)
-            return [
-                3.0,                                # m
-                1.0,                                # gamma
-                0.0,                                # lambda3
-                p1[0],                              # c
-                p1[1],                              # d
-                p1[2],                              # costheta0
-                p1[3],                              # n
-                p1[4],                              # beta
-                (p1[5] + p2[5]) / 2,                # lambda2
-                mixing * math.sqrt(p1[6] * p2[6]),  # B
-                math.sqrt(p1[7] * p2[7]),           # R
-                math.sqrt(p1[8] * p2[8]),           # D
-                (p1[9] + p2[9]) / 2,                # lambda1
-                math.sqrt(p1[10] * p2[10]),         # A
-            ]
-
-        parameters = {}
-        for e1, e2, e3 in itertools.product(element_parameters, repeat=3):
-            if e1 == e2:
-                mixing_value = 1.0
-            else:
-                sorted_e1_e2 = tuple(sorted([e1, e2]))
-                mixing_value = mixing_parameters.get(sorted_e1_e2)
-                if mixing_value is None:
-                    continue
-            parameters[(e1, e2, e3)] = mixing_params_from_singles(e1, e2, mixing_value)
-        return parameters
-
     def _apply_potential(self, lmp, potential):
-        """Apply specific potential
-
-        Wish that this was more generic. But I have found that simpler
-        implementation is better for now.
-        """
-        spec = potential.schema['spec']
-        element_map = {e.symbol: i for i, e in enumerate(self.elements, start=1)}
-
-        # collect potentials in spec
-        potentials = []
-        if ('charge' in spec) and ('kspace' in spec):
-            lmp.command('kspace_style %s %f' % (spec['kspace']['type'], spec['kspace']['tollerance']))
-            for element, charge in spec['charge'].items():
-                lmp.command('set type %d charge %f' % (element_map[element], float(charge)))
-            potentials.append(({
-                'pair_style': 'coul/long %f' % 10.0,
-                'pair_coeff': [('* *', 'coul/long', '')]
-            }))
-
-        for i, pair_potential in enumerate(spec.get('pair', [])):
-            if pair_potential['type'] == 'buckingham':
-                pair_coeffs = []
-                for parameter in pair_potential['parameters']:
-                    ij = ' '.join([str(_) for _ in sorted([
-                        element_map[parameter['elements'][0]],
-                        element_map[parameter['elements'][1]]])])
-                    pair_coeffs.append((ij, 'buck', ' '.join([str(float(coeff)) for coeff in parameter['coefficients']])))
-                potentials.append({
-                    'pair_style': 'buck %f' % pair_potential.get('cutoff', [10.0])[-1],
-                    'pair_coeff': pair_coeffs
-                })
-            elif pair_potential['type'] == 'tersoff-2':
-                filename = '/tmp/lammps.%d.tersoff' % i
-                potentials.append({
-                    'pair_style': 'tersoff',
-                    'pair_coeff': [('* *', 'tersoff', '%s %s' % (
-                        filename, ' '.join(str(e) for e in self.elements)))],
-                })
-            elif pair_potential['type'] == 'tersoff':
-                filename = '/tmp/lammps.%d.tersoff' % i
-                potentials.append({
-                    'pair_style': 'tersoff',
-                    'pair_coeff': [('* *', 'tersoff', '%s %s' % (
-                        filename, ' '.join(str(e) for e in self.elements)))],
-                })
-            elif pair_potential['type'] == 'stillinger-weber':
-                filename = '/tmp/lammps.%d.sw' % i
-                potentials.append({
-                    'pair_style': 'sw',
-                    'pair_coeff': [('* *', 'sw', '%s %s' % (
-                        filename, ' '.join(str(e) for e in self.elements)))],
-                })
-            elif pair_potential['type'] == 'gao-weber':
-                filename = '/tmp/lammps.%d.gw' % i
-                potentials.append({
-                    'pair_style': 'gw',
-                    'pair_coeff': [('* *', 'gw', '%s %s' % (
-                        filename, ' '.join(str(e) for e in self.elements)))],
-                })
-            else:
-                raise ValueError('pair potential %s not implemented yet!' % (
-                    pair_potential['type']))
-
-        if len(potentials) == 0:
-            pass
-        elif len(potentials) == 1:  # no need for overlay
-            potential = potentials[0]
-            lmp.command('pair_style %s' % potential['pair_style'])
-            for pair_coeff in potential['pair_coeff']:
-                lmp.command('pair_coeff ' + pair_coeff[0] + ' ' + pair_coeff[2])
-        else:  # use hybrid/overlay to join all potentials
-            lmp.command('pair_style hybrid/overlay ' + ' '.join(potential['pair_style'] for potential in potentials))
-            for potential in potentials:
-                for pair_coeff in potential.get('pair_coeff', []):
-                    print(pair_coeff)
-                    print('pair_coeff ' + ' '.join(pair_coeff))
-                    lmp.command('pair_coeff ' + ' '.join(pair_coeff))
+        lammps_commands = write_potential(potential, elements=self.elements, unique_id=1)
+        for command in lammps_commands:
+            lmp.command(command)
 
     def _apply_potential_files(self, potential):
-        """Since potential do not change between all structures we only need
-        to write files once per submit
-        """
-        spec = potential.schema['spec']
-        for i, pair_potential in enumerate(spec.get('pair', [])):
-            if pair_potential['type'] == 'tersoff-2':
-                filename = '/tmp/lammps.%d.tersoff' % i
-                element_parameters = {}
-                mixing_parameters = {}
-                for parameter in pair_potential['parameters']:
-                    if len(parameter['elements']) == 1:
-                        element_parameters[parameter['elements'][0]] = parameter['coefficients']
-                    elif len(parameter['elements']) == 2:
-                        mixing_parameters[tuple(sorted(parameter['elements']))] = parameter['coefficients'][0]
-                parameters = self._tersoff_2_to_tersoff(element_parameters, mixing_parameters)
-                write_tersoff_potential(parameters, filename=filename)
-            elif pair_potential['type'] == 'tersoff':
-                filename = '/tmp/lammps.%d.tersoff' % i
-                parameters = {}
-                for parameter in pair_potential['parameters']:
-                    parameters[tuple(parameter['elements'])] = parameter['coefficients']
-                write_tersoff_potential(parameters, filename=filename)
-            elif pair_potential['type'] == 'stillinger-weber':
-                filename = '/tmp/lammps.%d.sw' % i
-                parameters = {}
-                for parameter in pair_potential['parameters']:
-                    parameters[tuple(parameter['elements'])] = parameter['coefficients']
-                write_stillinger_weber_potential(parameters, filename=filename)
-            elif pair_potential['type'] == 'gao-weber':
-                filename = '/tmp/lammps.%d.gw' % i
-                parameters = {}
-                for parameter in pair_potential['parameters']:
-                    parameters[tuple(parameter['elements'])] = parameter['coefficients']
-                write_gao_weber_potential(parameters, filename=filename)
+        lammps_files = write_potential_files(potential, elements=self.elements, unique_id=1)
+        for filename, content in lammps_files.items():
+            with open(filename, 'w') as f:
+                f.write(content)
 
     async def submit(self, potential, properties=None):
         properties = properties or {'stress', 'energy', 'forces'}
@@ -212,3 +74,175 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
 
     def shutdown(self):
         pass
+
+
+def tersoff_2_to_tersoff(element_parameters, mixing_parameters):
+    def mixing_params_from_singles(e1, e2, mixing_value):
+        p1 = [float(_) for _ in element_parameters[e1]]
+        p2 = [float(_) for _ in element_parameters[e2]]
+        mixing = float(mixing_value)
+        return [
+            3.0,                                # m
+            1.0,                                # gamma
+            0.0,                                # lambda3
+            p1[0],                              # c
+            p1[1],                              # d
+            p1[2],                              # costheta0
+            p1[3],                              # n
+            p1[4],                              # beta
+            (p1[5] + p2[5]) / 2,                # lambda2
+            mixing * math.sqrt(p1[6] * p2[6]),  # B
+            math.sqrt(p1[7] * p2[7]),           # R
+            math.sqrt(p1[8] * p2[8]),           # D
+            (p1[9] + p2[9]) / 2,                # lambda1
+            math.sqrt(p1[10] * p2[10]),         # A
+        ]
+
+    parameters = {}
+    for e1, e2, e3 in itertools.product(element_parameters, repeat=3):
+        if e1 == e2:
+            mixing_value = 1.0
+        else:
+            sorted_e1_e2 = tuple(sorted([e1, e2]))
+            mixing_value = mixing_parameters.get(sorted_e1_e2)
+            if mixing_value is None:
+                continue
+        parameters[(e1, e2, e3)] = mixing_params_from_singles(e1, e2, mixing_value)
+    return parameters
+
+
+def write_potential_files(potential, elements, unique_id=1):
+    """Generate lammps files required by specified potential
+
+    Parameters
+    ----------
+    potential: dftfit.potential.Potential
+        schema representation of potential
+    elements: list
+        list specifying the index of each element
+    unique_id: int
+        an id that can be used for files to guarentee uniqueness
+    """
+    spec = potential.schema['spec']
+    lammps_files = {}
+    for i, pair_potential in enumerate(spec.get('pair', [])):
+        if pair_potential['type'] == 'tersoff-2':
+            element_parameters = {}
+            mixing_parameters = {}
+            for parameter in pair_potential['parameters']:
+                if len(parameter['elements']) == 1:
+                    element_parameters[parameter['elements'][0]] = parameter['coefficients']
+                elif len(parameter['elements']) == 2:
+                    mixing_parameters[tuple(sorted(parameter['elements']))] = parameter['coefficients'][0]
+            parameters = tersoff_2_to_tersoff(element_parameters, mixing_parameters)
+        elif pair_potential['type'] in {'tersoff', 'stillinger-weber', 'gao-weber'}:
+            parameters = {}
+            for parameter in pair_potential['parameters']:
+                parameters[tuple(parameter['elements'])] = parameter['coefficients']
+
+        if pair_potential['type'] in {'tersoff-2', 'tersoff'}:
+            filename = '/tmp/lammps.%d.%d.tersoff' % (i, unique_id)
+            lammps_files[filename] = write_tersoff_potential(parameters)
+        elif pair_potential['type'] == 'stillinger-weber':
+            filename = '/tmp/lammps.%d.%d.sw' % (i, unique_id)
+            lammps_files[filename] = write_stillinger_weber_potential(parameters)
+        elif pair_potential['type'] == 'gao-weber':
+            filename = '/tmp/lammps.%d.%d.gw' % (i, unique_id)
+            lammps_files[filename] = write_gao_weber_potential(parameters)
+    return lammps_files
+
+
+def write_potential(potential, elements, unique_id=1):
+    """Generate lammps commands required by specified potential
+
+    Parameters
+    ----------
+    potential: dftfit.potential.Potential
+        schema representation of potential
+    elements: list
+        list specifying the index of each element
+    unique_id: int
+        an id that can be used for files to guarentee uniqueness
+
+    Supported Potentials:
+
+    - two-body
+      - lennard jones
+      - buckingham
+    - three-body
+      - tersoff-2, tersoff
+      - stillinger-weber
+      - gao-weber
+    - n-body
+      - coloumb charge (long + short range)
+    """
+    spec = potential.schema['spec']
+    element_map = {e.symbol: i for i, e in enumerate(elements, start=1)}
+
+    # collect potentials in spec
+    potentials = []
+    lammps_commands = []
+    if ('charge' in spec) and ('kspace' in spec):
+        lammps_commands.append('kspace_style %s %f' % (spec['kspace']['type'], spec['kspace']['tollerance']))
+        for element, charge in spec['charge'].items():
+            lammps_commands.append('set type %d charge %f' % (element_map[element], float(charge)))
+        potentials.append(({
+            'pair_style': 'coul/long %f' % 10.0,
+            'pair_coeff': [('* *', 'coul/long', '')]
+        }))
+
+    for i, pair_potential in enumerate(spec.get('pair', [])):
+        if pair_potential['type'] == 'buckingham':
+            pair_coeffs = []
+            for parameter in pair_potential['parameters']:
+                ij = ' '.join([str(_) for _ in sorted([
+                    element_map[parameter['elements'][0]],
+                    element_map[parameter['elements'][1]]])])
+                pair_coeffs.append((ij, 'buck', ' '.join([str(float(coeff)) for coeff in parameter['coefficients']])))
+            potentials.append({
+                'pair_style': 'buck %f' % pair_potential.get('cutoff', [10.0])[-1],
+                'pair_coeff': pair_coeffs
+            })
+        elif pair_potential['type'] == 'tersoff-2':
+            filename = '/tmp/lammps.%d.%d.tersoff' % (i, unique_id)
+            potentials.append({
+                'pair_style': 'tersoff',
+                'pair_coeff': [('* *', 'tersoff', '%s %s' % (
+                    filename, ' '.join(str(e) for e in elements)))],
+            })
+        elif pair_potential['type'] == 'tersoff':
+            filename = '/tmp/lammps.%d.%d.tersoff' % (i, unique_id)
+            potentials.append({
+                'pair_style': 'tersoff',
+                'pair_coeff': [('* *', 'tersoff', '%s %s' % (
+                    filename, ' '.join(str(e) for e in elements)))],
+            })
+        elif pair_potential['type'] == 'stillinger-weber':
+            filename = '/tmp/lammps.%d.%d.sw' % (i, unique_id)
+            potentials.append({
+                'pair_style': 'sw',
+                'pair_coeff': [('* *', 'sw', '%s %s' % (
+                    filename, ' '.join(str(e) for e in elements)))],
+            })
+        elif pair_potential['type'] == 'gao-weber':
+            filename = '/tmp/lammps.%d.gw' % (i, unique_id)
+            potentials.append({
+                'pair_style': 'gw',
+                'pair_coeff': [('* *', 'gw', '%s %s' % (
+                    filename, ' '.join(str(e) for e in elements)))],
+            })
+        else:
+            raise ValueError('pair potential %s not implemented yet!' % (
+                pair_potential['type']))
+
+    if len(potentials) == 1:  # no need for hybrid/overlay
+        potential = potentials[0]
+        lammps_commands.append('pair_style %s' % potential['pair_style'])
+        for pair_coeff in potential['pair_coeff']:
+            lammps_commands.append('pair_coeff ' + pair_coeff[0] + ' ' + pair_coeff[2])
+    elif len(potentials) > 1:  # use hybrid/overlay to join all potentials
+        lammps_commands.append('pair_style hybrid/overlay ' + ' '.join(potential['pair_style'] for potential in potentials))
+        for potential in potentials:
+            for pair_coeff in potential.get('pair_coeff', []):
+                lammps_commands.append('pair_coeff ' + ' '.join(pair_coeff))
+    return lammps_commands
