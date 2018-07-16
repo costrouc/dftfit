@@ -49,6 +49,7 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
 
     def _apply_potential_files(self, potential):
         lammps_files = write_potential_files(potential, elements=self.elements, unique_id=1)
+        print(list(lammps_files.keys()))
         for filename, content in lammps_files.items():
             with open(filename, 'w') as f:
                 f.write(content)
@@ -151,7 +152,7 @@ def write_potential_files(potential, elements, unique_id=1):
         elif pair_potential['type'] in {'tersoff', 'stillinger-weber', 'gao-weber'}:
             parameters = {}
             for parameter in pair_potential['parameters']:
-                parameters[tuple(parameter['elements'])] = parameter['coefficients']
+                parameters[tuple(parameter['elements'])] = [float(_) for _ in parameter['coefficients']]
 
         filename = '/tmp/lammps.%d.%d.%s' % (i, unique_id, potential_lammps_name)
         if pair_potential['type'] in {'tersoff-2', 'tersoff'}:
@@ -161,7 +162,6 @@ def write_potential_files(potential, elements, unique_id=1):
         elif pair_potential['type'] == 'gao-weber':
             lammps_files[filename] = write_gao_weber_potential(parameters)
     return lammps_files
-
 
 
 def write_potential(potential, elements, unique_id=1):
