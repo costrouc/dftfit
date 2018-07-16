@@ -111,6 +111,18 @@ def tersoff_2_to_tersoff(element_parameters, mixing_parameters):
     return parameters
 
 
+TWO_BODY_POTENTIALS = {'lennard-jones', 'buckingham'}
+THREE_BODY_POTENTIALS = {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber'}
+LAMMPS_POTENTIAL_NAME_MAPPING = {
+    'lennard-jones': 'lj/cut',
+    'buckingham': 'buck',
+    'tersoff-2': 'tersoff',
+    'tersoff': 'tersoff',
+    'stillinger-weber': 'sw',
+    'gao-weber': 'gw',
+}
+
+
 def write_potential_files(potential, elements, unique_id=1):
     """Generate lammps files required by specified potential
 
@@ -126,6 +138,7 @@ def write_potential_files(potential, elements, unique_id=1):
     spec = potential.schema['spec']
     lammps_files = {}
     for i, pair_potential in enumerate(spec.get('pair', [])):
+        potential_lammps_name = LAMMPS_POTENTIAL_NAME_MAPPING.get(pair_potential['type'])
         if pair_potential['type'] == 'tersoff-2':
             element_parameters = {}
             mixing_parameters = {}
@@ -140,16 +153,15 @@ def write_potential_files(potential, elements, unique_id=1):
             for parameter in pair_potential['parameters']:
                 parameters[tuple(parameter['elements'])] = parameter['coefficients']
 
+        filename = '/tmp/lammps.%d.%d.%s' % (i, unique_id, potential_lammps_name)
         if pair_potential['type'] in {'tersoff-2', 'tersoff'}:
-            filename = '/tmp/lammps.%d.%d.tersoff' % (i, unique_id)
             lammps_files[filename] = write_tersoff_potential(parameters)
         elif pair_potential['type'] == 'stillinger-weber':
-            filename = '/tmp/lammps.%d.%d.sw' % (i, unique_id)
             lammps_files[filename] = write_stillinger_weber_potential(parameters)
         elif pair_potential['type'] == 'gao-weber':
-            filename = '/tmp/lammps.%d.%d.gw' % (i, unique_id)
             lammps_files[filename] = write_gao_weber_potential(parameters)
     return lammps_files
+
 
 
 def write_potential(potential, elements, unique_id=1):
@@ -192,48 +204,28 @@ def write_potential(potential, elements, unique_id=1):
         }))
 
     for i, pair_potential in enumerate(spec.get('pair', [])):
-        if pair_potential['type'] == 'buckingham':
+        potential_lammps_name = LAMMPS_POTENTIAL_NAME_MAPPING.get(pair_potential['type'])
+        if pair_potential['type'] in TWO_BODY_POTENTIALS:
             pair_coeffs = []
             for parameter in pair_potential['parameters']:
                 ij = ' '.join([str(_) for _ in sorted([
                     element_map[parameter['elements'][0]],
                     element_map[parameter['elements'][1]]])])
-                pair_coeffs.append((ij, 'buck', ' '.join([str(float(coeff)) for coeff in parameter['coefficients']])))
+                coefficients_str = ' '.join([str(float(coeff)) for coeff in parameter['coefficients']])
+                pair_coeffs.append((ij, potential_lammps_name, coefficients_str))
             potentials.append({
-                'pair_style': 'buck %f' % pair_potential.get('cutoff', [10.0])[-1],
+                'pair_style': '%s %f' % (potential_lammps_name, pair_potential.get('cutoff', [10.0])[-1]),
                 'pair_coeff': pair_coeffs
             })
-        elif pair_potential['type'] == 'tersoff-2':
-            filename = '/tmp/lammps.%d.%d.tersoff' % (i, unique_id)
+        elif pair_potential['type'] in THREE_BODY_POTENTIALS:  # file potentials
+            filename = '/tmp/lammps.%d.%d.%s' % (i, unique_id, potential_lammps_name)
             potentials.append({
-                'pair_style': 'tersoff',
-                'pair_coeff': [('* *', 'tersoff', '%s %s' % (
-                    filename, ' '.join(str(e) for e in elements)))],
-            })
-        elif pair_potential['type'] == 'tersoff':
-            filename = '/tmp/lammps.%d.%d.tersoff' % (i, unique_id)
-            potentials.append({
-                'pair_style': 'tersoff',
-                'pair_coeff': [('* *', 'tersoff', '%s %s' % (
-                    filename, ' '.join(str(e) for e in elements)))],
-            })
-        elif pair_potential['type'] == 'stillinger-weber':
-            filename = '/tmp/lammps.%d.%d.sw' % (i, unique_id)
-            potentials.append({
-                'pair_style': 'sw',
-                'pair_coeff': [('* *', 'sw', '%s %s' % (
-                    filename, ' '.join(str(e) for e in elements)))],
-            })
-        elif pair_potential['type'] == 'gao-weber':
-            filename = '/tmp/lammps.%d.gw' % (i, unique_id)
-            potentials.append({
-                'pair_style': 'gw',
-                'pair_coeff': [('* *', 'gw', '%s %s' % (
+                'pair_style': potential_lammps_name,
+                'pair_coeff': [('* *', potential_lammps_name, '%s %s' % (
                     filename, ' '.join(str(e) for e in elements)))],
             })
         else:
-            raise ValueError('pair potential %s not implemented yet!' % (
-                pair_potential['type']))
+            raise ValueError('pair potential %s not implemented yet!' % (pair_potential['type']))
 
     if len(potentials) == 1:  # no need for hybrid/overlay
         potential = potentials[0]
