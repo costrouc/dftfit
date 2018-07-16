@@ -112,8 +112,8 @@ def tersoff_2_to_tersoff(element_parameters, mixing_parameters):
     return parameters
 
 
-TWO_BODY_POTENTIALS = {'lennard-jones', 'buckingham'}
-THREE_BODY_POTENTIALS = {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber'}
+PAIR_POTENTIALS_WITHOUT_FILE = {'lennard-jones', 'buckingham'}
+PAIR_POTENTIALS_WITH_FILE = {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber'}
 LAMMPS_POTENTIAL_NAME_MAPPING = {
     'lennard-jones': 'lj/cut',
     'buckingham': 'buck',
@@ -179,7 +179,7 @@ def write_potential(potential, elements, unique_id=1):
     Supported Potentials:
 
     - two-body
-      - lennard jones
+      - lennard-jones
       - buckingham
     - three-body
       - tersoff-2, tersoff
@@ -205,7 +205,7 @@ def write_potential(potential, elements, unique_id=1):
 
     for i, pair_potential in enumerate(spec.get('pair', [])):
         potential_lammps_name = LAMMPS_POTENTIAL_NAME_MAPPING.get(pair_potential['type'])
-        if pair_potential['type'] in TWO_BODY_POTENTIALS:
+        if pair_potential['type'] in PAIR_POTENTIALS_WITHOUT_FILE:
             pair_coeffs = []
             for parameter in pair_potential['parameters']:
                 ij = ' '.join([str(_) for _ in sorted([
@@ -217,7 +217,7 @@ def write_potential(potential, elements, unique_id=1):
                 'pair_style': '%s %f' % (potential_lammps_name, pair_potential.get('cutoff', [10.0])[-1]),
                 'pair_coeff': pair_coeffs
             })
-        elif pair_potential['type'] in THREE_BODY_POTENTIALS:  # file potentials
+        elif pair_potential['type'] in PAIR_POTENTIALS_WITH_FILE:
             filename = '/tmp/lammps.%d.%d.%s' % (i, unique_id, potential_lammps_name)
             potentials.append({
                 'pair_style': potential_lammps_name,

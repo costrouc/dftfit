@@ -5,7 +5,7 @@ spec:
     - type: lennard-jones
       cutoff: [10.0]
       parameters:
-        - elements: ['Ne']
+        - elements: ['Ne', 'Ne']
           # from: https://doi.org/10.1080/00268976.2016.1246760
           # Also provides potentials for Ne, Ar, Kr, Xe
           # metal units

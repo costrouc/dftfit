@@ -6,6 +6,7 @@ from dftfit.io.lammps_cython import LammpsCythonDFTFITCalculator
 
 
 @pytest.mark.parametrize('structure_filename, supercell, num_atoms, potential_filename', [
+    ('Ne.cif', (2, 2, 2), 32, 'Ne-lennard-jones.yaml'),             # lennard-jones
     ('MgO.cif', (2, 2, 2), 64, 'MgO-charge-buck-fitting.yaml'),     # buckingham
     ('LiTaO3.cif', (1, 1, 1), 30, 'LiTaO3-tersoff-2.yaml'),         # tersoff-2
     ('LiTaO3.cif', (1, 1, 1), 30, 'LiTaO3-tersoff-2-charge.yaml'),  # tersoff-2 + charge
