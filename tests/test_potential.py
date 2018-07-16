@@ -35,6 +35,7 @@ def test_potential_from_schema():
 
 @pytest.mark.parametrize('filename, num_opt_params, num_params', [
     ('Ne-lennard-jones.yaml', 0, 3),
+    ('He-beck.yaml', 0, 6),
     ('MgO-charge-buck.yaml', 0, 13),
     ('MgO-charge-buck-fitting.yaml', 8, 13),
     ('MgO-charge-func.yaml', 0, 14),

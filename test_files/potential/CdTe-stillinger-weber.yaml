@@ -4,7 +4,9 @@ spec:
   pair:
     - type: stillinger-weber
       parameters:
-        # Based on: Wang, Stroud and Markworth, Phys Rev B, 40, 3129 (1989).
+        # from: Wang, Stroud and Markworth, Phys Rev B, 40, 3129 (1989).
+        # units: metal
+        # lammps reference: https://lammps.sandia.gov/doc/pair_sw.html
         # epsilon, sigma, a, lambda, gamma, cosheta0, A, B, p, q, tol
         - elements: ["Cd", "Cd", "Cd"]
           coefficients: [1.03, 2.51, 1.80, 25.0, 1.20, -0.333333333333, 5.1726, 0.8807, 4.0, 0.0, 0.0]

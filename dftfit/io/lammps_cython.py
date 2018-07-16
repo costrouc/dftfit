@@ -112,10 +112,11 @@ def tersoff_2_to_tersoff(element_parameters, mixing_parameters):
     return parameters
 
 
-PAIR_POTENTIALS_WITHOUT_FILE = {'lennard-jones', 'buckingham'}
+PAIR_POTENTIALS_WITHOUT_FILE = {'lennard-jones', 'beck', 'buckingham'}
 PAIR_POTENTIALS_WITH_FILE = {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber'}
 LAMMPS_POTENTIAL_NAME_MAPPING = {
     'lennard-jones': 'lj/cut',
+    'beck': 'beck',
     'buckingham': 'buck',
     'tersoff-2': 'tersoff',
     'tersoff': 'tersoff',

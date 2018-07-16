@@ -5,6 +5,8 @@ spec:
     - type: gao-weber
       parameters:
         # from: https://doi.org/10.1103/PhysRevB.73.125206
+        # units: metal
+        # reference: https://lammps.sandia.gov/doc//pair_gw.html
         # m gamma lambda3 c d h n beta lambda2 B R D lambda1 A
         - elements: ['Si', 'Si', 'Si']
           coefficients: [1, 0.013318, 0, 14, 2.1, -1, 0.78000, 1, 1.80821400248640, 632.658058300867, 2.35, 0.15, 2.38684248328205, 1708.79738703139]
