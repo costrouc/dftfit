@@ -5,11 +5,19 @@ your potential in one of the following forms. DFTFIT can optimize it.
 
 # Buckingham Potential
 
+ - [lammps documentation](https://lammps.sandia.gov/doc/pair_buck.html)
+ - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck.yaml)
+ - 3 parameters
+
 ```math
 \psi(r) = A \exp^{-\frac{r}{\rho}} - \frac{C}{r^6}
 ```
 
 # Tersoff Potentials
+
+ - [lammmps documentation](https://lammps.sandia.gov/doc/pair_tersoff.html)
+ - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiC-tersoff.yaml)
+ - 14 parameters
 
 ```math
 E = \frac{1}{2} \sum_i \sum_{j \ne i} V_{ij}
@@ -69,6 +77,12 @@ Tersoff [2] has the the following contstraints:
 
 $`\lambda_{3, i} = 0`$ thus m has not effect. In original paper $`\gamma_{ik} = 1`$.
 
+Additional assumptions are the following: `lambda3 = 0`, `m = 3`, and
+`gamma = 1` thus these parameters are not included.
+
+The order of the parameters are `c, d, costheta0, n, beta, lambda2, B,
+R, D, lambda1, A`. Additional models may be added if necissary.
+
 ```math
 \lambda_{ij} = \frac{1}{2} (\lambda_{i} + \lambda_{j})
 ```
@@ -97,47 +111,11 @@ From [4] an R is 1.95, 2.85 for C-C-C and Si-Si-Si respectively and
 0.15 for D (units Angstroms). R and D are chosen so as to include the
 first neighbor shell only.
 
-## dftfit implementations
-
-Currently **only**
-[tersoff_2](https://doi.org/10.1103/PhysRevB.39.5566) is
-implemented. Only the first two elements in the three body potential
-matter. Here is a python implementation of how each pair is mixed from
-the original potentials. This pair type is `tersoff-2` an example of
-the file can be [found here](lita03-tersoff.yaml).
-
-```python
-mixing_pair = {
-    ('Element1', 'Element2'): 1.0001,
-    ...
-}
-
-# param_ij = lambda param_i, param_j: ...
-param_lambda = {
-    'lambda1': lambda l1, l2: 0.5 * (l1 + l2),
-    'lambda2': lambda l1, l2: 0.5 * (l1 + l2),
-    'lambda3': lambda l1, l2: 0.5 * (l1 + l2),
-    'A': lambda A1, A2: math.sqrt(A1*A2),
-    'B': lambda B1, B2: mixing_pair[current_pair] * math.sqrt(B1*B2), # need to include mixing
-    'R': lambda R1, R2: math.sqrt(R1*R2),
-    'D': lambda D1, D2: math.sqrt(D1*D2),
-    'c': lambda c1, c2: c1,
-    'd': lambda d1, d2: d1,
-    'm': lambda m1, m2: m1,
-    'gamma': lambda g1, g2: g1,
-    'costheta0': lambda c1, c2: c1,
-    'n': lambda n1, n2: n1
-}
-```
-
-Additional assumptions are the following: `lambda3 = 0`, `m = 3`, and
-`gamma = 1` thus these parameters are not included.
-
-The order of the parameters are `c, d, costheta0, n, beta, lambda2, B,
-R, D, lambda1, A`. Additional models may be added if necissary.
-
-
 # Stillinger Weber Potentials
+
+ - [lammps documentation](https://lammps.sandia.gov/doc/pair_sw.html)
+ - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/CdTe-stillinger-weber.yaml)
+ - 11 parameters
 
 ```math
 E = \sum_i \sum_{j > i} \phi_2(r_{ij}) + \sum_i \sum_{j \ne i} \sum_{k > j} \phi_3(r_{ij}, r_{ik}, \theta_{ijk})
