@@ -113,11 +113,12 @@ def tersoff_2_to_tersoff(element_parameters, mixing_parameters):
     return parameters
 
 
-PAIR_POTENTIALS_WITHOUT_FILE = {'lennard-jones', 'beck', 'buckingham'}
+PAIR_POTENTIALS_WITHOUT_FILE = {'lennard-jones', 'beck', 'buckingham', 'zbl'}
 PAIR_POTENTIALS_WITH_FILE = {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber', 'vashishta'}
 LAMMPS_POTENTIAL_NAME_MAPPING = {
     'lennard-jones': 'lj/cut',
     'beck': 'beck',
+    'zbl': 'zbl',
     'buckingham': 'buck',
     'tersoff-2': 'tersoff',
     'tersoff': 'tersoff',
@@ -218,8 +219,14 @@ def write_potential(potential, elements, unique_id=1):
                     element_map[parameter['elements'][1]]])])
                 coefficients_str = ' '.join([str(float(coeff)) for coeff in parameter['coefficients']])
                 pair_coeffs.append((ij, potential_lammps_name, coefficients_str))
+
+                if pair_potential['type'] == 'zbl':
+                    cutoff = pair_potential.get('cutoff', [3.0, 4.0])
+                    pair_style = '%s %f %f' % (potential_lammps_name, cutoff[0], cutoff[1])
+                else:
+                    pair_style = '%s %f' % (potential_lammps_name, pair_potential.get('cutoff', [10.0])[-1])
             potentials.append({
-                'pair_style': '%s %f' % (potential_lammps_name, pair_potential.get('cutoff', [10.0])[-1]),
+                'pair_style': pair_style,
                 'pair_coeff': pair_coeffs
             })
         elif pair_potential['type'] in PAIR_POTENTIALS_WITH_FILE:

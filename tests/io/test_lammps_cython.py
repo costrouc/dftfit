@@ -9,6 +9,7 @@ from dftfit.io.lammps_cython import LammpsCythonDFTFITCalculator
     ('Ne.cif', (2, 2, 2), 32, 'Ne-lennard-jones.yaml'),             # lennard-jones
     ('He.cif', (3, 3, 3), 54, 'He-beck.yaml'),                      # beck
     ('MgO.cif', (2, 2, 2), 64, 'MgO-charge-buck-fitting.yaml'),     # buckingham
+    ('MgO.cif', (2, 2, 2), 64, 'MgO-charge-buck-zbl.yaml'),         # zbl
     ('LiTaO3.cif', (1, 1, 1), 30, 'LiTaO3-tersoff-2.yaml'),         # tersoff-2
     ('LiTaO3.cif', (1, 1, 1), 30, 'LiTaO3-tersoff-2-charge.yaml'),  # tersoff-2 + charge
     ('3C-SiC.cif', (2, 2, 2), 64, 'SiC-gao-weber.yaml'),            # gao-weber

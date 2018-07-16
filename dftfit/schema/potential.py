@@ -63,6 +63,7 @@ class PairPotentialSchema(BaseSchema):
         'python-function',
         'lennard-jones',
         'buckingham',
+        'zbl',
         'beck',
         'harmonic',
         'tersoff',
