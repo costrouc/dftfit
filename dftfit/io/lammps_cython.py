@@ -1,5 +1,6 @@
 import math
 import itertools
+import functools
 
 import lammps
 from lammps.potential import (
@@ -114,8 +115,6 @@ def tersoff_2_to_tersoff(element_parameters, mixing_parameters):
     return parameters
 
 
-PAIR_POTENTIALS_WITHOUT_FILE = {'lennard-jones', 'beck', 'buckingham', 'zbl'}
-PAIR_POTENTIALS_WITH_FILE = {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber', 'vashishta', 'comb', 'comb-3'}
 LAMMPS_POTENTIAL_NAME_MAPPING = {
     'lennard-jones': 'lj/cut',
     'beck': 'beck',
@@ -127,7 +126,8 @@ LAMMPS_POTENTIAL_NAME_MAPPING = {
     'gao-weber': 'gw',
     'vashishta': 'vashishta',
     'comb': 'comb',
-    'comb-3': 'comb3'
+    'comb-3': 'comb3',
+    'python-function': 'table'
 }
 
 
@@ -156,7 +156,7 @@ def write_potential_files(potential, elements, unique_id=1):
                 elif len(parameter['elements']) == 2:
                     mixing_parameters[tuple(sorted(parameter['elements']))] = parameter['coefficients'][0]
             parameters = tersoff_2_to_tersoff(element_parameters, mixing_parameters)
-        elif pair_potential['type'] in (PAIR_POTENTIALS_WITH_FILE - {'tersoff-2'}):
+        elif pair_potential['type'] in {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber', 'vashishta', 'comb', 'comb-3', 'python-function'}:
             parameters = {}
             for parameter in pair_potential['parameters']:
                 parameters[tuple(parameter['elements'])] = [float(_) for _ in parameter['coefficients']]
@@ -174,6 +174,21 @@ def write_potential_files(potential, elements, unique_id=1):
             lammps_files[filename] = write_comb_potential(parameters)
         elif pair_potential['type'] == 'comb-3':
             lammps_files[filename] = write_comb_3_potential(parameters)
+        elif pair_potential['type'] == 'python-function':
+            cutoff = [float(_) for _ in pair_potential.get('cutoff', [1.0, 10.0])]
+            samples = int(pair_potential.get('samples', 1000))
+
+            def get_function(func_str):
+                d = {}
+                exec(func_str, d)
+                return d['potential']
+
+            potential_func = get_function(pair_potential['function'])
+            for (e1, e2), parameters in parameters.items():
+                float_parameters = [float(_) for _ in parameters]
+                f_r = functools.partial(potential_func, *float_parameters)
+                filename = '/tmp/lammps.%s.%s.%d.%d.%s' % (e1, e2, i, unique_id, potential_lammps_name)
+                lammps_files[filename] = write_table_pair_potential(f_r, samples=samples, bounds=cutoff)
     return lammps_files
 
 
@@ -218,25 +233,37 @@ def write_potential(potential, elements, unique_id=1):
 
     for i, pair_potential in enumerate(spec.get('pair', [])):
         potential_lammps_name = LAMMPS_POTENTIAL_NAME_MAPPING.get(pair_potential['type'])
-        if pair_potential['type'] in PAIR_POTENTIALS_WITHOUT_FILE:
+        if pair_potential['type'] in {'lennard-jones', 'beck', 'buckingham', 'zbl'}:
             pair_coeffs = []
             for parameter in pair_potential['parameters']:
-                ij = ' '.join([str(_) for _ in sorted([
-                    element_map[parameter['elements'][0]],
-                    element_map[parameter['elements'][1]]])])
+                e1, e2 = parameter['elements']
+                ij = ' '.join([str(_) for _ in sorted([element_map[e1], element_map[e2]])])
                 coefficients_str = ' '.join([str(float(coeff)) for coeff in parameter['coefficients']])
                 pair_coeffs.append((ij, potential_lammps_name, coefficients_str))
 
-                if pair_potential['type'] == 'zbl':
-                    cutoff = pair_potential.get('cutoff', [3.0, 4.0])
-                    pair_style = '%s %f %f' % (potential_lammps_name, cutoff[0], cutoff[1])
-                else:
-                    pair_style = '%s %f' % (potential_lammps_name, pair_potential.get('cutoff', [10.0])[-1])
+            if pair_potential['type'] == 'zbl':
+                cutoff = pair_potential.get('cutoff', [3.0, 4.0])
+                pair_style = '%s %f %f' % (potential_lammps_name, cutoff[0], cutoff[1])
+            else:
+                pair_style = '%s %f' % (potential_lammps_name, pair_potential.get('cutoff', [10.0])[-1])
             potentials.append({
                 'pair_style': pair_style,
                 'pair_coeff': pair_coeffs
             })
-        elif pair_potential['type'] in PAIR_POTENTIALS_WITH_FILE:
+        elif pair_potential['type'] == 'python-function':
+            pair_coeffs = []
+            for parameter in pair_potential['parameters']:
+                e1, e2 = parameter['elements']
+                ij = ' '.join([str(_) for _ in sorted([element_map[e1], element_map[e2]])])
+                filename = '/tmp/lammps.%s.%s.%d.%d.%s' % (e1, e2, i, unique_id, potential_lammps_name)
+                pair_coeffs.append((ij, potential_lammps_name, '%s PAIR' % filename))
+
+            samples = pair_potential.get('samples', 1000)
+            potentials.append({
+                'pair_style': 'table linear %d' % samples,
+                'pair_coeff': pair_coeffs
+            })
+        elif pair_potential['type'] in {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber', 'vashishta', 'comb', 'comb-3'}:
             filename = '/tmp/lammps.%d.%d.%s' % (i, unique_id, potential_lammps_name)
             if pair_potential['type'] == 'comb-3':
                 pair_style = '%s polar_off' % (potential_lammps_name)
@@ -259,5 +286,6 @@ def write_potential(potential, elements, unique_id=1):
         lammps_commands.append('pair_style hybrid/overlay ' + ' '.join(potential['pair_style'] for potential in potentials))
         for potential in potentials:
             for pair_coeff in potential.get('pair_coeff', []):
+                print(pair_coeff)
                 lammps_commands.append('pair_coeff ' + ' '.join(pair_coeff))
     return lammps_commands
