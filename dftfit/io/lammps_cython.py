@@ -6,7 +6,8 @@ from lammps.potential import (
     write_table_pair_potential,
     write_tersoff_potential,
     write_stillinger_weber_potential,
-    write_gao_weber_potential
+    write_gao_weber_potential,
+    write_vashishta_potential
 )
 import numpy as np
 
@@ -113,7 +114,7 @@ def tersoff_2_to_tersoff(element_parameters, mixing_parameters):
 
 
 PAIR_POTENTIALS_WITHOUT_FILE = {'lennard-jones', 'beck', 'buckingham'}
-PAIR_POTENTIALS_WITH_FILE = {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber'}
+PAIR_POTENTIALS_WITH_FILE = {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber', 'vashishta'}
 LAMMPS_POTENTIAL_NAME_MAPPING = {
     'lennard-jones': 'lj/cut',
     'beck': 'beck',
@@ -122,6 +123,7 @@ LAMMPS_POTENTIAL_NAME_MAPPING = {
     'tersoff': 'tersoff',
     'stillinger-weber': 'sw',
     'gao-weber': 'gw',
+    'vashishta': 'vashishta',
 }
 
 
@@ -150,7 +152,7 @@ def write_potential_files(potential, elements, unique_id=1):
                 elif len(parameter['elements']) == 2:
                     mixing_parameters[tuple(sorted(parameter['elements']))] = parameter['coefficients'][0]
             parameters = tersoff_2_to_tersoff(element_parameters, mixing_parameters)
-        elif pair_potential['type'] in {'tersoff', 'stillinger-weber', 'gao-weber'}:
+        elif pair_potential['type'] in {'tersoff', 'stillinger-weber', 'gao-weber', 'vashishta'}:
             parameters = {}
             for parameter in pair_potential['parameters']:
                 parameters[tuple(parameter['elements'])] = [float(_) for _ in parameter['coefficients']]
@@ -162,6 +164,8 @@ def write_potential_files(potential, elements, unique_id=1):
             lammps_files[filename] = write_stillinger_weber_potential(parameters)
         elif pair_potential['type'] == 'gao-weber':
             lammps_files[filename] = write_gao_weber_potential(parameters)
+        elif pair_potential['type'] == 'vashishta':
+            lammps_files[filename] = write_vashishta_potential(parameters)
     return lammps_files
 
 

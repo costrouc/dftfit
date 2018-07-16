@@ -68,7 +68,8 @@ class PairPotentialSchema(BaseSchema):
         'tersoff',
         'tersoff-2',
         'stillinger-weber',
-        'gao-weber'
+        'gao-weber',
+        'vashishta',
     }
 
     type = fields.String(required=True, validate=validate.OneOf(PAIR_POTENTIALS))

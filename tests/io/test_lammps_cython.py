@@ -7,12 +7,13 @@ from dftfit.io.lammps_cython import LammpsCythonDFTFITCalculator
 
 @pytest.mark.parametrize('structure_filename, supercell, num_atoms, potential_filename', [
     ('Ne.cif', (2, 2, 2), 32, 'Ne-lennard-jones.yaml'),             # lennard-jones
-    ('He.cif', (3, 3, 3), 54, 'He-beck.yaml'),
+    ('He.cif', (3, 3, 3), 54, 'He-beck.yaml'),                      # beck
     ('MgO.cif', (2, 2, 2), 64, 'MgO-charge-buck-fitting.yaml'),     # buckingham
     ('LiTaO3.cif', (1, 1, 1), 30, 'LiTaO3-tersoff-2.yaml'),         # tersoff-2
     ('LiTaO3.cif', (1, 1, 1), 30, 'LiTaO3-tersoff-2-charge.yaml'),  # tersoff-2 + charge
     ('3C-SiC.cif', (2, 2, 2), 64, 'SiC-gao-weber.yaml'),            # gao-weber
     ('3C-SiC.cif', (2, 2, 2), 64, 'SiC-tersoff.yaml'),              # tersoff
+    ('3C-SiC.cif', (2, 2, 2), 64, 'SiC-vashishta.yaml'),            # vashishta
     ('CdTe.cif', (2, 2, 2), 64, 'CdTe-stillinger-weber.yaml'),      # stillinger-weber
 ])
 @pytest.mark.benchmark(group='apply-potential', min_rounds=10)

@@ -44,6 +44,7 @@ def test_potential_from_schema():
     ('LiNbO3-charge-buck-harmonic.yaml', 0, 25),
     ('SiC-tersoff.yaml', 0, 112),
     ('SiC-gao-weber.yaml', 0, 112),
+    ('SiC-vashishta.yaml', 0, 112),
     ('SiCGe-tersoff-2.yaml', 0, 44),
     ('SiCGe-tersoff.yaml', 0, 210),
     ('CdTe-stillinger-weber.yaml', 0, 88)
