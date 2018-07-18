@@ -8,14 +8,24 @@ potential. `json` can be used to represent any DFTFIT yaml
 specification. Additionally they can be represented with normal python
 datastructures `dict` and `list`.
 
-Two Body Potentials
+[Two Body Potentials](#two-body-potentials)
  - [Python Function](#python-function)
+ - [Coloumbic Interaction](#coulombic-interaction-potential)
  - [ZBL](#zbl-potential)
  - [Lennard Jones](#lennard-jones-potential)
  - [Beck](#beck-potential)
  - [Buckingham](#buckingham-potential)
 
-# Python Functions
+[Three Body Potentials](#three-body-potentials)
+ - [Tersoff](#tersoff-potential)
+ - [Stillinger Weber](#stillinger-weber-potential)
+ - [Gao Weber](#gao-weber-potential)
+ - [Vashishta](#vashista-potential)
+ - [COMB/COMB3](#comb-potential)
+
+# Two Body Potentials
+
+## Python Functions
 
 DFTFIT allows for arbitrary python functions to be used for pair
 potentials. The only requirement is that you define a function named
@@ -59,7 +69,37 @@ pair:
        coefficients: [2145.7345, 0.3, 30.2222]
 ```
 
-# ZBL Potential
+## Coloumbic Interaction Potential
+
+ - [lammps documentation](https://lammps.sandia.gov/doc/pair_coul.html)
+ - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck.yaml)
+ - n parameters: where n is number of elements - 1
+
+The coloumbic interaction potential has more knobs that other pair
+potentials to allow for how the long range interactions are
+integrated. Additionally a `constraint` allows for ensure that the
+total charge of the system is balanced. Complex forumla can be used
+e.g. `LiTaO3`.
+ 
+```math
+E = \frac{C q_i q_j}{\epsilon r}
+```
+
+yaml schema
+
+```yaml
+spec:
+  constraint:
+    charge_balance: MgO
+  charge:
+    Mg: 1.4
+    O: -1.4
+  kspace:
+    type: pppm
+    tollerance: 1e-5
+```
+
+## ZBL Potential
 
  - [lammps documentation](https://lammps.sandia.gov/doc/pair_zbl.html)
  - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-zbl.yaml)
@@ -92,7 +132,7 @@ pair:
        coefficients: [8, 8]
 ```
 
-# Lennard Jones Potential
+## Lennard Jones Potential
 
  - [lammps documentation](https://lammps.sandia.gov/doc/pair_lj.html)
  - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/Ne-lennard-jones.yaml)
@@ -113,7 +153,7 @@ pair:
        coefficients: [33.921, 2.801]
 ```
 
-# Beck Potential
+## Beck Potential
 
  - [lammps documentation](https://lammps.sandia.gov/doc/pair_beck.html)
  - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/He-beck.yaml)
@@ -134,7 +174,7 @@ pair:
        coefficients: [399.671876712, 0.0000867636112694, 0.675, 4.390, 0.0003746]
 ```
 
-# Buckingham Potential
+## Buckingham Potential
 
  - [lammps documentation](https://lammps.sandia.gov/doc/pair_buck.html)
  - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck.yaml)
@@ -159,11 +199,49 @@ pair:
        coefficients: [2145.7345, 0.3, 30.2222]
 ```
 
-# Tersoff Potentials
+# Three Body Potentials
+
+Three Body potentials tend to have **many** more parameters. Because
+of this there are often mixing rules that help to reduce the number of
+parameters. They define some rules such that given interaction
+element_{i, i} $`\nabla_i`$ and element_{j,j} $`\nabla_i`$ the
+potential for intercation element_{ij} can be calculated via
+$`f(\nabda_i, \nabla_j)`$.
+
+Currently defined mixes:
+ - [tersoff-2](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/LiTaO3-tersoff-2.yaml)
+
+## Tersoff Potential
 
  - [lammmps documentation](https://lammps.sandia.gov/doc/pair_tersoff.html)
  - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiC-tersoff.yaml)
- - 14 parameters
+ - 14 parameters: $`m, \gamma, \lambda_3, c, d, \cos(\theta_0), n, beta, \lambda_2, B, R, D, \lambda_1, A`$
+
+yaml schema
+
+```yaml
+pair:
+ - type: tersoff
+   parameters:
+     - elements: ['C', 'C', 'C']
+       coefficients: [3.0, 1.0, 0.0, 38049, 4.3484, -0.57058, 0.72751, 0.00000015724, 2.2119, 346.7, 1.95, 0.15, 3.4879, 1393.6]
+     - elements: ['Si', 'Si', 'Si']
+       coefficients: [3.0, 1.0, 0.0, 100390, 16.217, -0.59825 ,0.78734, 0.0000011, 1.73222, 471.18, 2.85, 0.15, 2.4799, 1830.8]
+     - elements: ['Si', 'Si', 'C']
+       coefficients: [3.0, 1.0, 0.0, 100390, 16.217, -0.59825, 0.0, 0.0, 0.0, 0.0, 2.36, 0.15, 0.0, 0.0]
+     - elements: ['Si', 'C', 'C']
+       coefficients: [3.0, 1.0, 0.0, 100390, 16.217, -0.59825, 0.787340, 0.0000011, 1.97205, 395.126, 2.36, 0.15, 2.9839, 1597.3111]
+     - elements: ['C', 'Si', 'Si']
+       coefficients: [3.0, 1.0, 0.0, 38049, 4.3484, -0.57058, 0.72751, 0.00000015724, 1.97205, 395.126, 2.36, 0.15, 2.9839, 1597.3111]
+     - elements: ['C', 'Si', 'C']
+       coefficients: [3.0, 1.0, 0.0, 38049, 4.3484, -0.57058, 0.0, 0.0, 0.0, 0.0, 1.95, 0.15, 0.0, 0.0]
+     - elements: ['C', 'C', 'Si']
+       coefficients: [3.0, 1.0, 0.0, 38049, 4.3484, -0.57058, 0.0, 0.0, 0.0, 0.0, 2.36, 0.15, 0.0, 0.0]
+     - elements: ['Si', 'C', 'Si']
+       coefficients: [3.0, 1.0, 0.0, 100390, 16.217, -0.59825, 0.0, 0.0, 0.0, 0.0, 2.85, 0.15, 0.0, 0.0]
+```
+
+Equations
 
 ```math
 E = \frac{1}{2} \sum_i \sum_{j \ne i} V_{ij}
@@ -257,11 +335,42 @@ From [4] an R is 1.95, 2.85 for C-C-C and Si-Si-Si respectively and
 0.15 for D (units Angstroms). R and D are chosen so as to include the
 first neighbor shell only.
 
-# Stillinger Weber Potentials
+1. [Tersoff Original Paper J. Tersoff, Phys Rev B, 37, 6991 (1988).](https://doi.org/10.1103/PhysRevB.37.6991)
+2. [Albe Form](http://iopscience.iop.org/article/10.1088/0953-8984/15/32/324/meta)
+3. [Tersoff 2](https://doi.org/10.1103/PhysRevB.39.5566)
+4. [Lammps Implementation](http://lammps.sandia.gov/doc/pair_tersoff.html)
+
+## Stillinger Weber Potential
 
  - [lammps documentation](https://lammps.sandia.gov/doc/pair_sw.html)
  - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/CdTe-stillinger-weber.yaml)
- - 11 parameters
+ - 11 parameters: $`\epsilon, \sigma, a, \lambda, \gamma, \cos(\theta_0), A, B, p, q, tol`$
+
+yaml schema
+
+```yaml
+pair:
+  - type: stillinger-weber
+    parameters:
+      - elements: ["Cd", "Cd", "Cd"]
+        coefficients: [1.03, 2.51, 1.80, 25.0, 1.20, -0.333333333333, 5.1726, 0.8807, 4.0, 0.0, 0.0]
+      - elements: ["Te", "Te", "Te"]
+        coefficients: [1.03, 2.51, 1.80, 25.0, 1.20, -0.333333333333, 8.1415, 0.6671, 4.0, 0.0, 0.0]
+      - elements: ["Cd", "Cd", "Te"]
+        coefficients: [1.03, 0.0 , 0.0, 25.0, 0.0, -0.333333333333, 0.0, 0.0, 0.0, 0.0, 0.0]
+      - elements: ["Cd", "Te", "Te"]
+        coefficients: [1.03, 2.51, 1.80, 25.0, 1.20, -0.333333333333, 7.0496, 0.6022, 4.0, 0.0, 0.0]
+      - elements: ["Te", "Cd", "Cd"]
+        coefficients: [1.03, 2.51, 1.80, 25.0, 1.20, -0.333333333333, 7.0496, 0.6022, 4.0, 0.0, 0.0]
+      - elements: ["Te", "Cd", "Te"]
+        coefficients: [1.03, 0.0, 0.0, 25.0, 0.0, -0.333333333333, 0.0, 0.0, 0.0, 0.0, 0.0]
+      - elements: ["Te", "Te", "Cd"]
+        coefficients: [1.03, 0.0, 0.0, 25.0, 0.0, -0.333333333333, 0.0, 0.0, 0.0, 0.0, 0.0]
+      - elements: ["Cd", "Te", "Cd"]
+        coefficients: [1.03, 0.0, 0.0, 25.0, 0.0, -0.333333333333, 0.0, 0.0, 0.0, 0.0, 0.0]
+```
+
+Equations
 
 ```math
 E = \sum_i \sum_{j > i} \phi_2(r_{ij}) + \sum_i \sum_{j \ne i} \sum_{k > j} \phi_3(r_{ij}, r_{ik}, \theta_{ijk})
@@ -279,9 +388,9 @@ Parameters: $`\epsilon, \sigma, a, \lambda, \gamma, costheta0, A, B, p, q, tol`$
 
 Mixing terms: $`\sigma, \epsilon`$
 
-## Mixing Rules
+### Mixing Rules
 
-### Analysis of the mixing rules for the Stillinger–Weber potential: a case-study of Ge–Si interactions in the liquid phase
+Analysis of the mixing rules for the Stillinger–Weber potential: a case-study of Ge–Si interactions in the liquid phase
 
 https://doi.org/10.1016/j.jnoncrysol.2006.07.017
 
@@ -303,7 +412,7 @@ https://doi.org/10.1016/j.jnoncrysol.2006.07.017
 > \epsilon^{\frac{1}{4}}_j \epsilon^{\frac{1}{2}}_j
 > \epsilon^{\frac{1}{4}}_j`$ and $`\lambda_{ijk} = \sqrt{\lambda_{ij}\lambda_{ik}} =
 > \lambda^{\frac{1}{4}}_j \lambda^{\frac{1}{2}}_j
-> \lambda^{\frac{1}{4}}_j`$, first made by Grabow and Gilmer in [17]
+> \lambda^{\frac{1}{4}}_j`$, first made by Grabow and Gilmer in [1]
 > was iterated, even though the original authors had not justified it in
 > any way.
 
@@ -319,11 +428,82 @@ https://doi.org/10.1016/j.jnoncrysol.2006.07.017
 > only slightly different parameters resulted in radically different
 > final atomic configurations.
 
+1. M.H. Grabow, G.H. Gilmer, Surf. Sci. 194 (1987) 333
 
-# References
+## Gao Weber Potential
 
-1. [Tersoff Original Paper J. Tersoff, Phys Rev B, 37, 6991 (1988).](https://doi.org/10.1103/PhysRevB.37.6991)
-2. [Albe Form](http://iopscience.iop.org/article/10.1088/0953-8984/15/32/324/meta)
-3. [Tersoff 2](https://doi.org/10.1103/PhysRevB.39.5566)
-4. [Lammps Implementation](http://lammps.sandia.gov/doc/pair_tersoff.html)
-17. M.H. Grabow, G.H. Gilmer, Surf. Sci. 194 (1987) 333
+ - [lammps documentation](https://lammps.sandia.gov/doc/pair_gw.html)
+ - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiC-gao-weber.yaml)
+ - 14 parameters: $`m, \gamma, \lambda_3, c, d, h, n, \beta ,\lambda_2, B, R, D, \lambda_1, A`$
+
+yaml schema
+
+```yaml
+pair:
+  - type: gao-weber
+    parameters:
+      - elements: ['Si', 'Si', 'Si']
+        coefficients: [1, 0.013318, 0, 14, 2.1, -1, 0.78000, 1, 1.80821400248640, 632.658058300867, 2.35, 0.15, 2.38684248328205, 1708.79738703139]
+      - elements: ['Si', 'Si', 'C']
+        coefficients: [1, 0.013318, 0, 14, 2.1, -1, 0.78000, 1, 1.80821400248640, 632.658058300867, 2.35, 0.15, 2.38684248328205, 1708.79738703139]
+      - elements: ['Si', 'C', 'Si']
+        coefficients: [1, 0.013318, 0, 14, 2.1, -1, 0.78000, 1, 1.96859970919818, 428.946015420752, 2.35, 0.15, 3.03361215187440, 1820.05673775234]
+      - elements: ['C', 'Si', 'Si']
+        coefficients: [1, 0.011304, 0, 19, 2.5, -1, 0.80468, 1, 1.96859970919818, 428.946015420752, 2.35, 0.15, 3.03361215187440, 1820.05673775234]
+      - elements: ['C', 'C', 'Si']
+        coefficients: [1, 0.011304, 0, 19, 2.5, -1, 0.80469, 1, 1.76776695296637, 203.208547714849, 2.35, 0.15, 2.54558441227157, 458.510465798439]
+      - elements: ['C', 'Si', 'C']
+        coefficients: [1, 0.011304, 0, 19, 2.5, -1, 0.80469, 1, 1.96859970919818, 428.946015420752, 2.35, 0.15, 3.03361215187440, 1820.05673775234]
+      - elements: ['Si', 'C', 'C']
+        coefficients: [1, 0.013318, 0, 14, 2.1, -1, 0.78000, 1, 1.96859970919818, 428.946015420752, 2.35, 0.15, 3.03361215187440, 1820.05673775234]
+      - elements: ['C', 'C', 'C']
+        coefficients: [1, 0.011304, 0, 19, 2.5, -1, 0.80469, 1, 1.76776695296637, 203.208547714849, 2.35, 0.15, 2.54558441227157, 458.510465798439]
+```
+
+Equations
+
+Not documented see publication: Gao and Weber, Nuclear Instruments and Methods in Physics Research B 191 (2012) 504.
+
+## Vashishta Potential
+
+ - [lammps documentation](https://lammps.sandia.gov/doc/pair_vashishta.html)
+ - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiC-vashishta.yaml)
+ - 14 parameters: $`H, \eta, Z_i, Z_j, \lambda_1, D, \lambda_4, W, rc, B, \gamma, r_0, C, \cos(\theta)`$
+
+yaml schema
+
+```yaml
+pair:
+ - type: vashishta
+   parameters:
+     - elements: ['C', 'C', 'C']
+       coefficients: [471.74538, 7, -1.201, -1.201, 5.0, 0.0, 3.0, 0.0, 7.35, 0.0, 0.0, 0.0, 0.0, 0.0]
+     - elements: ['Si', 'Si', 'Si']
+       coefficients: [23.67291, 7, 1.201, 1.201, 5.0, 15.575, 3.0, 0.0, 7.35, 0.0, 0.0, 0.0, 0.0, 0.0]
+     - elements: ['C', 'Si', 'Si']
+       coefficients: [447.09026, 9, -1.201, 1.201, 5.0, 7.7874, 3.0, 61.4694, 7.35, 9.003, 1.0, 2.90, 5.0, -0.333333333333]
+     - elements: ['Si', 'C', 'C']
+       coefficients: [447.09026, 9, 1.201, -1.201, 5.0, 7.7874, 3.0, 61.4694, 7.35, 9.003, 1.0, 2.90, 5.0, -0.333333333333]
+     - elements: ['C', 'C', 'Si']
+       coefficients: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+     - elements: ['C', 'Si', 'C']
+       coefficients: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+     - elements: ['Si', 'C', 'Si']
+       coefficients: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+     - elements: ['Si', 'Si', 'C']
+       coefficients: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+```
+
+Equations
+
+```math
+U = \sum^N_i \sum^N_{j > i} U_{ij}^{(2)}(r_{ij}) + \sum^N_i \sum^N_{j \ne i} \sum^N_{k>j,k \ne i} U_{ijk}^{(3)} (r_{ij}, r_{ik}, \theta_{ijk})
+```
+
+```math
+U_{ij}^{(2)}(r) = \frac{H_{ij}}{r^{eta_{ij}}} + \frac{Z_i Z_j}{r} \exp(-r/\lambda_{1, ij}) - \frac{D_{ij}}{r^4} \exp(-r/\lambda_{4, ij}) - \frac{W_{ij}}{r^6}, r<r_{c, ij}
+```
+
+```math
+U_{ijk}^{(3)} (r_{ij}, r_{ik}, \theta_{ijk}) = B_{ijk} \frac{[\cos \theta_{ijk} - \cos \theta_{0ijk}]^2}{1 + C_{ijk}[\cos \theta_{ijk} - \cos \theta_{0ijk}]^2} \times \exp \left( \frac{\gamma_{ij}}{r_{ij} - r_{0, ij}} \right) \exp \left( \frac{\gamma_ik}{r_{ik} - r_{0, ik}} \right), r_{ij} < r_{0, ij}, r_{ik} < r_{0, ik}
+```
