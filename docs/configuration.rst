@@ -61,7 +61,7 @@ optimization DFTFIT is able to offer 20+ single objective and several
 multi-objective algorithms. A list of some of the notable algorithms
 include.
 
- - `SADE <https://esa.github.io/pagmo2/docs/python/algorithms/py_algorithms.html#pygmo.sade>`
+ - `SADE <https://esa.github.io/pagmo2/docs/python/algorithms/py_algorithms.html#pygmo.sade>`_
  - `LBFGS <https://esa.github.io/pagmo2/docs/python/algorithms/py_algorithms.html#pygmo.nlopt>`_
  - `Bee Colony <https://esa.github.io/pagmo2/docs/python/algorithms/py_algorithms.html#pygmo.bee_colony>`_
  - `MOEAD <https://esa.github.io/pagmo2/docs/python/algorithms/py_algorithms.html#pygmo.moead>`_
