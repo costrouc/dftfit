@@ -27,6 +27,7 @@ list of optimizers.
    configuration
    command
    visualization
+   performance
 
 
 Indices and tables
