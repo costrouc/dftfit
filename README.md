@@ -65,27 +65,18 @@ Any combination of the following potentials is a valid potential in DFTFIT.
 Two-Body Potentials
 
  - custom python function
-
  - ZBL
-
  - Buckingham
-
  - Beck
-
  - coulombic interaction
-
  - Lennard Jones
 
 Three-Body Potentials
 
  - Tersoff
-
  - Stillinger Weber
-
  - Gao Weber
-
  - Vashishta
-
  - COMB/COMB3
 
 ## Algorithm
