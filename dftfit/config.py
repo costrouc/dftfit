@@ -26,8 +26,9 @@ class Configuration:
 
         # Database
         self.dbm = None
-        if 'database' in self.schema['spec']:
-            database_filename = os.path.expanduser(self.schema['spec']['database'])
+        self.db_write_interval = self.schema['spec'].get('database', {}).get('interval', 10)
+        if self.schema['spec'].get('database', {}).get('filename'):
+            database_filename = os.path.expanduser(self.schema['spec']['database']['filename'])
             database_directory, filename = os.path.split(database_filename)
             os.makedirs(database_directory, exist_ok=True)
             self.dbm = DatabaseManager(database_filename)

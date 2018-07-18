@@ -286,6 +286,5 @@ def write_potential(potential, elements, unique_id=1):
         lammps_commands.append('pair_style hybrid/overlay ' + ' '.join(potential['pair_style'] for potential in potentials))
         for potential in potentials:
             for pair_coeff in potential.get('pair_coeff', []):
-                print(pair_coeff)
                 lammps_commands.append('pair_coeff ' + ' '.join(pair_coeff))
     return lammps_commands

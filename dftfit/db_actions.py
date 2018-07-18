@@ -114,6 +114,31 @@ def write_evaluation(dbm, run_id, potential, result):
               *errors, *weights))
 
 
+def write_evaluations_batch(dbm, run_id, eval_batch):
+    with dbm.connection:
+        values = []
+        for potential, result in eval_batch:
+            errors = (
+                result['parts']['forces'],
+                result['parts']['stress'],
+                result['parts']['energy'])
+            if 'weights' in result:
+                weights = (
+                    result['weights']['forces'],
+                    result['weights']['stress'],
+                    result['weights']['energy']
+                )
+            else:
+                weights = (0, 0, 0)
+            values.append((run_id, potential.optimization_parameters.tolist(),
+                           *errors, *weights))
+        cursor = dbm.connection.executemany('''
+        INSERT INTO evaluation (run_id, parameters, sq_force_error, sq_stress_error, sq_energy_error, w_f, w_s, w_e)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (values))
+
+
+
 def filter_evaluations(dbm, potential=None, limit=10, condition='best', run_id=None, labels=None):
     """Select a subset of evaluations. Currently only works on single
     objective functions because "best" and "worst" are subjective in

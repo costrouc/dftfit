@@ -17,6 +17,7 @@ def dftfit(configuration_schema, potential_schema, training_schema):
             dft_calculations=training.calculations,
             potential=potential,
             dbm=configuration.dbm,
+            db_write_interval=configuration.db_write_interval,
             algorithm=configuration.algorithm,
             algorithm_kwargs=configuration.algorithm_kwargs,
             problem_kwargs=configuration.problem_kwargs,

@@ -7,7 +7,9 @@ metadata:
     test: test
 spec:
   logging: INFO
-  database: "/tmp/dftfit/database.db"
+  database:
+    filename: "/tmp/dftfit/database.db"
+    interval: 10
   steps: 1
   population: 7
   algorithm:

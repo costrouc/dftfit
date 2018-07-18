@@ -7,7 +7,9 @@ metadata:
     hello: world
 spec:
   logging: INFO
-  database: "test.db"
+  database:
+    filename: "test.db"
+    interval: 10
   steps: 10
   population: 5
   algorithm:

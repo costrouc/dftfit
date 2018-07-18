@@ -5,7 +5,7 @@ import logging
 
 import numpy as np
 
-from .db_actions import write_evaluation
+from .db_actions import write_evaluations_batch
 from .io.lammps import LammpsLocalDFTFITCalculator
 from .io.lammps_cython import LammpsCythonDFTFITCalculator
 
@@ -13,30 +13,42 @@ logger = logging.getLogger(__name__)
 
 
 class DFTFITProblemBase:
-    def __init__(self, potential, dft_calculations, calculator='lammps', dbm=None, run_id=None, loop=None, **kwargs):
+    def __init__(self, potential, dft_calculations, calculator='lammps', dbm=None, db_write_interval=10, run_id=None, loop=None, **kwargs):
+        # Calculator Initialization
         calculator_mapper = {
             'lammps': LammpsLocalDFTFITCalculator,
             'lammps_cython': LammpsCythonDFTFITCalculator,
         }
-
         self.dft_calculations = dft_calculations
         self.loop = loop or asyncio.get_event_loop()
-        structures = [c.structure for c in dft_calculations]
-        self.calculator = calculator_mapper[calculator](structures=structures, **kwargs)
+        self.calculator = calculator_mapper[calculator](structures=[c.structure for c in dft_calculations], **kwargs)
         self.loop.run_until_complete(self.calculator.create())
+
+        # Potential Initialization
         self.potential = potential
 
+        # Database Logging Initialization
         self.dbm = dbm
         self._run_id = run_id
+        self.db_write_interval = db_write_interval
+        self._evaluation_buffer = []
         if self.dbm and not isinstance(self._run_id, int):
             raise ValueError('cannot write evaluation to database without integer run_id')
 
     def store_evaluation(self, potential, result):
         if self.dbm:
-            write_evaluation(self.dbm, self._run_id, potential, result)
+            self._evaluation_buffer.append([potential, result])
+            if len(self._evaluation_buffer) >= self.db_write_interval:
+                write_evaluations_batch(self.dbm, self._run_id, self._evaluation_buffer)
+                self._evaluation_buffer = []
 
     def __deepcopy__(self, memo):
         return self # override copy method
+
+    def finalize(self):
+        if self._evaluation_buffer: # ensure that all evaluations have been written
+            write_evaluations_batch(self.dbm, self._run_id, self._evaluation_buffer)
+            self._evaluation_buffer = []
 
     def __del__(self):
         self.calculator.shutdown()

@@ -16,7 +16,9 @@ to write to. See bellow for an example configuration file.
        hello: world
    spec:
      logging: INFO
-     database: "test.db"
+     database:
+       filename: "test.db"
+       interval: 10
      steps: 10
      population: 5
      algorithm:
@@ -82,7 +84,8 @@ For easily viewing the results DFTFIT provides serveral methods in
 ``dftfit.db_actions``. Also you may use any available SQLite viewer
 such as the free `sqlitebrowser <http://sqlitebrowser.org/>`_.
 
- - ``spec.database`` controls the location that all information is written to
+ - ``spec.database.filename`` controls the sqlite filename that all information is written to
+ - ``spec.database.interval`` controls how dftfit batches writes of evaluation information. Each write takes around 1-20 ms depending on system.
 
 MD Calculator
 -------------

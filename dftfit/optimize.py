@@ -19,15 +19,15 @@ available_algorithms = {
 
 
 class Optimize:
-    def __init__(self, dft_calculations, potential, algorithm='pygmo.de', algorithm_kwargs=None, problem_kwargs=None, dbm=None, run_id=None):
+    def __init__(self, dft_calculations, potential, algorithm='pygmo.de', algorithm_kwargs=None, problem_kwargs=None, dbm=None, run_id=None, db_write_interval=10):
         self.dbm = dbm
         self.algorithm_name = algorithm
         if self.algorithm_name not in available_algorithms:
             raise ValueError(f'algorithm {self.algorithm_name} not available')
         if available_algorithms[self.algorithm_name][1] == 'S':
-            internal_problem = DFTFITSingleProblem(potential=potential, dft_calculations=dft_calculations, dbm=dbm, run_id=run_id, **problem_kwargs)
+            internal_problem = DFTFITSingleProblem(potential=potential, dft_calculations=dft_calculations, dbm=dbm, db_write_interval=db_write_interval, run_id=run_id, **problem_kwargs)
         else:
-            internal_problem = DFTFITMultiProblem(potential=potential, dft_calculations=dft_calculations, dbm=dbm, run_id=run_id, **problem_kwargs)
+            internal_problem = DFTFITMultiProblem(potential=potential, dft_calculations=dft_calculations, dbm=dbm, db_write_interval=db_write_interval, run_id=run_id, **problem_kwargs)
         self._internal_problem = internal_problem
         self._problem = pygmo.problem(internal_problem)
         self.algorithm_kwargs = algorithm_kwargs or {}
@@ -38,4 +38,6 @@ class Optimize:
     def optimize(self, population, steps, seed=None):
         algorithm_constructor = available_algorithms[self.algorithm_name][0]
         self._algorithm = pygmo.algorithm(algorithm_constructor(gen=steps, seed=seed, **self.algorithm_kwargs))
-        return self._algorithm.evolve(population)
+        results = self._algorithm.evolve(population)
+        self._internal_problem.finalize()
+        return results
