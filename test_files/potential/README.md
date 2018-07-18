@@ -3,14 +3,160 @@
 A list of potentials that are supported by dftfit. If you can write
 your potential in one of the following forms. DFTFIT can optimize it.
 
+Note that the yaml schema is not the only way to provide a
+potential. `json` can be used to represent any DFTFIT yaml
+specification. Additionally they can be represented with normal python
+datastructures `dict` and `list`.
+
+Two Body Potentials
+ - [Python Function](#Python Function)
+ - [ZBL](#ZBL Potential)
+ - [Lennard Jones](#Lennard Jones Potential)
+ - [Beck](#Beck Potential)
+ - [Buckingham](#Buckingham Potential)
+
+# Python Functions
+
+DFTFIT allows for arbitrary python functions to be used for pair
+potentials. The only requirement is that you define a function named
+`potential` with the last arguments being the `r` that will be
+supplied by dftfit. All the other parameters to the function will be
+optimized. See this [stack-overflow
+question](https://stackoverflow.com/questions/19139869/vectorizing-a-function-python)
+if you need clarification on what numpy function vectorization
+is. Under the covers DFTFIT evaluates the function at a set number of
+points (`np.linspace(cutoff[0], cutoff[1], samples)`) to calculate the
+energies and forces (via the finite centered difference).
+
+An example of the buckingham potential is below. You are free to
+import and call any functions within the block.
+
+```python
+import numpy as np
+
+def potential(A, p, C, r):
+    return A * np.exp(-r/p) - C / (r**6)
+```
+
+yaml schema
+
+```yaml
+pair:
+ - type: python-function
+   cutoff: [1.0, 10.0]
+   samples: 1000
+   function: |
+     import numpy as np
+
+     def potential(A, p, C, r):
+         return A * np.exp(-r/p) - C / (r**6)
+   parameters:
+     - elements: ['Mg', 'Mg']
+       coefficients: [1309362.2766468062, 0.104, 0.0]
+     - elements: ['Mg', 'O']
+       coefficients: [9892.357, 0.20199, 0.0]
+     - elements: ['O', 'O']
+       coefficients: [2145.7345, 0.3, 30.2222]
+```
+
+# ZBL Potential
+
+ - [lammps documentation](https://lammps.sandia.gov/doc/pair_zbl.html)
+ - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-zbl.yaml)
+ - 2 parameters: Z_1, Z_2
+
+```math
+E_{ij} = \frac{Z_i Z_j e^2}{4 \pi \epsilon_0 r_{ij}} \phi(r_{ij}/a)
+```
+
+```math
+a = \frac{0.46850}{Z_i^{0.23} + Z_j^{0.23}}
+```
+
+```math
+\phi{x} = 0.18175e^{-3.19980x} + 0.50986e^{-0.94229x} + 0.28022e^{-0.40290x} + 0.02817e^{-0.20162x}
+```
+
+yaml schema
+
+```yaml
+pair:
+ - type: zbl
+   cutoff: [3.0, 4.0]
+   parameters:
+     - elements: ['Mg', 'Mg']
+       coefficients: [12, 12]
+     - elements: ['Mg', 'O']
+       coefficients: [12, 8]
+     - elements: ['O', 'O']
+       coefficients: [8, 8]
+```
+
+# Lennard Jones Potential
+
+ - [lammps documentation](https://lammps.sandia.gov/doc/pair_lj.html)
+ - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/Ne-lennard-jones.yaml)
+ - parameters 2: ε, σ
+
+```math
+E = 4 \epsilon \left[ \left(\frac{\sigma}{r} \right)^{12} - \left( \frac{\sigma}{r} \right)^6 \right]
+```
+
+yaml schema
+
+```yaml
+pair:
+ - type: lennard-jones
+   cutoff: [10.0]
+   parameters:
+     - elements: ['Ne', 'Ne']
+       coefficients: [33.921, 2.801]
+```
+
+# Beck Potential
+
+ - [lammps documentation](https://lammps.sandia.gov/doc/pair_beck.html)
+ - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/He-beck.yaml)
+ - 5 parameters: A, B, a, α, β
+
+```math
+E(r) = A \exp \left[ -\alpha r - \beta r^6 \right] -\frac{B}{(r^2 + a^2)^3} \left( 1 + \frac{2.709 + 3a^2}{r^2 + a^2} \right)
+```
+
+yaml schema
+
+```yaml
+pair:
+ - type: beck
+   cutoff: [8.0]
+   parameters:
+     - elements: ['He', 'He']
+       coefficients: [399.671876712, 0.0000867636112694, 0.675, 4.390, 0.0003746]
+```
+
 # Buckingham Potential
 
  - [lammps documentation](https://lammps.sandia.gov/doc/pair_buck.html)
  - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck.yaml)
- - 3 parameters
+ - 3 parameters: A, ρ, C
 
 ```math
 \psi(r) = A \exp^{-\frac{r}{\rho}} - \frac{C}{r^6}
+```
+
+yaml schema
+
+```yaml
+pair:
+ - type: buckingham
+   cutoff: [10.0]
+   parameters:
+     - elements: ['Mg', 'Mg']
+       coefficients: [1309362.2766468062, 0.104, 0.0]
+     - elements: ['Mg', 'O']
+       coefficients: [9892.357, 0.20199, 0.0]
+     - elements: ['O', 'O']
+       coefficients: [2145.7345, 0.3, 30.2222]
 ```
 
 # Tersoff Potentials

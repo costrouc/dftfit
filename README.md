@@ -2,8 +2,6 @@
 [Gitlab](https://gitlab.com/costrouc/dftfit). Github is used only as a
 mirror for visibility**
 
-
-
 # DFTFIT
 
 DFTFIT is a python code that used Ab Initio data from DFT calculations
