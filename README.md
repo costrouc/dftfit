@@ -5,8 +5,17 @@ mirror for visibility**
 # DFTFIT
 
 DFTFIT is a python code that used Ab Initio data from DFT calculations
-such as VASP and QE to create molecular dynamic potentials. Our
-package differs from other similar codes in that we leverage LAMMPS.
+such as VASP, Quantum Espresso, and Siesta to develop molecular
+dynamic potentials. Our package differs from other similar codes in
+that we leverage LAMMPS as a calculator enabling a wide variety of
+[potentials](https://dftfit.readthedocs.io/en/latest/potentials.html). The
+potentials include custom python functions and a wide variety or
+three-body interactions including the Tersoff, Stillinger-Weber,
+Gao-Weber, Vashishta, and COMB Potentials. All of which can be
+combined to have for example a Buckingham + Coulomb + ZBL
+potential. We also have an extensive set of multi-objective and
+single-objective
+[optimizers](https://dftfit.readthedocs.io/en/latest/configuration.html#optimization).
 
 <table>
 <tr>
@@ -78,8 +87,25 @@ Dependencies
 
 # Installation
 
+For `pypi` installation. Note that installation of `lammps-cython` may
+fail and is required. You will need to install ``LAMMPS`` as
+documented
+[here](https://costrouc.gitlab.io/lammps-cython/installation.html#pip). You may have to do `pip install numpy cython`.
+
 ```bash
 pip install dftfit
+```
+
+For `conda` installation
+
+```bash
+conda install -c costrouc dftfit
+```
+
+For `docker` installation
+
+```bash
+docker pull costrouc/dftfit
 ```
 
 # Documentation
@@ -88,13 +114,14 @@ The official documentation is hosted on readthedocs.org: https://dftfit.readthed
 
 # Running
 
-DFTFIT is a library that provides methods for optimization. There is a
-GUI in the works. See the test folder for examples. Currently there
-are examples for mgo and ceria.
+DFTFIT provides a [command line
+interface](https://dftfit.readthedocs.io/en/latest/commands.html). Of
+course the package can be used as a standard python package.
 
-# Examples
+# Tutorial and Documentation
 
-One example for DFTFIT is included for MgO.
+ - [MgO tutorial](https://dftfit.readthedocs.io/en/latest/tutorial.html)
+ - [Documentation](https://dftfit.readthedocs.io/en/latest/index.html)
 
 # Contributing
 

@@ -9,12 +9,18 @@ Welcome to dftfit's documentation!
 .. image:: images/mgo-training-sets-goal.png
 
 DFTFIT is a python code that used Ab Initio data from DFT calculations
-such as VASP and QE to create molecular dynamic potentials. Our
-package differs from other similar codes in that we leverage LAMMPS as
-a calculator. We also have an extensive set of multi-objective and
-single-objective optimizers. See `pygmo algorithms
-<https://esa.github.io/pagmo2/docs/algorithm_list.html>`_ for full
-list of optimizers.
+such as VASP, Quantum Espresso, and Siesta to develop molecular
+dynamic potentials. Our package differs from other similar codes in
+that we leverage LAMMPS as a calculator enabling a wide variety of
+`potentials
+<https://dftfit.readthedocs.io/en/latest/potentials.html>`_. The
+potentials include custom python functions and a wide variety or
+three-body interactions including the Tersoff, Stillinger-Weber,
+Gao-Weber, Vashishta, and COMB Potentials. All of which can be
+combined to have for example a Buckingham + Coulomb + ZBL
+potential. We also have an extensive set of multi-objective and
+single-objective `optimizers
+<https://dftfit.readthedocs.io/en/latest/configuration.html#optimization>`_.
 
 .. toctree::
    :maxdepth: 2
@@ -25,7 +31,7 @@ list of optimizers.
    potentials
    training
    configuration
-   command
+   commands
    visualization
    performance
 
