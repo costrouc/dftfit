@@ -507,3 +507,22 @@ U_{ij}^{(2)}(r) = \frac{H_{ij}}{r^{eta_{ij}}} + \frac{Z_i Z_j}{r} \exp(-r/\lambd
 ```math
 U_{ijk}^{(3)} (r_{ij}, r_{ik}, \theta_{ijk}) = B_{ijk} \frac{[\cos \theta_{ijk} - \cos \theta_{0ijk}]^2}{1 + C_{ijk}[\cos \theta_{ijk} - \cos \theta_{0ijk}]^2} \times \exp \left( \frac{\gamma_{ij}}{r_{ij} - r_{0, ij}} \right) \exp \left( \frac{\gamma_ik}{r_{ik} - r_{0, ik}} \right), r_{ij} < r_{0, ij}, r_{ik} < r_{0, ik}
 ```
+
+## COMB Potential
+
+ - [lammps documentation](https://lammps.sandia.gov/doc/pair_comb.html)
+ - [example comb potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiO2-comb.yaml)
+ - [example comb3 potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/Ti4Cu2O-comb-3.yaml)
+ - 46 parameters (comb), 71 parameters (comb3)
+
+Spec not provided here because is so large. See examples.
+
+Equations
+
+```math
+E = \sum_i [E_i^{self} (q_i) + \sum_{j>i}[E_{ij}^{short}(r_{ij}, q_i, q_j) + E_{ij}^{Coul}(r_{ij}, q_i, q_j)] + E^{polar}(q_i, r_{ij}) + E^{vdw}(r_{ij}) + E^{barr}(q_i) + E^{corr}(r_{ij}, \theta_{jik})]
+```
+
+See publication for full parameter list. 
+ - COMB - T.-R. Shan, B. D. Dvine, T. W. Kemper, S. B. Sinnott, and S. R. Phillpot, Phys. Rev. B 81, 125328 (2010)
+ - COMB3 - T. Liang, T.-R. Shan, Y.-T. Cheng, B. D. Devine, M. Noordhoek, Y. Li, Z. Lu, S. R. Phillpot, and S. B. Sinnott, Mat. Sci. & Eng: R 74, 255-279 (2013).
