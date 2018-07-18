@@ -17,6 +17,17 @@ potential. We also have an extensive set of multi-objective and
 single-objective
 [optimizers](https://dftfit.readthedocs.io/en/latest/configuration.html#optimization).
 
+In general three things are required from the user.
+  - [Ab-Initio Training
+    Data](https://dftfit.readthedocs.io/en/latest/training.html)
+    includes VASP, Siesta, and Quantum Espresso Calculations.
+  - [configuration](https://dftfit.readthedocs.io/en/latest/configuration.html):
+    specifies optimization algorithm and number of steps, sqlite
+    database to store results, and MD calculator to use.
+  - [Potential](https://dftfit.readthedocs.io/en/latest/potentials.html)
+    among a rich set of two and three body potentials. Including a
+    custom python function.
+
 <table>
 <tr>
   <td>Latest Release</td>
