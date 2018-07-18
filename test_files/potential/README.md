@@ -1,12 +1,32 @@
 # Potentials
 
-A list of potentials that are supported by dftfit. If you can write
-your potential in one of the following forms. DFTFIT can optimize it.
+DFTFIT can define very complex potentials. Unlike similar potential
+fitting software, DFTFIT allows any combination of potentials defined
+bellow. This allows a user for example to mix a ZBL and buckingham
+with a coloumbic interaction [seen
+here](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-zbl.yaml). Even
+though it may not make sense a user can mix a Tersoff, ZBL, Stillinger
+Weber, and python custom pair potential. The performance impact of
+mixing several potentials is almost negligible for small systems of less
+than 1000 atoms.
+
+DFTFIT uses a `json` schema to represent any potential. To make DFTFIT
+optimize any float value in the potential replace the float value for
+with somthing similar to `{"initial": 1.0, "bounds ": [2.0,
+3.0]}`. This tells DFTFIT that the initial guess should be `1.0` and
+to restrict the optimization values between `2.0` and `3.0`. An
+example is shown
+[here](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-fitting.yaml)
+for MgO.
 
 Note that the yaml schema is not the only way to provide a
 potential. `json` can be used to represent any DFTFIT yaml
 specification. Additionally they can be represented with normal python
 datastructures `dict` and `list`.
+
+Bellow is a list of all the supported potentials. Soon EAM and
+arbitrary splines for potentials will be supported see [issue
+17](https://gitlab.com/costrouc/dftfit/issues/17)
 
 [Two Body Potentials](#two-body-potentials)
  - [Python Function](#python-function)
