@@ -9,11 +9,11 @@ specification. Additionally they can be represented with normal python
 datastructures `dict` and `list`.
 
 Two Body Potentials
- - [Python Function](#Python Function)
- - [ZBL](#ZBL Potential)
- - [Lennard Jones](#Lennard Jones Potential)
- - [Beck](#Beck Potential)
- - [Buckingham](#Buckingham Potential)
+ - [Python Function](#python-function)
+ - [ZBL](#zbl-potential)
+ - [Lennard Jones](#lennard-jones-potential)
+ - [Beck](#beck-potential)
+ - [Buckingham](#buckingham-potential)
 
 # Python Functions
 
