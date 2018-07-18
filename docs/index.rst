@@ -23,7 +23,9 @@ list of optimizers.
    installation
    tutorial
    potentials
-   commands
+   training
+   configuration
+   command
    visualization
 
 
