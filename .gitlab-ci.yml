@@ -2,6 +2,11 @@ variables:
     TWINE_USERNAME: SECURE
     TWINE_PASSWORD: SECURE
     TWINE_REPOSITORY_URL: https://upload.pypi.org/legacy/
+    ANACONDA_USERNAME: SECURE
+    ANACONDA_TOKEN: SECURE
+    DOCKER_PASSWORD: SECURE
+    DOCKER_USERNAME: SECURE
+
 
 stages:
   - test_base
@@ -54,9 +59,13 @@ deploy_docker:
   services:
     - docker:dind
   script:
+    - export DOCKER_IMAGE="costrouc/dftfit"
     - export GITLAB_IMAGE="$CI_REGISTRY/$CI_PROJECT_PATH/dftfit"
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker build -t $GITLAB_IMAGE:$CI_COMMIT_TAG -f Dockerfile.dftfit --build-arg VERSION=$CI_COMMIT_TAG .
-    - docker push $GITLAB_IMAGE:$CI_COMMIT_TAG
+    - docker tag  "$GITLAB_IMAGE:$CI_COMMIT_TAG" "$DOCKER_IMAGE:$CI_COMMIT_TAG"
+    - docker push "$GITLAB_IMAGE:$CI_COMMIT_TAG"
+    - docker push "$DOCKER_IMAGE:$CI_COMMIT_TAG"
   only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
