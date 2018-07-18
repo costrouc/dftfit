@@ -18,7 +18,6 @@ Read a potential from ``json`` or ``yaml`` file.
    from dftfit.potential import Potential
    potential = Potential.from_file(filename)
 
-
 DFTFIT can define very complex potentials. Unlike similar potential
 fitting software, DFTFIT allows any combination of potentials defined
 bellow. This allows a user for example to mix a ZBL and buckingham
@@ -375,7 +374,8 @@ first neighbor shell only.
 3. `Tersoff 2 <https://doi.org/10.1103/PhysRevB.39.5566>`_
 4. `Lammps Implementation <http://lammps.sandia.gov/doc/pair_tersoff.html>`_
 
-## Stillinger Weber Potential
+Stillinger Weber Potential
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
  - `lammps documentation <https://lammps.sandia.gov/doc/pair_sw.html>`_
  - `example potential <https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/CdTe-stillinger-weber.yaml>`_
