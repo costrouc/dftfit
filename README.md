@@ -58,6 +58,36 @@ alt="gitlab pipeline status" /> </a> </td>
  - [HTCMC 2016](https://speakerdeck.com/costrouc/dftfit-potential-generation-for-molecular-dynamics-calculations#)
  - [MRS 2017](https://speakerdeck.com/costrouc/dftfit-potential-generation-for-molecular-dynamics-calculations#)
 
+## Potentials
+
+Any combination of the following potentials is a valid potential in DFTFIT.
+
+Two-Body Potentials
+
+ - custom python function
+
+ - ZBL
+
+ - Buckingham
+
+ - Beck
+
+ - coulombic interaction
+
+ - Lennard Jones
+
+Three-Body Potentials
+
+ - Tersoff
+
+ - Stillinger Weber
+
+ - Gao Weber
+
+ - Vashishta
+
+ - COMB/COMB3
+
 ## Algorithm
 
 We use generalized least squares method for finding the optimal
