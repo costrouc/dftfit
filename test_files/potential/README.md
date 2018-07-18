@@ -12,8 +12,7 @@ than 1000 atoms.
 
 DFTFIT uses a `json` schema to represent any potential. To make DFTFIT
 optimize any float value in the potential replace the float value for
-with somthing similar to `{"initial": 1.0, "bounds ": [2.0,
-3.0]}`. This tells DFTFIT that the initial guess should be `1.0` and
+with somthing similar to `{"initial": 1.0, "bounds ": [2.0, 3.0]}`. This tells DFTFIT that the initial guess should be `1.0` and
 to restrict the optimization values between `2.0` and `3.0`. An
 example is shown
 [here](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-fitting.yaml)

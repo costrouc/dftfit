@@ -22,6 +22,7 @@ list of optimizers.
 
    installation
    tutorial
+   potentials
    commands
    visualization
 
