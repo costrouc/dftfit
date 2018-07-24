@@ -44,7 +44,7 @@ about:
   home: https://gitlab.com/costrouc/dftfit
   license: MIT
   license_family: MIT
-  license_file: LICENSE
+  license_file: LICENSE.md
   summary: 'Ab-Initio Molecular Dynamics Potential Development'
   description: |
     DFTFIT is a python code that used Ab Initio data from DFT
