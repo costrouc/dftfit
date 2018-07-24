@@ -14,7 +14,7 @@ For `conda` installation
 
 .. code-block:: shell
 
-   conda install -c costrouc dftfit
+   conda install -c costrouc -c matsci -c conda-forge dftfit
 
 
 For `docker` installation
