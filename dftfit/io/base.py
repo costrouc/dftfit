@@ -53,7 +53,7 @@ class DFTFITCalculator:
     interface may change.
 
     """
-    def __init__(self, structures):
+    def __init__(self, structures, potential):
         raise NotImplementedError()
 
     async def create(self):

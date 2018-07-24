@@ -136,11 +136,12 @@ def modify_input_for_potential(lammps_input, potential):
 
 
 class LammpsLocalDFTFITCalculator(DFTFITCalculator):
-    def __init__(self, structures, command='lammps_ubuntu', num_workers=1):
+    def __init__(self, structures, potential, command='lammps_ubuntu', num_workers=1):
         self.num_cores = 1
         self.command = command
         self.lammps_local_client = LammpsLocalClient(command=command, num_workers=num_workers)
         self.structures = structures
+        self.potential = potential
 
     async def create(self):
         await self.lammps_local_client.create()

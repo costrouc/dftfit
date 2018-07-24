@@ -36,8 +36,9 @@ def test_lammps_cython_calculator():
 @pytest.mark.lammps_cython
 @pytest.mark.calculator
 @pytest.mark.long
+@pytest.mark.parametrize('num_workers', [1, 2])
 @pytest.mark.benchmark(group='calculators', min_rounds=1)
-def test_lammps_cython_calculator_benchmark(benchmark):
+def test_lammps_cython_calculator_benchmark(benchmark, num_workers):
     # Read in configuration information
     base_directory = 'test_files/dftfit_calculators/'
     training_schema = load_filename(base_directory + 'training.yaml')
@@ -45,6 +46,7 @@ def test_lammps_cython_calculator_benchmark(benchmark):
     configuration_schema = load_filename(base_directory + 'configuration.yaml')
     configuration_schema['spec']['problem'].update({
         'calculator': 'lammps_cython',
+        'num_workers': num_workers
     })
     configuration_schema['spec']['steps'] = 3
 

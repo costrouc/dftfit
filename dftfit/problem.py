@@ -21,7 +21,7 @@ class DFTFITProblemBase:
         }
         self.dft_calculations = dft_calculations
         self.loop = loop or asyncio.get_event_loop()
-        self.calculator = calculator_mapper[calculator](structures=[c.structure for c in dft_calculations], **kwargs)
+        self.calculator = calculator_mapper[calculator](structures=[c.structure for c in dft_calculations], potential=potential, **kwargs)
         self.loop.run_until_complete(self.calculator.create())
 
         # Potential Initialization

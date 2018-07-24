@@ -1,6 +1,9 @@
 import math
 import itertools
 import functools
+import multiprocessing
+
+import numpy as np
 
 import lammps
 from lammps.potential import (
@@ -12,20 +15,20 @@ from lammps.potential import (
     write_comb_potential,
     write_comb_3_potential
 )
-import numpy as np
 
+from ..potential import Potential
 from .base import DFTFITCalculator, MDReader
 
 
-class LammpsCythonDFTFITCalculator(DFTFITCalculator):
-    """This is not a general purpose lammps calculator. Only for dftfit
-    evaluations. For now there are not plans to generalize it.
+class LammpsCythonWorker:
+    """A lammps cython worker
+
+    All input and output is fully serializable.
     """
-    def __init__(self, structures, num_workers=1):
-        if num_workers != 1:
-            raise NotImplemented('For now limited to one worker')
+    def __init__(self, structures, elements, potential_schema):
         self.structures = structures
-        self.elements = []
+        self.elements = elements
+        self.potential = Potential(potential_schema)
         self.lammps_systems = []
 
     def _initialize_lammps(self, structure):
@@ -36,20 +39,88 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
         lmp.thermo.add('my_ke', 'ke', 'all')
         return lmp
 
-    async def create(self):
+    def create(self):
+        for structure in self.structures:
+            self.lammps_systems.append(self._initialize_lammps(structure))
+
+    def _apply_potential(self, potential):
+        lammps_commands = write_potential(potential, elements=self.elements, unique_id=1)
+        for command in lammps_commands:
+            for lmp in self.lammps_systems:
+                lmp.command(command)
+
+    def worker_multiprocessing_loop(self, pipe):
+        while True:
+            message = pipe.recv()
+            if message == 'quit':
+                break
+            results = self.compute(message)
+            pipe.send(results)
+        pipe.close()
+
+    def compute(self, parameters):
+        self.potential.optimization_parameters = parameters
+        self._apply_potential(self.potential)
+        results = []
+        for lmp in self.lammps_systems:
+            lmp.run(0)
+            S = lmp.thermo.computes['thermo_press'].vector
+            results.append({
+                'forces': lmp.system.forces.copy(),
+                'energy': lmp.thermo.computes['thermo_pe'].scalar + lmp.thermo.computes['my_ke'].scalar,
+                'stress': np.array([
+                    [S[0], S[3], S[5]],
+                    [S[3], S[1], S[4]],
+                    [S[5], S[4], S[2]]
+                ])
+            })
+        return results
+
+
+class LammpsCythonDFTFITCalculator(DFTFITCalculator):
+    """This is not a general purpose lammps calculator. Only for dftfit
+    evaluations. For now there are not plans to generalize it.
+    """
+    def __init__(self, structures, potential, num_workers=1):
+        self.structures = structures
+
         # ensure element indexes are the same between all lammps calculations
         self.elements = set()
         for structure in self.structures:
             self.elements = self.elements | set(structure.species)
         self.elements = list(self.elements)
 
-        for structure in self.structures:
-            self.lammps_systems.append(self._initialize_lammps(structure))
+        self.workers = []
+        potential_schema = potential.as_dict()
+        if num_workers == 1:
+            self.workers.append(LammpsCythonWorker(structures, self.elements, potential_schema))
+        else:
+            def create_worker(structures, elements, potential_schema, pipe):
+                worker = LammpsCythonWorker(structures, elements, potential_schema)
+                worker.create()
+                worker.worker_multiprocessing_loop(pipe)
 
-    def _apply_potential(self, lmp, potential):
-        lammps_commands = write_potential(potential, elements=self.elements, unique_id=1)
-        for command in lammps_commands:
-            lmp.command(command)
+            self.workers = []
+            structure_index = 0
+            rem = len(structures) % num_workers
+            n = math.floor(len(structures) / num_workers)
+            for i in range(num_workers):
+                p_conn, c_conn = multiprocessing.Pipe()
+                # hand out remaining to first rem < i
+                if num_workers - rem >= i:
+                    subset_structures = structures[structure_index: structure_index+n+1]
+                    structure_index += n + 1
+                else:
+                    subset_structures = structures[structure_index: structure_index+n]
+                    structure_index += n
+                p = multiprocessing.Process(target=create_worker, args=(subset_structures, self.elements, potential_schema, c_conn))
+                p.start()
+                self.workers.append((p, p_conn))
+
+    async def create(self):
+        # otherwise seperate process calls this method
+        if len(self.workers) == 1:
+            self.workers[0].create()
 
     def _apply_potential_files(self, potential):
         lammps_files = write_potential_files(potential, elements=self.elements, unique_id=1)
@@ -59,25 +130,32 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
 
     async def submit(self, potential, properties=None):
         properties = properties or {'stress', 'energy', 'forces'}
-        results = []
+        parameters = potential.optimization_parameters
         self._apply_potential_files(potential)
-        for lmp, structure in zip(self.lammps_systems, self.structures):
-            self._apply_potential(lmp, potential)
-            lmp.run(0)
-            S = lmp.thermo.computes['thermo_press'].vector
-            results.append(MDReader(
-                forces=lmp.system.forces.copy(),
-                energy=lmp.thermo.computes['thermo_pe'].scalar + lmp.thermo.computes['my_ke'].scalar,
-                stress=np.array([
-                    [S[0], S[3], S[5]],
-                    [S[3], S[1], S[4]],
-                    [S[5], S[4], S[2]]
-                ]),
-                structure=structure))
-        return results
+
+        results = []
+        if len(self.workers) == 1:
+            results = self.workers[0].compute(parameters)
+        else:
+            # send potential to each worker
+            for p, p_conn in self.workers:
+                p_conn.send(parameters)
+
+            # recv calculation results from each worker
+            for p, p_conn in self.workers:
+                results.extend(p_conn.recv())
+
+        md_readers = []
+        for structure, result in zip(self.structures, results):
+            md_readers.append(MDReader(energy=result['energy'], forces=result['forces'], stress=result['stress'], structure=structure))
+        return md_readers
 
     def shutdown(self):
-        pass
+        # nothing is needed if not using multiprocessing module
+        if len(self.workers) > 1:
+            for p, p_conn in self.workers:
+                p_conn.send('quit')
+                p.join()
 
 
 def tersoff_2_to_tersoff(element_parameters, mixing_parameters):

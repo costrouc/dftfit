@@ -28,14 +28,11 @@ def test_potential_lammps_cython(
     assert len(s) == num_atoms
     p = potential('test_files/potential/%s' % potential_filename)
 
-    calculator = LammpsCythonDFTFITCalculator([s])
+    calculator = LammpsCythonDFTFITCalculator([s], potential=p)
     loop = asyncio.get_event_loop()
     loop.run_until_complete(calculator.create())
-
-    # using calculator internals
-    lmp = calculator.lammps_systems[-1]
 
     @benchmark
     def f():
         calculator._apply_potential_files(p)
-        calculator._apply_potential(lmp, p)
+        calculator.workers[0]._apply_potential(p)

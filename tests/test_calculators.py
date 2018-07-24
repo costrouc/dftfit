@@ -28,8 +28,8 @@ def test_calculator_equivalency(structure):
     potential = Potential(potential_schema)
 
     calculators = [
-        LammpsLocalDFTFITCalculator(structures=[s], command='lammps', num_workers=1),
-        LammpsCythonDFTFITCalculator(structures=[s])
+        LammpsLocalDFTFITCalculator(structures=[s], potential=potential, command='lammps', num_workers=1),
+        LammpsCythonDFTFITCalculator(structures=[s], potential=potential)
     ]
 
     loop = asyncio.get_event_loop()
