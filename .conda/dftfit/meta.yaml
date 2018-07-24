@@ -1,5 +1,5 @@
 {% set build = 0 %}
-{% set version = 'v0.4.8' %}
+{% set version = 'v0.4.9' %}
 
 package:
   name: dftfit
@@ -21,6 +21,7 @@ requirements:
     - pymatgen
     - marshmallow
     - pagmo
+    - pygmo
     - pyyaml
     - pandas
     - scipy
@@ -32,6 +33,7 @@ requirements:
     - pymatgen
     - marshmallow
     - pagmo
+    - pygmo
     - pyyaml
     - pandas
     - scipy
