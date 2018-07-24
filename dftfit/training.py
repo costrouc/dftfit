@@ -38,8 +38,6 @@ class Training:
         return len(self._calculations)
 
     def download_mattoolkit_calculations(self, selector, cache_filename=None):
-        from mattoolkit.api import CalculationResourceList
-
         if cache_filename:
             cache_directory, filename = os.path.split(cache_filename)
             os.makedirs(cache_directory, exist_ok=True)
@@ -48,11 +46,15 @@ class Training:
                 if key in cache:
                     calc_ids = cache[key]
                 else:
+                    from mattoolkit.api import CalculationResourceList
+
                     calculations = CalculationResourceList()
                     calculations.get(params={'labels': selector['labels']})
                     calc_ids = [c.id for c in calculations.items]
                     cache[key] = calc_ids
         else:
+            from mattoolkit.api import CalculationResourceList
+
             calculations = CalculationResourceList()
             calculations.get(params={'labels': selector['labels']})
             calc_ids = [c.id for c in calculations.items]

@@ -46,8 +46,10 @@ setup(
         'pymatgen_lammps',
     ],
     setup_requires=['pytest-runner', 'setuptools>=38.6.0'],  # >38.6.0 needed for markdown README.md
+    extras_require={
+        'mattoolkit': 'mattoolkit'
+    },
     tests_require=['pytest', 'pytest-benchmark'],
-    extras_require={},
     entry_points={
         'console_scripts': [
             'dftfit=dftfit.__main__:main'

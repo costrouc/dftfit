@@ -20,7 +20,6 @@ lammps-cython = "*"
 cython = "*"
 pytest-benchmark = "*"
 snakeviz = "*"
-mattoolkit = "*"
 
 
 [dev-packages]
