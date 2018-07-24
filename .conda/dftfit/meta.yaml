@@ -24,7 +24,6 @@ requirements:
     - pyyaml
     - pandas
     - scipy
-    - mattoolkit
     - numpy
     - scikit-learn
   run:
@@ -36,7 +35,6 @@ requirements:
     - pyyaml
     - pandas
     - scipy
-    - mattoolkit
     - numpy
     - scikit-learn
 
