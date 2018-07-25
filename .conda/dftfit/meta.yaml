@@ -19,7 +19,7 @@ requirements:
     - lammps-cython
     - pymatgen-lammps
     - pymatgen
-    - marshmallow
+    - marshmallow 2.*.*
     - pygmo >=2.8
     - pyyaml
     - pandas
@@ -30,7 +30,7 @@ requirements:
     - lammps-cython
     - pymatgen-lammps
     - pymatgen
-    - marshmallow
+    - marshmallow 2.*.*
     - pygmo >=2.8
     - pyyaml
     - pandas
