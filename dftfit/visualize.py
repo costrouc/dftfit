@@ -4,8 +4,7 @@ import collections
 import numpy as np
 from sklearn import manifold
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
-import pymatgen as pmg
+
 
 from .db_actions import filter_evaluations, list_evaluations
 
