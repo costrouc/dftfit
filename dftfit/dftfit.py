@@ -12,14 +12,19 @@ def dftfit(configuration_schema, potential_schema, training_schema):
     training = Training(training_schema, **configuration.training_kwargs)
 
     try:
-        potential_id, run_id = write_run_initial(configuration.dbm, potential, training, configuration)
+        potential_hash, run_id = write_run_initial(configuration.dbm, potential, training, configuration)
         optimize = Optimize(
             dft_calculations=training.calculations,
             potential=potential,
+            # database
             dbm=configuration.dbm,
             db_write_interval=configuration.db_write_interval,
+            # algorithm
             algorithm=configuration.algorithm,
             algorithm_kwargs=configuration.algorithm_kwargs,
+            # problem
+            features=configuration.features,
+            weights=configuration.weights,
             problem_kwargs=configuration.problem_kwargs,
             run_id=run_id
         )

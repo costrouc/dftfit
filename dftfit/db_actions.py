@@ -11,132 +11,95 @@ def _write_potential(dbm, potential):
     potential_str = json.dumps(potential.as_dict(with_parameters=False), sort_keys=True)
     potential_hash = hashlib.md5(potential_str.encode('utf-8')).hexdigest()
 
-    result = dbm.connection.execute(
-        'SELECT id FROM potential WHERE potential.hash = ?',
-        (potential_hash,)).fetchone()
-    if result:
-        return result['id']
-
-    cursor = dbm.connection.execute(
-        'INSERT INTO potential (hash, schema) VALUES (?, ?)',
-        (potential_hash, potential.as_dict(with_parameters=False))
-    )
-    return cursor.lastrowid
+    dbm.connection.execute("""
+    INSERT OR REPLACE INTO potential (hash, schema)
+    VALUES (?, ?)
+    """, (potential_hash, potential_str))
+    return potential_hash
 
 
 def _write_training(dbm, training):
     training_str = json.dumps(training.schema, sort_keys=True)
     training_hash = hashlib.md5(training_str.encode('utf-8')).hexdigest()
 
-    result = dbm.connection.execute(
-        'SELECT id FROM training WHERE training.hash = ?',
-        (training_hash,)).fetchone()
-    if result:
-        return result['id']
-
-    cursor = dbm.connection.execute(
-        'INSERT INTO training (hash, schema) VALUES (?, ?)',
-        (training_hash, training.schema)
-    )
-    return cursor.lastrowid
+    dbm.connection.execute("""
+    INSERT OR REPLACE INTO training (hash, schema)
+    VALUES (?, ?)
+    """, (training_hash, training.schema))
+    return training_hash
 
 
 def _write_labels(dbm, run_id, labels):
     for key, value in labels.items():
         result = dbm.connection.execute('''
-        SELECT id FROM label
-        WHERE label.key = ? AND label.value = ?
+        SELECT id FROM label WHERE label.key = ? AND label.value = ?
         ''', (key, value)).fetchone()
 
         if result:
             label_id = result['id']
         else:
             cursor = dbm.connection.execute('''
-            INSERT INTO label (key, value)
-            VALUES (?, ?)
+            INSERT INTO label (key, value) VALUES (?, ?)
             ''', (key, value))
             label_id = cursor.lastrowid
 
         cursor = dbm.connection.execute('''
-        INSERT INTO run_label (run_id, label_id)
-        VALUES (?, ?)
+        INSERT INTO run_label (run_id, label_id) VALUES (?, ?)
         ''', (run_id, label_id))
 
 
 def write_run_initial(dbm, potential, training, configuration):
     with dbm.connection:
-        potential_id = _write_potential(dbm, potential)
-        training_id = _write_training(dbm, training)
+        potential_hash = _write_potential(dbm, potential)
+        training_hash = _write_training(dbm, training)
         cursor = dbm.connection.execute('''
-        INSERT INTO run (name, potential_id, training_id, configuration, start_time, initial_parameters, indicies, bounds)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO run (
+              name, potential_hash, training_hash,
+              configuration, start_time,
+              initial_parameters, indicies, bounds,
+              features, weights
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             configuration.run_name,
-            potential_id,
-            training_id,
+            potential_hash,
+            training_hash,
             configuration.schema,
             dt.datetime.utcnow(),
             potential.parameters.tolist(),
             potential.optimization_parameter_indicies.tolist(),
-            potential.optimization_bounds.tolist()
+            potential.optimization_bounds.tolist(),
+            configuration.features,
+            configuration.weights
         ))
         run_id = cursor.lastrowid
         _write_labels(dbm, run_id, configuration.run_labels)
-        return potential_id, run_id
+        return potential_hash, run_id
 
 
 def write_run_final(dbm, run_id):
     with dbm.connection:
-        cursor = dbm.connection.execute('''
+        dbm.connection.execute('''
         UPDATE run SET end_time = ?
         WHERE id = ? AND end_time IS NULL
         ''', (dt.datetime.utcnow(), run_id))
 
 
-def write_evaluation(dbm, run_id, potential, result):
+def write_evaluation(dbm, run_id, potential, errors, value):
     with dbm.connection:
-        errors = (
-            result['parts']['forces'],
-            result['parts']['stress'],
-            result['parts']['energy'])
-        if 'weights' in result:
-            weights = (
-                result['weights']['forces'],
-                result['weights']['stress'],
-                result['weights']['energy']
-            )
-        else:
-            weights = (0, 0, 0)
-        cursor = dbm.connection.execute('''
-        INSERT INTO evaluation (run_id, parameters, sq_force_error, sq_stress_error, sq_energy_error, w_f, w_s, w_e)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (run_id, potential.optimization_parameters.tolist(),
-              *errors, *weights))
+        dbm.connection.execute('''
+        INSERT INTO evaluation (run_id, parameters, errors, value)
+        VALUES (?, ?, ?, ?)
+        ''', (run_id, potential.optimization_parameters.tolist(), errors, value))
 
 
 def write_evaluations_batch(dbm, run_id, eval_batch):
     with dbm.connection:
-        values = []
-        for potential, result in eval_batch:
-            errors = (
-                result['parts']['forces'],
-                result['parts']['stress'],
-                result['parts']['energy'])
-            if 'weights' in result:
-                weights = (
-                    result['weights']['forces'],
-                    result['weights']['stress'],
-                    result['weights']['energy']
-                )
-            else:
-                weights = (0, 0, 0)
-            values.append((run_id, potential.optimization_parameters.tolist(),
-                           *errors, *weights))
-        cursor = dbm.connection.executemany('''
-        INSERT INTO evaluation (run_id, parameters, sq_force_error, sq_stress_error, sq_energy_error, w_f, w_s, w_e)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (values))
-
+        evaluations = [(run_id, potential.optimization_parameters.tolist(), errors, value) for potential, errors, value in eval_batch]
+        dbm.connection.executemany('''
+        INSERT INTO evaluation (run_id, parameters, errors, value)
+        VALUES (?, ?, ?, ?)
+        ''', evaluations)
 
 
 def filter_evaluations(dbm, potential=None, limit=10, condition='best', run_id=None, labels=None):

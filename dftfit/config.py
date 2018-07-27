@@ -38,14 +38,28 @@ class Configuration:
             'cache_filename': '~/.cache/dftfit/cache.db'})
 
         # Algorithm
-        _algorithm_kwargs= self.schema['spec'].get('algorithm', {})
-        self.algorithm = _algorithm_kwargs.get('name', 'pygmo.de')
-        self.steps = self.schema['spec'].get('steps', 10)
-        self.population = self.schema['spec'].get('population', 5)
-        self.algorithm_kwargs = {k:v for k,v in _algorithm_kwargs.items() if k != 'name'}
+        _algorithm_kwargs = self.schema['spec'].get('algorithm', {
+            'name': 'pygmo.sade',
+            'steps': 10,
+            'population': 10
+        })
+        self.algorithm = _algorithm_kwargs['name']
+        self.steps = _algorithm_kwargs['steps']
+        self.population = _algorithm_kwargs['population']
+        self.algorithm_kwargs = {k:v for k,v in _algorithm_kwargs.items() if k not in {'name', 'steps', 'population'}}
 
         # Problem
-        self.problem_kwargs = self.schema['spec'].get('problem', {})
+        _problem_kwargs = self.schema['spec'].get('problem', {
+            'calculator': 'lammps_cython',
+            'num_workers': 1,
+            'weights': {'force': 0.6, 'stress': 0.2, 'energy': 0.2}
+        })
+        self.features = []
+        self.weights = []
+        for feature in sorted(_problem_kwargs['weights']):
+            self.features.append(feature)
+            self.weights.append(_problem_kwargs['weights'][feature])
+        self.problem_kwargs = {k:v for k,v in _problem_kwargs.items() if k not in {'weights'}}
 
     @classmethod
     def from_file(cls, filename, format=None):

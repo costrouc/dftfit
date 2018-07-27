@@ -8,12 +8,13 @@ import numpy as np
 from .db_actions import write_evaluations_batch
 from .io.lammps import LammpsLocalDFTFITCalculator
 from .io.lammps_cython import LammpsCythonDFTFITCalculator
+from . import objective
 
 logger = logging.getLogger(__name__)
 
 
 class DFTFITProblemBase:
-    def __init__(self, potential, dft_calculations, calculator='lammps', dbm=None, db_write_interval=10, run_id=None, loop=None, **kwargs):
+    def __init__(self, potential, dft_calculations, features, weights, calculator='lammps_cython', dbm=None, db_write_interval=10, run_id=None, loop=None, **kwargs):
         # Calculator Initialization
         calculator_mapper = {
             'lammps': LammpsLocalDFTFITCalculator,
@@ -27,6 +28,18 @@ class DFTFITProblemBase:
         # Potential Initialization
         self.potential = potential
 
+        # Objective Initialization
+        self.features = features
+        self.weights = weights
+        self.objective_functions = []
+        for feature in self.features:
+            if feature == 'force':
+                self.objective_functions.append(objective.force_objective_function)
+            elif feature == 'stress':
+                self.objective_functions.append(objective.stress_objective_function)
+            elif feature == 'energy':
+                self.objective_functions.append(objective.energy_objective_function)
+
         # Database Logging Initialization
         self.dbm = dbm
         self._run_id = run_id
@@ -35,12 +48,29 @@ class DFTFITProblemBase:
         if self.dbm and not isinstance(self._run_id, int):
             raise ValueError('cannot write evaluation to database without integer run_id')
 
-    def store_evaluation(self, potential, result):
+    def store_evaluation(self, potential, errors, value):
         if self.dbm:
-            self._evaluation_buffer.append([potential, result])
+            self._evaluation_buffer.append([potential, errors, value])
             if len(self._evaluation_buffer) >= self.db_write_interval:
                 write_evaluations_batch(self.dbm, self._run_id, self._evaluation_buffer)
                 self._evaluation_buffer = []
+
+    def _fitness(self, parameters):
+        potential = self.potential.copy()
+        potential.optimization_parameters = parameters
+        md_calculations = self.loop.run_until_complete(self.calculator.submit(potential))
+
+        value = 0.0
+        errors = []
+        for feature, weight, func in zip(self.features, self.weights, self.objective_functions):
+            v = func(md_calculations, self.dft_calculations)
+            if weight:
+                value += v * weight
+            errors.append(v)
+
+        self.store_evaluation(potential, errors, value)
+        logger.info(f'evaluation: {value}')
+        return errors, value
 
     def __deepcopy__(self, memo):
         return self # override copy method
@@ -58,21 +88,15 @@ class DFTFITProblemBase:
 
 
 class DFTFITSingleProblem(DFTFITProblemBase):
-    def __init__(self, w_f, w_s, w_e, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.weights = {'forces': w_f, 'stress': w_s, 'energy': w_e}
 
     def get_nobj(self):
         return 1
 
     def fitness(self, parameters):
-        potential = self.potential.copy()
-        potential.optimization_parameters = parameters
-        md_calculations = self.loop.run_until_complete(self.calculator.submit(potential))
-        result = singleobjective_function(self.dft_calculations, md_calculations, self.weights)
-        self.store_evaluation(potential, result)
-        logger.info(f'evaluation: {result["score"]}')
-        return (result['score'],)
+        errors, value = self._fitness(parameters)
+        return (value,)
 
 
 class DFTFITMultiProblem(DFTFITProblemBase):
@@ -80,59 +104,8 @@ class DFTFITMultiProblem(DFTFITProblemBase):
         super().__init__(**kwargs)
 
     def get_nobj(self):
-        return 3
+        return len(self.features)
 
     def fitness(self, parameters):
-        potential = self.potential.copy()
-        potential.optimization_parameters = parameters
-        md_calculations = self.loop.run_until_complete(self.calculator.submit(potential))
-        result = multiobjective_function(self.dft_calculations, md_calculations)
-        self.store_evaluation(potential, result)
-        logger.info(f'evaluation: {result["score"]}')
-        return result['score']
-
-
-def multiobjective_function(md_calculations, dft_calculations):
-    n_force_sq_error = 0.0
-    d_force_sq_error = 0.0
-    n_stress_sq_error = 0.0
-    d_stress_sq_error = 0.0
-    n_energy_sq_error = 0.0
-    d_energy_sq_error = 0.0
-
-    for md_calculation, dft_calculation in zip(md_calculations, dft_calculations):
-        n_force_sq_error += np.sum((md_calculation.forces - dft_calculation.forces)**2.0)
-        d_force_sq_error += np.sum(dft_calculation.forces**2.0)
-
-        n_stress_sq_error += np.sum((md_calculation.stress - dft_calculation.stress)**2.0)
-        d_stress_sq_error += np.sum(dft_calculation.stress**2.0)
-
-    if len(md_calculations) > 1:  # cannot calculate energy error if only one set of calculations
-        for (md_calc_i, dft_calc_i), (md_calc_j, dft_calc_j) in combinations(zip(md_calculations, dft_calculations), 2):
-            n_energy_sq_error += ((md_calc_i.energy - md_calc_j.energy) - (dft_calc_i.energy - dft_calc_j.energy))**2.0
-            d_energy_sq_error += (dft_calc_i.energy - dft_calc_j.energy)**2.0
-        energy_sq_error = math.sqrt(n_energy_sq_error / d_energy_sq_error)
-    else:
-        energy_sq_error = 0.0
-
-    force_sq_error = math.sqrt(n_force_sq_error / d_force_sq_error)
-    stress_sq_error = math.sqrt(n_stress_sq_error / d_stress_sq_error)
-
-    parts = {'forces': force_sq_error, 'stress': stress_sq_error, 'energy': energy_sq_error}
-    score = (force_sq_error, stress_sq_error, energy_sq_error)
-    return {'parts': parts, 'score': score}
-
-
-def singleobjective_function(md_calculations, dft_calculations, weights):
-    """ A simple method of scalarizing a multiobjective function:
-    https://en.wikipedia.org/wiki/Multi-objective_optimization#Scalarizing
-
-    """
-    result = multiobjective_function(md_calculations, dft_calculations)
-    result['score'] = (
-        weights['forces'] * result['parts']['forces'] + \
-        weights['stress'] * result['parts']['stress'] + \
-        weights['energy'] * result['parts']['energy']
-    )
-    result['weights'] = {'forces': weights['forces'], 'stress': weights['stress'], 'energy': weights['energy']}
-    return result
+        errors, value = self._fitness(parameters)
+        return tuple(errors)

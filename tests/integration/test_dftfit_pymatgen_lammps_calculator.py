@@ -30,9 +30,8 @@ def test_pymatgen_lammps_calculator():
         query = configuration.dbm.connection.execute('''
         SELECT count(*) FROM evaluation WHERE run_id = ?
         ''', (run_id,)).fetchone()
-        population = configuration_schema['spec']['population']
-        steps = configuration_schema['spec']['steps']
-        assert query[0] == population * (steps + 1) # because one initial run is done before calculation
+        # because one initial run is done before calculation
+        assert query[0] == configuration.population * (configuration.steps + 1)
 
 
 @pytest.mark.pymatgen_lammps

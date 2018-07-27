@@ -19,15 +19,28 @@ available_algorithms = {
 
 
 class Optimize:
-    def __init__(self, dft_calculations, potential, algorithm='pygmo.de', algorithm_kwargs=None, problem_kwargs=None, dbm=None, run_id=None, db_write_interval=10):
-        self.dbm = dbm
+    def __init__(self, dft_calculations, potential,
+                 dbm=None, db_write_interval=10,                      # database
+                 algorithm='pygmo.de', algorithm_kwargs=None,         # algorithm
+                 features=None, weights=None, problem_kwargs=None,    # problem
+                 run_id=None):
+
         self.algorithm_name = algorithm
         if self.algorithm_name not in available_algorithms:
             raise ValueError(f'algorithm {self.algorithm_name} not available')
+
+        _problem_kwargs = {
+            'potential': potential,
+            'dft_calculations': dft_calculations,
+            'dbm': dbm, 'db_write_interval': db_write_interval,
+            'features': features, 'weights': weights,
+            'run_id': run_id,
+            **problem_kwargs
+        }
         if available_algorithms[self.algorithm_name][1] == 'S':
-            internal_problem = DFTFITSingleProblem(potential=potential, dft_calculations=dft_calculations, dbm=dbm, db_write_interval=db_write_interval, run_id=run_id, **problem_kwargs)
+            internal_problem = DFTFITSingleProblem(**_problem_kwargs)
         else:
-            internal_problem = DFTFITMultiProblem(potential=potential, dft_calculations=dft_calculations, dbm=dbm, db_write_interval=db_write_interval, run_id=run_id, **problem_kwargs)
+            internal_problem = DFTFITMultiProblem(**_problem_kwargs)
         self._internal_problem = internal_problem
         self._problem = pygmo.problem(internal_problem)
         self.algorithm_kwargs = algorithm_kwargs or {}

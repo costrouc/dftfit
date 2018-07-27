@@ -10,15 +10,16 @@ spec:
   database:
     filename: "test.db"
     interval: 10
-  steps: 10
-  population: 5
   algorithm:
     name: 'pygmo.de'
+    steps: 10
+    population: 5
   problem:
     calculator: 'lammps'
     command: 'lammps_serial'
-    w_f: 0.8
-    w_s: 0.1
-    w_e: 0.1
+    weights:
+      force:  0.8
+      stress: 0.1
+      energy: 0.1
   training:
     use_cache: 'test_files/mattoolkit/cache/cache.db'

@@ -5,22 +5,16 @@ import datetime as dt
 
 POTENTIAL_TABLE = """
 CREATE TABLE IF NOT EXISTS potential (
-    id     INTEGER PRIMARY KEY,
-    hash   TEXT NOT NULL,
-    schema JSON NOT NULL,
-
-    UNIQUE (hash) ON CONFLICT ROLLBACK
+    hash   TEXT PRIMARY KEY NOT NULL,
+    schema JSON NOT NULL
 )
 """
 
 
 TRAINING_TABLE = """
 CREATE TABLE IF NOT EXISTS training (
-    id     INTEGER PRIMARY KEY,
-    hash   TEXT NOT NULL,
-    schema JSON NOT NULL,
-
-    UNIQUE (hash) ON CONFLICT ROLLBACK
+    hash   TEXT PRIMARY KEY NOT NULL,
+    schema JSON NOT NULL
 )
 """
 
@@ -29,17 +23,19 @@ RUN_TABLE = """
 CREATE TABLE IF NOT EXISTS run (
     id                 INTEGER PRIMARY KEY,
     name               TEXT,
-    potential_id       INTEGER NOT NULL,
-    training_id        INTEGER NOT NULL,
+    potential_hash     TEXT NOT NULL,
+    training_hash      TEXT NOT NULL,
     configuration      JSON,
     start_time         DATETIME NOT NULL,
     end_time           DATETIME,
     initial_parameters JSON NOT NULL,
     indicies           JSON NOT NULL,
     bounds             JSON NOT NULL,
+    features           JSON NOT NULL,
+    weights            JSON NOT NULL,
 
-    FOREIGN KEY(potential_id) REFERENCES potential(id),
-    FOREIGN KEY(training_id) REFERENCES training(id)
+    FOREIGN KEY(potential_hash) REFERENCES potential(hash),
+    FOREIGN KEY(training_hash) REFERENCES training(hash)
 )
 """
 
@@ -69,12 +65,8 @@ CREATE TABLE IF NOT EXISTS evaluation (
     id                 INTEGER PRIMARY KEY,
     run_id             INTEGER NOT NULL,
     parameters         JSON NOT NULL,
-    sq_force_error     REAL NOT NULL,
-    sq_stress_error    REAL NOT NULL,
-    sq_energy_error    REAL NOT NULL,
-    w_f                REAL NOT NULL,
-    w_s                REAL NOT NULL,
-    w_e                REAL NOT NULL,
+    errors             JSON NOT NULL,
+    value              REAL,
 
     FOREIGN KEY(run_id) REFERENCES run(id)
 )
