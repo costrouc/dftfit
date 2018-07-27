@@ -3,7 +3,7 @@ from .training import Training
 from .config import Configuration
 from .optimize import Optimize
 
-from .db_actions import write_run_initial, write_run_final
+from .db import write_run_initial, write_run_final
 
 
 def dftfit(configuration_schema, potential_schema, training_schema):

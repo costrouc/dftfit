@@ -11,7 +11,6 @@ import pymatgen as pmg
 
 from ..schema import PotentialSchema
 from ..parameter import FloatParameter
-from .. import db
 
 
 class Potential:
@@ -130,20 +129,6 @@ class Potential:
     def md5hash(self):
         potential_str = json.dumps(self.as_dict(with_parameters=False), sort_keys=True)
         return hashlib.md5(potential_str.encode('utf-8')).hexdigest()
-
-    @classmethod
-    def from_best_optimized_for_potential_calulations(cls, potential, calculations, database_filename=None):
-        # TODO: Notice that for now calculations are not considered for selection
-        potential_str = json.dumps(potential.as_dict(with_parameters=False), sort_keys=True)
-        potential_hash = hashlib.md5(potential_str.encode('utf-8')).hexdigest()
-        optimized_potential = potential.copy()
-        with db.DatabaseManager(database_filename or 'dftfit.db').transaction() as session:
-            evaluation = session.query(db.Evaluation) \
-                                .filter(db.Evaluation.potential_id == potential_hash) \
-                                .order_by(db.Evaluation.score).first()
-            parameters = json.loads(evaluation.parameters)
-            optimized_potential.optimization_parameters = parameters
-        return optimized_potential
 
     def as_dict(self, with_parameters=True):
         if with_parameters:

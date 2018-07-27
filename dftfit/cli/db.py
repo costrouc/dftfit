@@ -3,9 +3,9 @@ import argparse
 
 from .utils import is_file_type, is_not_file_type
 from ..db import DatabaseManager
-from ..db_actions import (
+from ..db import (
     copy_database_to_database,
-    select_potential_from_evaluation,
+    potential_from_evaluation,
     list_runs, run_summary
 )
 from ..visualize import visualize_progress

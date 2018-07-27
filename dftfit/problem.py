@@ -1,11 +1,7 @@
-from itertools import combinations
-import math
 import asyncio
 import logging
 
-import numpy as np
-
-from .db_actions import write_evaluations_batch
+from .db import write_evaluations_batch
 from .io.lammps import LammpsLocalDFTFITCalculator
 from .io.lammps_cython import LammpsCythonDFTFITCalculator
 from . import objective

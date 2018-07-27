@@ -6,7 +6,7 @@ from sklearn import manifold
 import matplotlib.pyplot as plt
 
 
-from .db_actions import filter_evaluations, list_evaluations
+from .db import filter_evaluations, list_run_evaluations
 
 
 def normalize_parameters(optimization_bounds, parameters_array):
@@ -38,7 +38,7 @@ def tsne_evaluations(dbm, ax, potential, run_id, limit=1000, condition='best', l
 
 
 def visualize_progress(dbm, run_id, window=100, title=None, filename=None, show=True):
-    df = list_evaluations(dbm, run_id)
+    df = list_run_evaluations(dbm, run_id)
     title = title or f'Optimization progress for run {run_id}'
 
     linewidth = 0.5
