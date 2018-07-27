@@ -19,16 +19,17 @@ to write to. See bellow for an example configuration file.
      database:
        filename: "test.db"
        interval: 10
-     steps: 10
-     population: 5
      algorithm:
        name: 'pygmo.de'
+       steps: 10
+       population: 5
      problem:
        calculator: 'lammps'
        command: 'lammps_serial'
-       w_f: 0.8
-       w_s: 0.1
-       w_e: 0.1
+       weights:
+         force:  0.8
+         stress: 0.1
+         energy: 0.1
 
 Metadata
 --------
@@ -46,12 +47,21 @@ Optimization
 DFTFIT gives the user explicit control over the optimization
 procedure. In general the number of potential evaluations is equal to
 ``spec.population * (spec.steps + 1)``. This is because DFTFIT does
-one initial evaluations of guessed parameters.
+one initial evaluations of guessed parameters. Note that optimization
+is broken into two parts. The problem is how DFTFIT evaluates the
+objective function. The algorithm is control over the optimization
+algorithm used on the objective function.
 
- - ``spec.algorithm.name`` optimization algorithm to use
- - ``spec.population`` number of guesses per optimization step
- - ``spec.steps`` number of steps to take in optimization.
- - ``spec.problem.w_f, spec.problem.w_e, spec.problem.w_s`` weights to use if doing single objective
+Problem
+~~~~~~~
+
+DFTFIT uses the problem to specify how it evaluates the objective
+function.
+
+ - ``spec.problem.weights`` weights to use in addition to the features
+   to calculate. Available options include: force, stress, and
+   energy. Note that even for multiobjective optimization functions a
+   single objective value can be computed.
 
 Algorithms
 ~~~~~~~~~~
@@ -67,6 +77,12 @@ include.
  - `LBFGS <https://esa.github.io/pagmo2/docs/python/algorithms/py_algorithms.html#pygmo.nlopt>`_
  - `Bee Colony <https://esa.github.io/pagmo2/docs/python/algorithms/py_algorithms.html#pygmo.bee_colony>`_
  - `MOEAD <https://esa.github.io/pagmo2/docs/python/algorithms/py_algorithms.html#pygmo.moead>`_
+
+Values
+
+ - ``spec.algorithm.name`` pagmo2 optimization algorithm to use
+ - ``spec.algorithm.steps`` number of steps to take in optimization
+ - ``spec.algorithm.population`` number of guesses per optimization step
 
 
 SQLite Database
@@ -98,7 +114,13 @@ calculator integrated `LAMMPS` within the python process.
 
 It is at least 5X-10X faster and is the recommended calculator.
 
- - ``spec.problem.calculator`` set that DFTFIT calculator to use. Recommended ``lammps-cyhton``
+ - ``spec.problem.calculator`` set that DFTFIT calculator to use. Recommended ``lammps_cython``. Available: "lammps", "lammps_cython"
+ - ``spec.problem.command`` only used by "lammps" calculator to
+   specify the executable path.
+ - ``spec.problem.num_workers`` allows for parallelism of DFTFIT
+   optimization. Does not scale well past 6 workers (1500 lammps
+   calculations/second).
+
 
 
 Miscellaneous

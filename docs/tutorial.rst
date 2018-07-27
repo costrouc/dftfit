@@ -137,18 +137,20 @@ flexible.
        test: test
    spec:
      logging: INFO
-     database: "/tmp/dftfit/database.db"
-     steps: 10
-     population: 10
+     database:
+       interval: 10
+       filename: "/tmp/dftfit/database.db"
      algorithm:
        name: 'pygmo.sade'
+       steps: 10
+       population: 10
      problem:
-       calculator: 'lammps'
-       command: 'lammps_serial'
+       calculator: 'lammps_cython'
        num_workers: 3
-       w_f: 0.3
-       w_s: 0.6
-       w_e: 0.1
+       weights:
+         force: 0.3
+         stress: 0.6
+         energy: 0.1
      training:
        cache_filename: "./cache/cache.db"
 
@@ -183,8 +185,8 @@ problem.command
 problem.num_workers
   determines the parallelism. Currently DFTFIT doesn't scale well past 8 processors. Each processor does about 150 calculations/second.
 
-w_f, w_s, w_e
-  if you have chosen the single objective function it is important to set these properties
+weights
+  features to calculate and the associated weights. Can be ``None`` for value.
 
 training.cache_filename
   where to store the caches parsed training calculations
