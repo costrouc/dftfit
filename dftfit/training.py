@@ -5,6 +5,7 @@ Has a caching layer as to speed up future runs
 import json
 import shelve
 import os
+import hashlib
 
 import yaml
 
@@ -78,4 +79,8 @@ class Training:
                 return cls(yaml.load(f), **kwargs)
 
     def __str__(self):
-        return json.dumps(self.schema, sort_keys=True, indent=4)
+        return json.dumps(self.schema, sort_keys=True)
+
+    @property
+    def md5hash(self):
+        return hashlib.md5(str(self).encode('utf-8')).hexdigest()

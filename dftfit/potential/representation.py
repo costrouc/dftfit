@@ -126,6 +126,7 @@ class Potential:
                     raise ValueError('unable to apply charge constraint no fixed values')
         return cls(schema)
 
+    @property
     def md5hash(self):
         potential_str = json.dumps(self.as_dict(with_parameters=False), sort_keys=True)
         return hashlib.md5(potential_str.encode('utf-8')).hexdigest()

@@ -102,7 +102,46 @@ def list_run_evaluations(dbm, run_id, min_evaluation=None):
 
 # TODO
 def filter_evaluations(dbm, potential=None, limit=10, condition='best', run_id=None, labels=None):
-    pass
+    cursor = dbm.connection.execute('SELECT id FROM run')
+    run_ids = {_['id'] for _ in cursor}
+
+    if potential:
+        RUNS_WITH_POTENTIAL = """
+        SELECT run_id
+        FROM run
+        WHERE run.potential_hash = ?
+        """
+        cursor = dbm.connection.execute(RUNS_WITH_POTENTIAL, (potential.md5hash,))
+        potential_run_ids = {_['run_id'] for _ in cursor}
+        run_ids = potential_run_ids & run_ids
+
+    if run_id:
+        run_ids = run_ids & {run_id}
+
+    if labels:
+        arguments = []
+        for key, value in labels:
+            arguments.extend([key, value])
+
+        RUN_ID_FROM_LABEL_IDS = """
+        SELECT run_id
+        FROM run_label
+        JOIN label ON run_label.label_id = label.id
+        WHERE {}
+        GROUP BY run_id
+        HAVING count = {}
+        """.format(
+            ' OR '.join(['(label.key = ? AND label.value = ?)']*len(labels)),
+            len(labels)
+        )
+        cursor = dbm.connection.execute(RUN_ID_FROM_LABEL_IDS, arguments)
+        label_run_ids = {_['run_id'] for _ in cursor}
+        run_ids = label_run_ids & run_ids
+
+    # TODO
+    # left over values
+    # limit, condition
+    # select evaluations
 
 
 def filter_potentials(dbm, potential=None, limit=10, condition='best', run_id=None, labels=None):
@@ -115,79 +154,6 @@ def copy_database_to_database(src_dbm, dest_dbm, only_unique=False):
 
 def run_summary(dbm, run_id):
     pass
-
-# def filter_evaluations(dbm, potential=None, limit=10, condition='best', run_id=None, labels=None):
-#     """Select a subset of evaluations. Currently only works on single
-#     objective functions because "best" and "worst" are subjective in
-#     multiobjecive functions.
-
-#     Arguments:
-#      - condition (str): best, random, worst
-
-#     THIS IS THE REASON TO USE SQLALCHEMY QUERY BUILDER.... I HAVE LEARNED NOW
-#     """
-
-#     query = '''
-#     SELECT run.id
-#     FROM run {join_sql}
-#     WHERE {where_sql}
-#     '''
-
-#     join_statement = []
-#     where_statement = ['1=1']
-#     query_arguments = []
-#     if labels:
-#         join_statement.extend([
-#             'JOIN run_label ON run.id = run_label.run_id',
-#             'JOIN label ON run_label.label_id = label.id'
-#         ])
-#         select_labels = []
-#         for key, value in labels.items():
-#             if not isinstance(key, str) or not isinstance(value, str):
-#                 raise ValueError(f'key: {key} values: {values} for label must be strings')
-#             select_labels.append('(label.key = ? AND label.value = ?)')
-#             query_arguments.extend([key, value])
-#         where_statement.append(' OR '.join(select_labels))
-#         query += f"""
-#         GROUP BY run.id
-#         HAVING count = {len(labels)}
-#         """
-
-#     if run_id is not None:
-#         if not isinstance(run_id, int):
-#             raise ValueError('run_id must be integer')
-#         where_statement.append('run.id = ?')
-#         query_arguments.append(run_id)
-
-#     if potential:
-#         potential_str = json.dumps(potential.as_dict(with_parameters=False), sort_keys=True)
-#         potential_hash = hashlib.md5(potential_str.encode('utf-8')).hexdigest()
-#         join_statement.append('JOIN potential ON run.potential_id = potential.id')
-#         where_statement.append('potential.hash = ?')
-#         query_arguments.append(potential_hash)
-
-#     # find all run ids that match selection
-#     query = query.format(join_sql=' '.join(join_statement),
-#                          where_sql=' AND '.join(where_statement))
-#     run_ids = [row['id'] for row in dbm.connection.execute(query, query_arguments)]
-
-#     if condition == 'best':
-#         order_sql = 'score ASC'
-#     elif condition == 'worst':
-#         order_sql = 'score DESC'
-#     elif condition == 'random':
-#         order_sql = 'RANDOM()'
-#     else:
-#         raise ValueError('condition ordering not supported')
-
-#     # pick subset of potentials
-#     query = f'''
-#     SELECT e.id, e.parameters, (e.w_f * e.sq_force_error + e.w_s * e.sq_stress_error + e.w_e * e.sq_energy_error) AS score FROM evaluation e
-#     WHERE {' OR '.join(['e.run_id = ?' for _ in run_ids])}
-#     ORDER BY {order_sql}
-#     LIMIT {limit}
-#     '''
-#     return dbm.connection.execute(query, run_ids)
 
 
 # def filter_potentials(dbm, potential=None, limit=10, condition='best', run_id=None, labels=None):

@@ -1,23 +1,18 @@
 import json
-import hashlib
 import datetime as dt
 
 
 def _write_potential(dbm, potential):
-    potential_str = json.dumps(potential.as_dict(with_parameters=False), sort_keys=True)
-    potential_hash = hashlib.md5(potential_str.encode('utf-8')).hexdigest()
-
+    potential_hash = potential.md5hash
     dbm.connection.execute("""
     INSERT OR REPLACE INTO potential (hash, schema)
     VALUES (?, ?)
-    """, (potential_hash, potential_str))
+    """, (potential_hash, potential.as_dict(with_parameters=False)))
     return potential_hash
 
 
 def _write_training(dbm, training):
-    training_str = json.dumps(training.schema, sort_keys=True)
-    training_hash = hashlib.md5(training_str.encode('utf-8')).hexdigest()
-
+    training_hash = training.md5hash
     dbm.connection.execute("""
     INSERT OR REPLACE INTO training (hash, schema)
     VALUES (?, ?)
