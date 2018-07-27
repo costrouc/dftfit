@@ -52,7 +52,7 @@ class LammpsCythonWorker:
     def worker_multiprocessing_loop(self, pipe):
         while True:
             message = pipe.recv()
-            if message == 'quit':
+            if isinstance(message, str) and message == 'quit':
                 break
             results = self.compute(message)
             pipe.send(results)
