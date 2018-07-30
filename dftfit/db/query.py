@@ -186,87 +186,77 @@ def filter_evaluations(dbm, potential=None, limit=10, condition='best', run_id=N
 
 
 def copy_database_to_database(src_dbm, dest_dbm, only_unique=False):
-    pass
+    SELECT_RUNS = 'SELECT id FROM run'
+    SELECT_RUN = 'SELECT id, name, potential_hash, training_hash, configuration, start_time, end_time, initial_parameters, indicies, bounds, features, weights FROM run WHERE id = ?'
+    SELECT_RUN_LABELS = 'SELECT label.key, label.value FROM run_label JOIN label ON run_label.label_id = label.id WHERE run_label.run_id = ?'
+    SELECT_RUN_POTENTIAL = 'SELECT potential.hash, potential.schema FROM potential JOIN run ON run.potential_hash = potential.hash WHERE run.id = ?'
+    SELECT_RUN_TRAINING = 'SELECT training.hash, training.schema FROM training JOIN run ON run.training_hash = training.hash WHERE run.id = ?'
+    SELECT_RUN_EVALUATION_COUNT = 'SELECT count(*) as num_evaluations FROM evaluation WHERE run_id = ?'
+    SELECT_RUN_EVALUATION = '''
+    SELECT parameters, errors, value FROM evaluation
+    WHERE run_id = ? ORDER BY id LIMIT ? OFFSET ?
+    '''
 
+    UNIQUE_RUN_POTENTIAL = 'SELECT hash FROM potential WHERE potential.hash = ?'
+    UNIQUE_RUN_TRAINING = 'SELECT hash FROM training WHERE training.hash = ?'
+    UNIQUE_RUN = '''
+    SELECT run.id FROM run
+              JOIN potential ON potential.hash = run.potential_hash
+              JOIN training ON training.hash = run.training_hash
+    WHERE name = ? AND potential.hash = ? AND training.hash = ? AND configuration = ?
+                   AND start_time = ? AND (end_time = ? OR end_time IS NULL AND ? is NULL)
+                   AND initial_parameters = ? AND indicies = ? AND bounds = ? AND features = ? AND weights = ?
+    '''
 
-# def copy_database_to_database(src_dbm, dest_dbm, only_unique=False):
-#     SELECT_RUNS = 'SELECT id FROM run'
-#     SELECT_RUN = 'SELECT id, name, potential_hash, training_hash, configuration, start_time, end_time, initial_parameters, indicies, bounds, features, weights FROM run WHERE id = ?'
-#     SELECT_RUN_LABELS = 'SELECT label.key, label.value FROM run_label JOIN label ON run_label.label_id = label.id WHERE run_label.run_id = ?'
-#     SELECT_RUN_POTENTIAL = 'SELECT potential.hash, potential.schema FROM potential JOIN run ON run.potential_hash = potential.hash WHERE run.id = ?'
-#     SELECT_RUN_TRAINING = 'SELECT training.hash, training.schema FROM training JOIN run ON run.training_hash = training.hash WHERE run.id = ?'
-#     SELECT_RUN_EVALUATION_COUNT = 'SELECT count(*) as num_evaluations FROM evaluation WHERE run_id = ?'
-#     SELECT_RUN_EVALUATION = '''
-#     SELECT parameters, errors, value FROM evaluation
-#     WHERE run_id = ? ORDER BY id LIMIT ? OFFSET ?
-#     '''
+    INSERT_RUN_POTENTIAL = 'INSERT INTO potential (hash, schema) VALUES (?, ?)'
+    INSERT_RUN_TRAINING = 'INSERT INTO training (hash, schema) VALUES (?, ?)'
+    INSERT_RUN = 'INSERT INTO run (name, potential_hash, training_hash, configuration, start_time, end_time, initial_parameters, indicies, bounds, features, weights) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    INSERT_RUN_EVALUATION = 'INSERT INTO evaluation (run_id, parameters, errors, value) VALUES (?, ?, ?, ?)'
 
-#     UNIQUE_RUN_POTENTIAL = 'SELECT hash FROM potential WHERE potential.hash = ?'
-#     UNIQUE_RUN_TRAINING = 'SELECT hash FROM training WHERE training.hash = ?'
-#     UNIQUE_RUN = '''
-#     SELECT run.id FROM run
-#               JOIN potential ON potential.hash = run.potential_hash
-#               JOIN training ON training.hash = run.training_hash
-#     WHERE name = ? AND potential.hash = ? AND training.hash = ? AND configuration = ?
-#                    AND start_time = ? AND (end_time = ? OR end_time IS NULL AND ? is NULL)
-#                    AND initial_parameters = ? AND indicies = ? AND bounds = ?
-#     '''
+    for run in src_dbm.connection.execute(SELECT_RUNS):
+        # Potential
+        query_result = src_dbm.connection.execute(SELECT_RUN_POTENTIAL, (run['id'],)).fetchone()
+        potential_hash = query_result['hash']
+        query = dest_dbm.connection.execute(UNIQUE_RUN_POTENTIAL, (potential_hash,)).fetchone()
+        if not query:
+            with dest_dbm.connection:
+                cursor = dest_dbm.connection.execute(INSERT_RUN_POTENTIAL, (query_result['hash'], query_result['schema']))
 
-#     INSERT_RUN_POTENTIAL = 'INSERT INTO potential (hash, schema) VALUES (?, ?)'
-#     INSERT_RUN_TRAINING = 'INSERT INTO training (hash, schema) VALUES (?, ?)'
-#     INSERT_RUN = 'INSERT INTO run (name, potential_id, training_id, configuration, start_time, end_time, initial_parameters, indicies, bounds) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
-#     INSERT_RUN_EVALUATION = 'INSERT INTO evaluation (run_id, parameters, sq_force_error, sq_stress_error, sq_energy_error, w_f, w_s, w_e) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+        # Training
+        query_result = src_dbm.connection.execute(SELECT_RUN_TRAINING, (run['id'],)).fetchone()
+        training_hash = query_result['hash']
+        query = dest_dbm.connection.execute(UNIQUE_RUN_TRAINING, (training_hash,)).fetchone()
+        if not query:
+            with dest_dbm.connection:
+                cursor = dest_dbm.connection.execute(INSERT_RUN_TRAINING, (query_result['hash'], query_result['schema']))
 
-#     for run in src_dbm.connection.execute(SELECT_RUNS):
-#         # Potential
-#         query_result = src_dbm.connection.execute(SELECT_RUN_POTENTIAL, (run['id'],)).fetchone()
-#         potential_hash = query_result['hash']
-#         query = dest_dbm.connection.execute(UNIQUE_RUN_POTENTIAL, (potential_hash,)).fetchone()
-#         if query:
-#             potential_id = query['id']
-#         else:
-#             with dest_dbm.connection:
-#                 cursor = dest_dbm.connection.execute(INSERT_RUN_POTENTIAL, (query_result['hash'], query_result['schema']))
-#                 potential_id = cursor.lastrowid
+        # Run
+        query_result = src_dbm.connection.execute(SELECT_RUN, (run['id'],)).fetchone()
+        query = dest_dbm.connection.execute(UNIQUE_RUN, (
+            query_result['name'], potential_hash, training_hash, query_result['configuration'],
+            query_result['start_time'], query_result['end_time'], query_result['end_time'],
+            query_result['initial_parameters'], query_result['indicies'], query_result['bounds'], query_result['features'], query_result['weights'])).fetchone()
+        if query and only_unique:
+            run_id = query['id']
+        else:
+            with dest_dbm.connection:
+                cursor = dest_dbm.connection.execute(INSERT_RUN, (
+                    query_result['name'], potential_hash, training_hash, query_result['configuration'],
+                    query_result['start_time'], query_result['end_time'],
+                    query_result['initial_parameters'], query_result['indicies'], query_result['bounds'], query_result['features'], query_result['weights']))
+                run_id = cursor.lastrowid
 
-#         # Training
-#         query_result = src_dbm.connection.execute(SELECT_RUN_TRAINING, (run['id'],)).fetchone()
-#         training_hash = query_result['hash']
-#         query = dest_dbm.connection.execute(UNIQUE_RUN_TRAINING, (training_hash,)).fetchone()
-#         if query:
-#             training_id = query['id']
-#         else:
-#             with dest_dbm.connection:
-#                 cursor = dest_dbm.connection.execute(INSERT_RUN_TRAINING, (query_result['hash'], query_result['schema']))
-#                 training_id = cursor.lastrowid
+            # Evaluation
+            num_evaluations = src_dbm.connection.execute(SELECT_RUN_EVALUATION_COUNT, (run['id'],)).fetchone()['num_evaluations']
+            print('   adding run %d with %d evaluations' % (run['id'], num_evaluations))
+            evaluation_limit = 1000
+            for offset in range(0, num_evaluations, evaluation_limit):
+                cursor = src_dbm.connection.execute(SELECT_RUN_EVALUATION, (run['id'], evaluation_limit, offset))
+                evaluations = [(run_id, row['parameters'], row['errors'], row['value']) for row in cursor]
+                with dest_dbm.connection:
+                    dest_dbm.connection.executemany(INSERT_RUN_EVALUATION, evaluations)
 
-#         # Run
-#         query_result = src_dbm.connection.execute(SELECT_RUN, (run['id'],)).fetchone()
-#         query = dest_dbm.connection.execute(UNIQUE_RUN, (
-#             query_result['name'], potential_hash, training_hash, query_result['configuration'],
-#             query_result['start_time'], query_result['end_time'], query_result['end_time'],
-#             query_result['initial_parameters'], query_result['indicies'], query_result['bounds'])).fetchone()
-#         if query and only_unique:
-#             run_id = query['id']
-#         else:
-#             with dest_dbm.connection:
-#                 cursor = dest_dbm.connection.execute(INSERT_RUN, (
-#                     query_result['name'], potential_id, training_id, query_result['configuration'],
-#                     query_result['start_time'], query_result['end_time'],
-#                     query_result['initial_parameters'], query_result['indicies'], query_result['bounds']))
-#                 run_id = cursor.lastrowid
-
-#             # Evaluation
-#             num_evaluations = src_dbm.connection.execute(SELECT_RUN_EVALUATION_COUNT, (run['id'],)).fetchone()['num_evaluations']
-#             print('   adding run %d with %d evaluations' % (run['id'], num_evaluations))
-#             evaluation_limit = 1000
-#             for offset in range(0, num_evaluations, evaluation_limit):
-#                 cursor = src_dbm.connection.execute(SELECT_RUN_EVALUATION, (run['id'], evaluation_limit, offset))
-#                 evaluations = [(run_id, row['parameters'], row['sq_force_error'], row['sq_stress_error'], row['sq_energy_error'], row['w_f'], row['w_s'], row['w_e']) for row in cursor]
-#                 with dest_dbm.connection:
-#                     dest_dbm.connection.executemany(INSERT_RUN_EVALUATION, evaluations)
-
-#             # labels
-#             labels = {row['key']: row['value'] for row in src_dbm.connection.execute(SELECT_RUN_LABELS, (run['id'],))}
-#             with dest_dbm.connection:
-#                 _write_labels(dest_dbm, run_id, labels)
+            # labels
+            labels = {row['key']: row['value'] for row in src_dbm.connection.execute(SELECT_RUN_LABELS, (run['id'],))}
+            with dest_dbm.connection:
+                _write_labels(dest_dbm, run_id, labels)
