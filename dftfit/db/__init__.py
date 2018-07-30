@@ -7,6 +7,6 @@ from .actions import (
 
 from .query import (
     filter_evaluations, filter_potentials,
-    copy_database_to_database, run_summary,
+    copy_database_to_database,
     list_run_evaluations, list_runs, potential_from_evaluation
 )

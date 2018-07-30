@@ -35,7 +35,7 @@ def potential_from_evaluation(dbm, evaluation_id):
         result['indicies'], result['parameters'], result['bounds'])
 
 
-def list_runs(dbm):
+def list_runs(dbm, parameters=True, stats=True):
     """Create pandas dataframe of runs
 
     Parameters
@@ -55,14 +55,38 @@ def list_runs(dbm):
            start_time, end_time, features, weights
     FROM run
     '''
-    SELECT_RUN_EVAL_AGG = '''
-    SELECT run_id, count(*) as num_evaluations, min(value) as min_value
-    FROM evaluation
-    GROUP BY evaluation.run_id
-    '''
     run_df = pd.read_sql(SELECT_RUNS, dbm.connection, index_col='run_id')
-    eval_agg_df = pd.read_sql(SELECT_RUN_EVAL_AGG, dbm.connection, index_col='run_id')
-    return pd.merge(run_df, eval_agg_df, on='run_id')
+
+    if stats:
+        SELECT_RUN_EVAL_AGG_MIN_COUNT = '''
+        SELECT run_id, count(*) as num_evaluations, min(value) as min_value
+        FROM evaluation
+        GROUP BY run_id
+        '''
+        run_df = pd.merge(run_df, pd.read_sql(SELECT_RUN_EVAL_AGG_MIN_COUNT, dbm.connection, index_col='run_id'), on='run_id')
+
+        # SELECT_RUN_EVAL_AGG_MIN_MEAN = '''
+        # SELECT run_id, min(value) as last_100_min_value, avg(value) as last_100_mean_value
+        # FROM evaluation
+        # GROUP BY run_id
+        # ORDER BY id DESC LIMIT 100
+        # '''
+        # run_df = pd.merge(run_df, pd.read_sql(SELECT_RUN_EVAL_AGG_MIN_MEAN, dbm.connection, index_col='run_id'), on='run_id')
+
+    if parameters:
+        parameter_values = []
+        for run_id in run_df.index.values:
+            SELECT_RUN_MIN_VALUE_PARAMETERS = '''
+            SELECT id, parameters
+            FROM evaluation
+            WHERE run_id = {}
+            ORDER BY id DESC LIMIT 1
+            '''.format(run_id)
+            cursor = dbm.connection.execute(SELECT_RUN_MIN_VALUE_PARAMETERS).fetchone()
+            parameter_values.append({'run_id': run_id, 'final_parameters': cursor['parameters']})
+        run_df = pd.merge(run_df, pd.DataFrame(parameter_values), on='run_id')
+
+    return run_df
 
 
 def list_run_evaluations(dbm, run_id, min_evaluation=None):
@@ -146,22 +170,23 @@ def filter_evaluations(dbm, potential=None, limit=10, condition='best', run_id=N
 
 
 def filter_potentials(dbm, potential=None, limit=10, condition='best', run_id=None, labels=None):
-    pass
+    results = []
+    for row in filter_evaluations(dbm, potential, limit, condition, run_id, labels):
+        results.append({'potential': select_potential_from_evaluation(dbm, row['id']), 'score': row['score']})
+    return results
 
 
 def copy_database_to_database(src_dbm, dest_dbm, only_unique=False):
     pass
 
 
-def run_summary(dbm, run_id):
-    pass
 
 
 # def filter_potentials(dbm, potential=None, limit=10, condition='best', run_id=None, labels=None):
-#     results = []
-#     for row in filter_evaluations(dbm, potential, limit, condition, run_id, labels):
-#         results.append({'potential': select_potential_from_evaluation(dbm, row['id']), 'score': row['score']})
-#     return results
+    results = []
+    for row in filter_evaluations(dbm, potential, limit, condition, run_id, labels):
+        results.append({'potential': select_potential_from_evaluation(dbm, row['id']), 'score': row['score']})
+    return results
 
 
 
@@ -247,41 +272,3 @@ def run_summary(dbm, run_id):
 #             labels = {row['key']: row['value'] for row in src_dbm.connection.execute(SELECT_RUN_LABELS, (run['id'],))}
 #             with dest_dbm.connection:
 #                 _write_labels(dest_dbm, run_id, labels)
-
-
-# def run_summary(dbm, run_id):
-#     SELECT_RUN = 'SELECT id, name, potential_id, training_id, configuration, start_time, end_time, initial_parameters, indicies, bounds FROM run WHERE id = ?'
-
-#     SELECT_RUN_NUM_EVALUATIONS = 'SELECT count(*) FROM evaluation WHERE run_id = ?'
-#     SELECT_RUN_LAST_EVALUATIONS = '''
-#     SELECT (e.w_f * e.sq_force_error + e.w_s * e.sq_stress_error + e.w_e * e.sq_energy_error) AS score FROM evaluation e
-#     WHERE run_id = ?
-#     ORDER BY e.id DESC LIMIT 100
-#     '''
-
-#     run = dbm.connection.execute(SELECT_RUN, (run_id,)).fetchone()
-#     run_summary = {
-#         'algorithm': run['configuration']['spec']['algorithm']['name'],
-#         'initial_parameters': run['initial_parameters'],
-#     }
-#     num_evaluations = dbm.connection.execute(SELECT_RUN_NUM_EVALUATIONS, (run_id,)).fetchone()[0]
-#     run_summary.update({
-#         'steps': num_evaluations
-#     })
-#     last_scores = [row['score'] for row in dbm.connection.execute(SELECT_RUN_LAST_EVALUATIONS, (run_id,))]
-#     if last_scores:
-#         run_summary.update({
-#             'stats': {'mean': np.mean(last_scores), 'median': np.median(last_scores), 'min': np.min(last_scores)}
-#         })
-#         min_score = filter_evaluations(dbm, run_id=run_id, condition='best', limit=1).fetchone()
-#         run_summary.update({
-#             'final_parameters': min_score['parameters'],
-#             'min_score': min_score['score']
-#         })
-#     else:
-#         run_summary.update({
-#             'stats': {'mean': 0.0, 'median': 0.0, 'min': 0.0},
-#             'final_parameters': [],
-#             'min_score': 0.0
-#         })
-#     return run_summary

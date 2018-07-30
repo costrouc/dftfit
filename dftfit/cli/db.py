@@ -6,7 +6,7 @@ from ..db import DatabaseManager
 from ..db import (
     copy_database_to_database,
     potential_from_evaluation,
-    list_runs, run_summary
+    list_runs
 )
 from ..visualize import visualize_progress
 
@@ -69,7 +69,7 @@ def handle_subcommand_db_potential(args):
     dbm = DatabaseManager(args.database)
     if args.evaluation:
         print(args.evaluation)
-        potential = select_potential_from_evaluation(dbm, args.evaluation)
+        potential = potential_from_evaluation(dbm, args.evaluation)
         print(potential)
         potential.write_file(args.output_filename)
 
@@ -81,16 +81,5 @@ def handle_subcommand_db_progress(args):
 
 def handle_subcommand_db_summary(args):
     dbm = DatabaseManager(args.database)
-    for run_id in list_runs(dbm):
-        r = run_summary(dbm, run_id)
-        initial_parameters = ', '.join(['{:4.3g}'.format(_) for _ in r['initial_parameters']])
-        final_parameters = ', '.join(['{:4.3g}'.format(_) for _ in r['final_parameters']])
-        print(f'''run: {run_id}
-        algo: {r['algorithm']:16} steps: {r['steps']:10}
-        stats:
-              mean:   {r['stats']['mean']:4.3}
-              median: {r['stats']['median']:4.3}
-              min:    {r['stats']['min']:4.3}
-        final:   {final_parameters}
-        score:   {r['min_score']}
-        ''')
+    df = list_runs(dbm)
+    print(df.to_string())
