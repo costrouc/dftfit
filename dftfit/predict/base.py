@@ -36,6 +36,11 @@ class Predict:
         sga = SpacegroupAnalyzer(structure)
         return sga.get_conventional_standard_structure()
 
+    def material_properties(self, structure, potential, properties=None):
+        properties = properties or {'lattice_constants'}
+        raise NotImplementedError()
+        pass
+
     def static(self, structure, potential):
         if self.calculator_type == 'lammps':
             kwargs = {'lammps_set': load_lammps_set('static')}
