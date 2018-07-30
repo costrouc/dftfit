@@ -58,7 +58,6 @@ class DFTFITProblemBase:
 
         value = 0.0
         errors = []
-        print(len(self.features), len(self.weights), len(self.objective_functions))
         for feature, weight, func in zip(self.features, self.weights, self.objective_functions):
             v = func(md_calculations, self.dft_calculations)
             if weight:
