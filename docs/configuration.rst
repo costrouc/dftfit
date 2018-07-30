@@ -23,6 +23,7 @@ to write to. See bellow for an example configuration file.
        name: 'pygmo.de'
        steps: 10
        population: 5
+       include_initial_guess: False
      problem:
        calculator: 'lammps'
        command: 'lammps_serial'
@@ -83,6 +84,7 @@ Values
  - ``spec.algorithm.name`` pagmo2 optimization algorithm to use
  - ``spec.algorithm.steps`` number of steps to take in optimization
  - ``spec.algorithm.population`` number of guesses per optimization step
+ - ``spec.algorithm.include_initial_guess`` whether to include the initial values from the potential schema
 
 
 SQLite Database

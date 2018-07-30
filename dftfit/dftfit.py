@@ -28,7 +28,16 @@ def dftfit(configuration_schema, potential_schema, training_schema):
             problem_kwargs=configuration.problem_kwargs,
             run_id=run_id
         )
+
+        # if include initial guess replace one random guess with initial
+        if configuration.include_initial_guess:
+            population_size = configuration.population - 1
+        else:
+            population_size = configuration.population
         population = optimize.population(configuration.population, seed=configuration.seed)
+        if configuration.include_initial_guess:
+            population.push_back(potential.optimization_parameters)
+
         optimize.optimize(population, steps=configuration.steps, seed=configuration.seed)
     except KeyboardInterrupt:
         print(f'\nShutting down DFTFIT\nIf using database all completed evaluations are written')

@@ -41,12 +41,14 @@ class Configuration:
         _algorithm_kwargs = self.schema['spec'].get('algorithm', {
             'name': 'pygmo.sade',
             'steps': 10,
-            'population': 10
+            'population': 10,
+            'include_initial_guess': False
         })
         self.algorithm = _algorithm_kwargs['name']
         self.steps = _algorithm_kwargs['steps']
         self.population = _algorithm_kwargs['population']
-        self.algorithm_kwargs = {k:v for k,v in _algorithm_kwargs.items() if k not in {'name', 'steps', 'population'}}
+        self.include_initial_guess = _algorithm_kwargs.get('include_initial_guess', False)
+        self.algorithm_kwargs = {k:v for k,v in _algorithm_kwargs.items() if k not in {'name', 'steps', 'population', 'include_initial_guess'}}
 
         # Problem
         _problem_kwargs = self.schema['spec'].get('problem', {

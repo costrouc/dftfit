@@ -14,6 +14,7 @@ spec:
     name: 'pygmo.de'
     steps: 10
     population: 5
+    include_initial_guess: False
   problem:
     calculator: 'lammps'
     command: 'lammps_serial'
