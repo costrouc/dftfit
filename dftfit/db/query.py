@@ -85,8 +85,9 @@ def list_run_evaluations(dbm, run_id, min_evaluation=None):
     """
     run = dbm.connection.execute(
         'SELECT features FROM run WHERE id = ?', (run_id,)).fetchone()
+    if run is None:
+        raise ValueError('run with run_id {} does not exist'.format(run_id))
     features = run['features']
-    # do something with run
 
     SELECT_EVALUATIONS = '''
     SELECT id as evaluation_id, parameters, errors, value
