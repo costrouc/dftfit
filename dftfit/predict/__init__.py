@@ -6,3 +6,4 @@ Example properties:
 """
 
 from .base import Predict
+from .utils import print_elastic_information

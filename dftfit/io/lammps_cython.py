@@ -2,10 +2,13 @@ import math
 import itertools
 import functools
 import multiprocessing
+import asyncio
 
 import numpy as np
+import pymatgen as pmg
 
 import lammps
+from lammps.core import lattice_const_to_lammps_box, transform_cartesian_vector_to_lammps_vector
 from lammps.potential import (
     write_table_pair_potential,
     write_tersoff_potential,
@@ -17,7 +20,7 @@ from lammps.potential import (
 )
 
 from ..potential import Potential
-from .base import DFTFITCalculator, MDReader
+from .base import DFTFITCalculator, MDCalculator, MDReader
 
 
 class LammpsCythonWorker:
@@ -156,6 +159,74 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
             for p, p_conn in self.workers:
                 p_conn.send('quit')
                 p.join()
+
+
+class LammpsCythonMDCalculator(MDCalculator):
+    def __init__(self, num_workers=1):
+        if num_workers != 1:
+            raise NotImplementedError('lammps-cython md calculator can only run with one worker')
+
+    async def create(self):
+        pass
+
+    async def submit(self, structure, potential, properties=None, lammps_additional_commands=None):
+        properties = properties or {'stress', 'energy', 'forces'}
+        lammps_additional_commands = lammps_additional_commands or ['run 0']
+        lmp = lammps.Lammps(units='metal', style='full', args=[
+            '-log', 'none', '-screen', 'none'
+        ])
+        elements = lmp.system.add_pymatgen_structure(structure)
+        lmp.thermo.add('my_ke', 'ke', 'all')
+
+        lammps_files = write_potential_files(potential, elements=elements, unique_id=2)
+        for filename, content in lammps_files.items():
+            with open(filename, 'w') as f:
+                f.write(content)
+
+        lammps_commands = write_potential(potential, elements=elements, unique_id=2)
+        for command in lammps_commands:
+            lmp.command(command)
+
+        for command in lammps_additional_commands:
+            lmp.command(command)
+
+        # to handle non-orthogonal unit cells
+        results = {}
+        if 'lattice' in properties:
+            lengths, angles_r = lmp.box.lengths_angles
+            angles = [math.degrees(_) for _ in angles_r]
+            results['lattice'] = pmg.Lattice.from_parameters(*lengths, *angles).matrix
+
+        if 'positions' in properties:
+            bounds, tilt, rotation_matrix = pmg.Structure(lmp.system.lattice, symbols, lmp.system.positions, coords_are_cart=True)
+            inv_rotation_matrix = np.linalg.inv(rotation_matrix)
+            cart_coords = transform_cartesian_vector_to_lammps_vector(positions, inv_rotation_matrix)
+            results['positions'] = cart_coords
+
+        if 'stress' in properties:
+            S = lmp.thermo.computes['thermo_press'].vector
+            results['stress'] = np.array([
+                [S[0], S[3], S[5]],
+                [S[3], S[1], S[4]],
+                [S[5], S[4], S[2]]
+            ])
+
+        if 'energy' in properties:
+            results['energy'] = lmp.thermo.computes['thermo_pe'].scalar + lmp.thermo.computes['my_ke'].scalar
+
+        if 'forces' in properties:
+            results['forces'] = lmp.system.forces.copy()
+
+        if 'symbols' in properties:
+            results['symbols'] = [elements[i-1] for i in lmp.system.types[0]]
+
+        if 'velocities' in properties:
+            results['velocities'] = lmp.system.velocities
+
+        # compatibility...
+        future = asyncio.Future()
+        future.set_result({'results': results})
+        return future
 
 
 def tersoff_2_to_tersoff(element_parameters, mixing_parameters):

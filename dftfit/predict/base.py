@@ -10,6 +10,7 @@ from pymatgen.analysis.elasticity import DeformedStructureSet, ElasticTensor, St
 
 
 from ..io.lammps import LammpsLocalMDCalculator
+from ..io.lammps_cython import LammpsCythonMDCalculator
 
 
 def load_lammps_set(config_filename):
@@ -21,10 +22,12 @@ def load_lammps_set(config_filename):
 
 
 class Predict:
-    def __init__(self, calculator='lammps', loop=None, **kwargs):
+    def __init__(self, calculator='lammps_cython', loop=None, **kwargs):
         calculator_mapper = {
-            'lammps': LammpsLocalMDCalculator
+            'lammps': LammpsLocalMDCalculator,
+            'lammps_cython': LammpsCythonMDCalculator
         }
+        self.calculator_type = calculator
         self.calculator = calculator_mapper[calculator](**kwargs)
         self.loop = loop or asyncio.get_event_loop()
         self.loop.run_until_complete(self.calculator.create())
@@ -34,11 +37,16 @@ class Predict:
         return sga.get_conventional_standard_structure()
 
     def static(self, structure, potential):
+        if self.calculator_type == 'lammps':
+            kwargs = {'lammps_set': load_lammps_set('static')}
+        elif self.calculator_type == 'lammps_cython':
+            kwargs = {'lammps_additional_commands': ['run 0']}
+
         async def calculate():
             future = await self.calculator.submit(
                 structure, potential,
                 properties={'forces', 'stress', 'energy'},
-                lammps_set=load_lammps_set('static'))
+                **kwargs)
             await future
             return future.result()
         result = self.loop.run_until_complete(calculate())
@@ -51,6 +59,12 @@ class Predict:
     def pair(self, specie_a, specie_b, potential, separations):
         max_r = np.max(separations)
         lattice = Lattice.from_parameters(10*max_r, 10*max_r, 10*max_r, 90, 90, 90)
+
+        if self.calculator_type == 'lammps':
+            kwargs = {'lammps_set': load_lammps_set('static')}
+        elif self.calculator_type == 'lammps_cython':
+            kwargs = {'lammps_additional_commands': ['run 0']}
+
         async def calculate():
             futures = []
             for sep in separations:
@@ -63,7 +77,7 @@ class Predict:
                 futures.append(await self.calculator.submit(
                     structure, potential,
                     properties={'energy'},
-                    lammps_set=load_lammps_set('static')))
+                    **kwargs))
             return await asyncio.gather(*futures)
         results = self.loop.run_until_complete(calculate())
         return np.array([r['results']['energy'] for r in results])
@@ -71,13 +85,22 @@ class Predict:
     def lattice_constant(self, structure, potential, supercell=(1, 1, 1), etol=1e-6, ftol=1e-6):
         conventional_structure = self.conventional_structure(structure)
 
-        async def calculate():
+        if self.calculator_type == 'lammps':
             relax_lammps_script = load_lammps_set('relax')
             relax_lammps_script['minimize'] = '%f %f 2000 10000' % (etol, ftol)
+            kwargs = {'lammps_set': relax_lammps_script}
+        elif self.calculator_type == 'lammps_cython':
+            kwargs = {'lammps_additional_commands': [
+                'fix 1 all box/relax iso 0.0 vmax 0.001',
+                'min_style cg',
+                'minimize %f %f 2000 10000' % (etol, ftol)
+            ]}
+
+        async def calculate():
             future = await self.calculator.submit(
                 conventional_structure * supercell, potential,
                 properties={'lattice'},
-                lammps_set=relax_lammps_script)
+                **kwargs)
             await future
             return future.result()
 
@@ -95,6 +118,17 @@ class Predict:
         strains = []
         stresses = []
 
+        if self.calculator_type == 'lammps':
+            relax_lammps_script = load_lammps_set('relax')
+            relax_lammps_script['fix'] = []
+            relax_lammps_script['minimize'] = '%f %f 2000 10000' % (etol, ftol)
+            kwargs = {'lammps_set': relax_lammps_script}
+        elif self.calculator_type == 'lammps_cython':
+            kwargs = {'lammps_additional_commands': [
+                'min_style cg',
+                'minimize %f %f 2000 10000' % (etol, ftol)
+            ]}
+
         async def calculate():
             relax_lammps_script = load_lammps_set('relax')
             relax_lammps_script['fix'] = []
@@ -105,7 +139,7 @@ class Predict:
                 futures.append(await self.calculator.submit(
                     deformed_structure, potential,
                     properties={'stress'},
-                    lammps_set=relax_lammps_script))
+                    **kwargs))
             for result in await asyncio.gather(*futures):
                 stress = Stress(np.array(result['results']['stress']) * 1e-4) # Convert to GPa
                 stresses.append(stress)
