@@ -20,7 +20,7 @@ def potential_from_evaluation(dbm, evaluation_id):
        potential representing the single evaluation
     """
     result = dbm.connection.execute('''
-    SELECT potential.schema, parameters, initial_parameters, indicies, bounds
+    SELECT potential.schema, evaluation.parameters, run.initial_parameters, run.indicies, run.bounds
     FROM evaluation
         JOIN run ON run.id = evaluation.run_id
         JOIN potential ON potential.hash = run.potential_hash
@@ -125,8 +125,7 @@ def list_run_evaluations(dbm, run_id, min_evaluation=None):
     return df.drop('errors', axis=1)
 
 
-# TODO
-def filter_evaluations(dbm, potential=None, limit=10, condition='best', run_id=None, labels=None):
+def filter_evaluations(dbm, potential=None, limit=10, condition='best', run_id=None, labels=None, include_potentials=False):
     cursor = dbm.connection.execute('SELECT id FROM run')
     run_ids = {_['id'] for _ in cursor}
 
@@ -163,32 +162,31 @@ def filter_evaluations(dbm, potential=None, limit=10, condition='best', run_id=N
         label_run_ids = {_['run_id'] for _ in cursor}
         run_ids = label_run_ids & run_ids
 
-    # TODO
-    # left over values
-    # limit, condition
-    # select evaluations
+    if len(run_ids) == 0:
+        return pd.DataFrame()
 
+    if condition != 'best':
+        raise ValueError('only know how to sort on condition best right now')
 
-def filter_potentials(dbm, potential=None, limit=10, condition='best', run_id=None, labels=None):
-    results = []
-    for row in filter_evaluations(dbm, potential, limit, condition, run_id, labels):
-        results.append({'potential': select_potential_from_evaluation(dbm, row['id']), 'score': row['score']})
-    return results
+    SELECT_EVALUATIONS = '''
+    SELECT id as evaluation_id, run_id, parameters, errors, value
+    FROM evaluation
+    WHERE {}
+    ORDER BY value LIMIT {}
+    '''.format(' OR '.join(['run_id = %d' % run_id for run_id in run_ids]), limit)
+    df = pd.read_sql(SELECT_EVALUATIONS, dbm.connection, index_col='evaluation_id')
+
+    if include_potentials:
+        eval_potentials = []
+        for eval_id in df.index.values:
+            eval_potentials.append({'evaluation_id': eval_id, 'potential': potential_from_evaluation(dbm, int(eval_id))})
+        df = pd.merge(df, pd.DataFrame(eval_potentials), on='evaluation_id')
+
+    return df
 
 
 def copy_database_to_database(src_dbm, dest_dbm, only_unique=False):
     pass
-
-
-
-
-# def filter_potentials(dbm, potential=None, limit=10, condition='best', run_id=None, labels=None):
-    results = []
-    for row in filter_evaluations(dbm, potential, limit, condition, run_id, labels):
-        results.append({'potential': select_potential_from_evaluation(dbm, row['id']), 'score': row['score']})
-    return results
-
-
 
 
 # def copy_database_to_database(src_dbm, dest_dbm, only_unique=False):
