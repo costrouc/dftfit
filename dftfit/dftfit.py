@@ -14,8 +14,8 @@ def dftfit(configuration_schema, potential_schema, training_schema):
     try:
         potential_hash, run_id = write_run_initial(configuration.dbm, potential, training, configuration)
         optimize = Optimize(
-            dft_calculations=training.calculations,
             potential=potential,
+            training=training,
             # database
             dbm=configuration.dbm,
             db_write_interval=configuration.db_write_interval,

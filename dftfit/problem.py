@@ -10,19 +10,22 @@ logger = logging.getLogger(__name__)
 
 
 class DFTFITProblemBase:
-    def __init__(self, potential, dft_calculations, features, weights, calculator='lammps_cython', dbm=None, db_write_interval=10, run_id=None, loop=None, **kwargs):
+    def __init__(self, potential, training, features, weights, calculator='lammps_cython', dbm=None, db_write_interval=10, run_id=None, loop=None, **kwargs):
         # Calculator Initialization
-        calculator_mapper = {
+        dftfit_calculator_mapper = {
             'lammps': LammpsLocalDFTFITCalculator,
             'lammps_cython': LammpsCythonDFTFITCalculator,
         }
-        self.dft_calculations = dft_calculations
         self.loop = loop or asyncio.get_event_loop()
-        self.calculator = calculator_mapper[calculator](structures=[c.structure for c in dft_calculations], potential=potential, **kwargs)
+
+        self.dft_calculations = training.calculations
+        self.calculator = dftfit_calculator_mapper[calculator](structures=[c.structure for c in self.dft_calculations], potential=potential, **kwargs)
         self.loop.run_until_complete(self.calculator.create())
 
         # Potential Initialization
         self.potential = potential
+
+
 
         # Objective Initialization
         self.features = features

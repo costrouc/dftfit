@@ -19,7 +19,7 @@ available_algorithms = {
 
 
 class Optimize:
-    def __init__(self, dft_calculations, potential,
+    def __init__(self, potential, training,
                  dbm=None, db_write_interval=10,                      # database
                  algorithm='pygmo.de', algorithm_kwargs=None,         # algorithm
                  features=None, weights=None, problem_kwargs=None,    # problem
@@ -31,7 +31,7 @@ class Optimize:
 
         _problem_kwargs = {
             'potential': potential,
-            'dft_calculations': dft_calculations,
+            'training': training,
             'dbm': dbm, 'db_write_interval': db_write_interval,
             'features': features, 'weights': weights,
             'run_id': run_id,
