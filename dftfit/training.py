@@ -6,8 +6,11 @@ import json
 import shelve
 import os
 import hashlib
+import collections
 
 import yaml
+from pymatgen.io.cif import CifParser
+from pymatgen.io.vasp import Poscar
 
 from .schema import TrainingSchema
 from .io.mattoolkit import MTKReader
@@ -16,9 +19,11 @@ from .io.siesta import SiestaReader
 
 class Training:
     def __init__(self, schema, cache_filename=None):
+        print(schema)
         schema_load, errors = TrainingSchema().load(schema)
         self.schema = schema_load
         self._gather_calculations(cache_filename=cache_filename)
+        self._gather_material_properties()
 
     def _gather_calculations(self, cache_filename=None):
         self._calculations = []
@@ -28,9 +33,46 @@ class Training:
             elif calculation['type'] == 'Siesta':
                 self._calculations.extend(SiestaReader.from_selector(calculation['selector']))
 
+    def _gather_material_properties(self):
+        self._material_properties_reference_ground_state = None
+        self._material_properties = collections.defaultdict(list)
+        for material_property in self.schema['spec']:
+            if material_property['type'] == 'ground_state':
+                if self._material_properties_reference_ground_state:
+                    raise ValueError('current cannot have more than one reference ground state')
+                self._material_properties_reference_ground_state = self._parse_structure(material_property)
+            elif material_property['type'] == 'lattice_constants':
+                self._material_properties['lattice_constants'].append(material_property['data'])
+            elif material_property['type'] == 'elastic_constants':
+                self._material_properties['elastic_constants'].append(material_property['data'])
+            elif material_property['type'] == 'bulk_modulus':
+                self._material_properties['bulk_modulus'].append(material_property['data'])
+            elif material_property['type'] == 'shear_modulus':
+                self._material_properties['shear_modulus'].append(material_property['data'])
+
+        if self._material_properties and self._material_properties_reference_ground_state is None:
+            raise ValueError('calculating material properties requires a reference ground state structure')
+
+    def _parse_structure(self, structure_schema):
+        data = structure_schema['data']
+        format = structure_schema['format']
+        if format == 'cif':
+            structure = (CifParser.from_string(data)).get_structures()[0]
+        elif format == 'POSCAR':
+            structure = (Poscar.from_string(data)).structure
+        return structure
+
     @property
     def calculations(self):
         return self._calculations
+
+    @property
+    def material_properties(self):
+        return self._material_properties
+
+    @property
+    def reference_ground_state(self):
+        return self._material_properties_reference_group_state
 
     def __iter__(self):
         return iter(self._calculations)

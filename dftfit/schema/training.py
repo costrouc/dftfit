@@ -35,9 +35,45 @@ class SiestaTrainingSetSchema(BaseSchema):
     selector = fields.Nested(SiestaSelectorSchema, required=True)
 
 
+# reference ground state
+class GroundStateTrainingSetSchema(BaseSchema):
+    type = fields.String(required=True, validate=validate.Equal('ground_state'))
+    format = fields.String(required=True, validate=validate.OneOf(['cif', 'POSCAR']))
+    data = fields.String(required=True)
+
+
+# lattice_constants
+class LatticeConstantTrainingSetSchema(BaseSchema):
+    type = fields.String(required=True, validate=validate.Equal('lattice_constants'))
+    data = fields.List(fields.List(fields.Float(required=True), equal=3, required=True), validate=validate.Length(equal=2), required=True)
+
+
+# elastic_constants
+class ElasticConstantTrainingSetSchema(BaseSchema):
+    type = fields.String(required=True, validate=validate.Equal('elastic_constants'))
+    data = fields.List(fields.List(fields.Float(required=True), equal=6, required=True), validate=validate.Length(equal=6), required=True)
+
+
+# bulk_modulus
+class BulkModulusTrainingSetSchema(BaseSchema):
+    type = fields.String(required=True, validate=validate.Equal('bulk_modulus'))
+    data = fields.Float(required=True)
+
+
+# shear_modulus
+class ShearModulusTrainingSetSchema(BaseSchema):
+    type = fields.String(required=True, validate=validate.Equal('shear_modulus'))
+    data = fields.Float(required=True)
+
+
 _TYPE_TO_SCHEMA = {
     'mattoolkit': MTKTrainingSetSchema,
     'Siesta': SiestaTrainingSetSchema,
+    'ground_state': GroundStateTrainingSetSchema,
+    'lattice_constants': LatticeConstantTrainingSetSchema,
+    'elastic_constants': ElasticConstantTrainingSetSchema,
+    'bulk_modulus': BulkModulusTrainingSetSchema,
+    'shear_modulus': ShearModulusTrainingSetSchema
 }
 
 
