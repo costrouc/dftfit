@@ -9,6 +9,7 @@ from dftfit.training import Training
     ('training-subset-litao3.yaml', 12, set()),
     ('training-full-litao3.yaml', 16, set()),
     ('training-mattoolkit-mgo-properties.yaml', 3, {'lattice_constants', 'elastic_constants', 'bulk_modulus', 'shear_modulus'}),
+    ('training-properties-mgo.yaml', 0, {'lattice_constants', 'elastic_constants'}),
 ])
 def test_training_from_file(filename, num_calculations, material_properties):
     kwargs = {}

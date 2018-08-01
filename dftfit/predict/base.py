@@ -39,7 +39,6 @@ class Predict:
     def material_properties(self, structure, potential, properties=None):
         properties = properties or {'lattice_constants'}
         raise NotImplementedError()
-        pass
 
     def static(self, structure, potential):
         if self.calculator_type == 'lammps':
