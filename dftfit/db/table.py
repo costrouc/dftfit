@@ -2,6 +2,8 @@ import sqlite3 as sqlite
 import json
 import datetime as dt
 
+from .. import utils
+
 
 POTENTIAL_TABLE = """
 CREATE TABLE IF NOT EXISTS potential (
@@ -83,7 +85,7 @@ class DatabaseManager:
 
     @staticmethod
     def adapt_json(d):
-        return (json.dumps(d, sort_keys=True)).encode()
+        return (json.dumps(d, sort_keys=True, cls=utils.NumpyEncoder)).encode()
 
     @staticmethod
     def convert_json(data):

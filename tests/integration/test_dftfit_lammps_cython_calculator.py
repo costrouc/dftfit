@@ -32,6 +32,40 @@ def test_lammps_cython_calculator():
         assert query[0] == configuration.population * (configuration.steps + 1)
 
 
+
+@pytest.mark.lammps_cython
+@pytest.mark.calculator
+def test_lammps_cython_calculator_with_experimental():
+    # Read in configuration information
+    base_directory = 'test_files/dftfit_calculators/'
+    training_schema = load_filename('test_files/training/training-mattoolkit-mgo-properties.yaml')
+    potential_schema = load_filename(base_directory + 'potential.yaml')
+    configuration_schema = load_filename(base_directory + 'configuration.yaml')
+    configuration_schema['spec']['problem'].update({
+        'calculator': 'lammps_cython',
+    })
+    configuration_schema['spec']['problem']['weights'] = {
+        'forces': 0.7,
+        'stress': 0.1,
+        'lattice_constants': 0.1,
+        'elastic_constants': 0.1
+    }
+
+    # Run optimization
+    run_id = dftfit(training_schema=training_schema,
+                    potential_schema=potential_schema,
+                    configuration_schema=configuration_schema)
+
+    # Ensure that the calculation ran check database
+    configuration = Configuration(configuration_schema)
+    with configuration.dbm.connection:
+        query = configuration.dbm.connection.execute('''
+        SELECT count(*) FROM evaluation WHERE run_id = ?
+        ''', (run_id,)).fetchone()
+        # because one initial run is done before calculation
+        assert query[0] == configuration.population * (configuration.steps + 1)
+
+
 @pytest.mark.lammps_cython
 @pytest.mark.calculator
 @pytest.mark.long

@@ -1,4 +1,5 @@
-from marshmallow import fields, validate, ValidationError, validates
+from marshmallow import fields, validate, ValidationError, validates, post_load
+import numpy as np
 
 from .base import BaseSchema
 from .fields import PolyField
@@ -47,11 +48,22 @@ class LatticeConstantTrainingSetSchema(BaseSchema):
     type = fields.String(required=True, validate=validate.Equal('lattice_constants'))
     data = fields.List(fields.List(fields.Float(required=True), equal=3, required=True), validate=validate.Length(equal=2), required=True)
 
+    @post_load
+    def as_numpy_array(self, data):
+        data['data'] = np.array(data['data']).reshape(2, 3)
+        return data
+
 
 # elastic_constants
 class ElasticConstantTrainingSetSchema(BaseSchema):
     type = fields.String(required=True, validate=validate.Equal('elastic_constants'))
     data = fields.List(fields.List(fields.Float(required=True), equal=6, required=True), validate=validate.Length(equal=6), required=True)
+
+    @post_load
+    def as_numpy_array(self, data):
+        data['data'] = np.array(data['data']).reshape(6, 6)
+        return data
+
 
 
 # bulk_modulus

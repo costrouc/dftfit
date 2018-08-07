@@ -43,7 +43,7 @@ def energy_objective_function(md_calculations, dft_calculations):
 # material properties
 def lattice_constant_objective_function(lattice, measured_lattice_constants):
     # not going to include angles in calculation (different units need to reconcile)
-    lengths, angles = lattice.lengths_angles
+    lengths, angles = lattice.lengths_and_angles
 
     n_lc_sq_error = 0.0
     d_lc_sq_error = 0.0
@@ -55,11 +55,13 @@ def lattice_constant_objective_function(lattice, measured_lattice_constants):
 
 
 def elastic_constants_objective_function(elastic_constants, measured_elastic_constants):
+    elastic_constants_voigt = elastic_constants.voigt
+
     n_ec_sq_error = 0.0
     d_ec_sq_error = 0.0
 
     for m_elastic_constants in measured_elastic_constants:
-        n_ec_sq_error = np.sum((elastic_constants - m_elastic_constants)**2.0)
+        n_ec_sq_error = np.sum((elastic_constants_voigt - m_elastic_constants)**2.0)
         d_ec_sq_error = np.sum(m_elastic_constants**2.0)
     return math.sqrt(n_ec_sq_error / d_ec_sq_error)
 

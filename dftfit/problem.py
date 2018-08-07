@@ -82,7 +82,7 @@ class DFTFITProblemBase:
         # material property calculations
         predict_calculations = {}
         if self.md_calculations:
-            if 'lattice_constant' in self.md_calculations:
+            if 'lattice_constants' in self.md_calculations:
                 old_lattice, new_lattice = self.md_calculator.lattice_constant(self.training.reference_ground_state, potential)
                 predict_calculations['lattice_constants'] = new_lattice
             if 'elastic_constants' in self.md_calculations:
@@ -95,7 +95,7 @@ class DFTFITProblemBase:
         for feature, weight, func in zip(self.features, self.weights, self.objective_functions):
             if feature in {'forces', 'stress', 'energy'}:
                 v = func(md_calculations, self.training.calculations)
-            elif feature in {'lattice_constant'}:
+            elif feature in {'lattice_constants'}:
                 v = func(predict_calculations['lattice_constants'], self.training.material_properties[feature])
             elif feature in {'elastic_constants', 'bulk_modulus', 'shear_modulus'}:
                 v = func(predict_calculations['elastic_constants'], self.training.material_properties[feature])

@@ -15,6 +15,7 @@ from pymatgen.io.vasp import Poscar
 from .schema import TrainingSchema
 from .io.mattoolkit import MTKReader
 from .io.siesta import SiestaReader
+from . import utils
 
 
 class Training:
@@ -72,7 +73,7 @@ class Training:
 
     @property
     def reference_ground_state(self):
-        return self._material_properties_reference_group_state
+        return self._material_properties_reference_ground_state
 
     def __iter__(self):
         return iter(self._calculations)
@@ -121,7 +122,7 @@ class Training:
                 return cls(yaml.load(f), **kwargs)
 
     def __str__(self):
-        return json.dumps(self.schema, sort_keys=True)
+        return json.dumps(self.schema, sort_keys=True, cls=utils.NumpyEncoder)
 
     @property
     def md5hash(self):
