@@ -115,10 +115,12 @@ class Predict:
     def elastic_constant(self, structure, potential, supercell=(1, 1, 1),
                          nd=0.01, ns=0.05, num_norm=4, num_shear=4,
                          etol=1e-6, ftol=1e-6):
+        norm_strains = np.linspace(-nd, nd, num_norm).tolist()
+        shear_strains = np.linspace(-ns, ns, num_shear).tolist()
         conventional_structure = self.conventional_structure(structure)
         deformation_set = DeformedStructureSet(conventional_structure * supercell,
-                                               nd=nd, ns=ns,
-                                               num_norm=num_norm, num_shear=num_shear)
+                                               norm_strains=norm_strains,
+                                               shear_strains=shear_strains)
         strains = []
         stresses = []
 
@@ -149,4 +151,4 @@ class Predict:
                 stresses.append(stress)
 
         self.loop.run_until_complete(calculate())
-        return ElasticTensor.from_pseudoinverse(strains, stresses)
+        return ElasticTensor.from_independent_strains(strains, stresses, Stress(np.zeros((3, 3))))
