@@ -7,23 +7,10 @@ name = "pypi"
 
 [packages]
 
-pymatgen = "==2017.7.4"
-pymatgen-lammps = "*"
-marshmallow = "*"
-pyyaml = "*"
-pygmo = "*"
-pandas = "*"
-scikit-learn = "*"
 pytest = "*"
-lammps-cython = "*"
-"mpi4py" = "*"
-cython = "*"
+pytest-cov = "*"
 pytest-benchmark = "*"
-snakeviz = "*"
 
 
 [dev-packages]
 
-sphinx = "*"
-sphinx-rtd-theme = "*"
-ipykernel = "*"
