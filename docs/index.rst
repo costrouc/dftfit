@@ -20,15 +20,22 @@ Gao-Weber, Vashishta, and COMB Potentials. All of which can be
 combined to have for example a Buckingham + Coulomb + ZBL
 potential. We also have an extensive set of multi-objective and
 single-objective `optimizers
-<https://dftfit.readthedocs.io/en/latest/configuration.html#optimization>`_.
+<https://dftfit.readthedocs.io/en/latest/configuration.html#optimization>`_
+that can evaluate a potential for many properties including energy,
+forces, stress, lattice constants, elastic constants, bulk modulus,
+and shear modulus.
 
 In general three things are required from the user.
-  - `Ab-Initio Training
-    Data <https://dftfit.readthedocs.io/en/latest/training.html>`_
-    includes VASP, Siesta, and Quantum Espresso Calculations.
-  - `configuration <https://dftfit.readthedocs.io/en/latest/configuration.html>`_
+  - `Ab-Initio Training Data
+    <https://dftfit.readthedocs.io/en/latest/training.html>`_ includes
+    VASP, Siesta, and Quantum Espresso Calculations. Additionally the
+    user may supply measured properties such as lattice constants,
+    elastic constants, bulk modulus, and shear modulus.
+  - `configuration
+    <https://dftfit.readthedocs.io/en/latest/configuration.html>`_
     specifies optimization algorithm and number of steps, sqlite
-    database to store results, and MD calculator to use.
+    database to store results, MD calculator to use, weights to give
+    for each property.
   - `Potential <https://dftfit.readthedocs.io/en/latest/potentials.html>`_
     among a rich set of two and three body potentials. Including a
     custom python function.

@@ -60,9 +60,10 @@ DFTFIT uses the problem to specify how it evaluates the objective
 function.
 
  - ``spec.problem.weights`` weights to use in addition to the features
-   to calculate. Available options include: force, stress, and
-   energy. Note that even for multiobjective optimization functions a
-   single objective value can be computed.
+   to calculate. Available options include: force, stress, energy,
+   lattice_constants, elastic_constants, bulk_modulus,
+   shear_modulus. Note that even for multiobjective optimization
+   functions a single objective value can be computed.
 
 Algorithms
 ~~~~~~~~~~

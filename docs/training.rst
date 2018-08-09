@@ -2,14 +2,35 @@ Training Sets
 =============
 
 DFTFIT uses Ab-Inito calculation to guide the optimization of
-potentials. The goal is to make it easier for users to include vasp
-calculations in their potential fitting. Thus DFTFIT has support for
-reading VASP ``vasprun.xml``, Quantum Espresso ``*.out``, and Siesta
-``*.xml`` output files. The parsers will read as many sets that
-contain the structure, energy, stress, and forces. These output files
-may be the result of a relaxation, SCF, of BOMD, etc. calculation. If
-DFTFIT does not have support for the output format that you supply
-please submit an `issue <https://gitlab.com/costrouc/dftfit/issues>`_.
+potentials along with measured properties. The goal is to make it
+easier for users to include vasp calculations in their potential
+fitting. Thus DFTFIT has support for reading VASP ``vasprun.xml``,
+Quantum Espresso ``*.out``, and Siesta ``*.xml`` output files. The
+parsers will read as many sets that contain the structure, energy,
+stress, and forces. These output files may be the result of a
+relaxation, SCF, of BOMD, etc. calculation. If DFTFIT does not have
+support for the output format that you supply please submit an `issue
+<https://gitlab.com/costrouc/dftfit/issues>`_. Additionally measured
+properties include: lattice_constants, elastic_constants,
+bulk_modulus, and shear_modulus.
+
+Measured Properties
+-------------------
+
+Recently DFTFIT has added support for experimental properties and
+other measured quantities. These include: lattice_constants,
+elastic_constants, bulk_modulus, and shear_modulus. In order to use
+one you must include a ground_state for an example see this input
+`training file <https://gitlab.com/costrouc/dftfit/blob/master/test_files/training/training-mattoolkit-mgo-properties.yaml>`_.
+
+ - lattice constants (lengths)
+ - elastic constants (voigt)
+ - bulk modulus
+ - shear modulus
+
+
+Ab-Initio Training Sets
+-----------------------
 
 Example of training sets include:
 
