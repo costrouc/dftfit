@@ -229,6 +229,41 @@ class LammpsCythonMDCalculator(MDCalculator):
         return future
 
 
+def vashishta_mixed_to_vashishta(element_parameters):
+    """ Vashishta mixing potential
+
+    Using tersoff for two body mixing rules.
+    """
+    def mixing_params_from_singles(e1, e2):
+        p1 = [float(_) for _ in element_parameters[e1]]
+        p2 = [float(_) for _ in element_parameters[e2]]
+        # 13 inputs: 14 paramters
+        # H (*), eta (1), Zi (1), Zj (1), lambda1 (+), D (*), lambda4 (+), W (*)
+        # cuttoff: rc (1), r0 (1)
+        # B (1), gamma (1), C (1), costheta0 (1)
+        return [
+            math.sqrt(p1[0] * p2[0]),            # H
+            p1[1],                               # eta
+            p1[2],                               # Zi
+            p2[2],                               # Zj
+            (p1[3] + p2[3]) / 2.0,               # lambda 1
+            math.sqrt(p1[4] * p2[4]),            # D
+            (p1[5] + p2[5]) / 2.0,               # lambda4
+            math.sqrt(p1[6] * p2[6]),            # W
+            p1[7],                               # r_cutoff (2)
+            p1[8],                               # B
+            p1[9],                               # gamma
+            p1[10],                              # r_0 (3)
+            p1[11],                              # C
+            p1[12],                              # costheta0
+        ]
+
+    parameters = {}
+    for e1, e2, e3 in itertools.product(element_parameters, repeat=3):
+        parameters[(e1, e2, e3)] = mixing_params_from_singles(e1, e2)
+    return parameters
+
+
 def tersoff_2_to_tersoff(element_parameters, mixing_parameters):
     def mixing_params_from_singles(e1, e2, mixing_value):
         p1 = [float(_) for _ in element_parameters[e1]]
