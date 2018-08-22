@@ -41,6 +41,7 @@ class FloatParameterField(fields.Field):
 
 class ConstraintSchema(BaseSchema):
     charge_balance = fields.String()
+    equations = fields.List(fields.Dict())
 
 
 ChargesSchema = type('ChargeSchema', (BaseSchema,), {element: FloatParameterField() for element in element_symbols})
