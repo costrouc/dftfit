@@ -3,12 +3,12 @@ import itertools
 import functools
 import multiprocessing
 import asyncio
+import uuid
 
 import numpy as np
 import pymatgen as pmg
 
 import lammps
-from lammps.core import lattice_const_to_lammps_box, transform_cartesian_vector_to_lammps_vector
 from lammps.potential import (
     write_table_pair_potential,
     write_tersoff_potential,
@@ -28,10 +28,11 @@ class LammpsCythonWorker:
 
     All input and output is fully serializable.
     """
-    def __init__(self, structures, elements, potential_schema):
+    def __init__(self, structures, elements, potential_schema, unique_id=1):
         self.structures = structures
         self.elements = elements
         self.potential = Potential(potential_schema)
+        self.unique_id = unique_id
         self.lammps_systems = []
 
     def _initialize_lammps(self, structure):
@@ -47,7 +48,7 @@ class LammpsCythonWorker:
             self.lammps_systems.append(self._initialize_lammps(structure))
 
     def _apply_potential(self, potential):
-        lammps_commands = write_potential(potential, elements=self.elements, unique_id=1)
+        lammps_commands = write_potential(potential, elements=self.elements, unique_id=self.unique_id)
         for command in lammps_commands:
             for lmp in self.lammps_systems:
                 lmp.command(command)
@@ -85,6 +86,7 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
     evaluations. For now there are not plans to generalize it.
     """
     def __init__(self, structures, potential, num_workers=1):
+        self.unique_id = str(uuid.uuid1())
         self.structures = structures
 
         # ensure element indexes are the same between all lammps calculations
@@ -96,10 +98,10 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
         self.workers = []
         potential_schema = potential.as_dict()
         if num_workers == 1:
-            self.workers.append(LammpsCythonWorker(structures, self.elements, potential_schema))
+            self.workers.append(LammpsCythonWorker(structures, self.elements, potential_schema, self.unique_id))
         else:
             def create_worker(structures, elements, potential_schema, pipe):
-                worker = LammpsCythonWorker(structures, elements, potential_schema)
+                worker = LammpsCythonWorker(structures, elements, potential_schema, self.unique_id)
                 worker.create()
                 worker.worker_multiprocessing_loop(pipe)
 
@@ -126,7 +128,7 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
             self.workers[0].create()
 
     def _apply_potential_files(self, potential):
-        lammps_files = write_potential_files(potential, elements=self.elements, unique_id=1)
+        lammps_files = write_potential_files(potential, elements=self.elements, unique_id=self.unique_id)
         for filename, content in lammps_files.items():
             with open(filename, 'w') as f:
                 f.write(content)
@@ -163,6 +165,7 @@ class LammpsCythonDFTFITCalculator(DFTFITCalculator):
 
 class LammpsCythonMDCalculator(MDCalculator):
     def __init__(self, num_workers=1):
+        self.unique_id = str(uuid.uuid1())
         if num_workers != 1:
             raise NotImplementedError('lammps-cython md calculator can only run with one worker')
 
@@ -178,12 +181,12 @@ class LammpsCythonMDCalculator(MDCalculator):
         elements = lmp.system.add_pymatgen_structure(structure)
         lmp.thermo.add('my_ke', 'ke', 'all')
 
-        lammps_files = write_potential_files(potential, elements=elements, unique_id=2)
+        lammps_files = write_potential_files(potential, elements=elements, unique_id=self.unique_id)
         for filename, content in lammps_files.items():
             with open(filename, 'w') as f:
                 f.write(content)
 
-        lammps_commands = write_potential(potential, elements=elements, unique_id=2)
+        lammps_commands = write_potential(potential, elements=elements, unique_id=self.unique_id)
         for command in lammps_commands:
             lmp.command(command)
 
@@ -325,7 +328,7 @@ def write_potential_files(potential, elements, unique_id=1):
         schema representation of potential
     elements: list
         list specifying the index of each element
-    unique_id: int
+    unique_id: str
         an id that can be used for files to guarentee uniqueness
     """
     spec = potential.schema['spec']
@@ -351,7 +354,7 @@ def write_potential_files(potential, elements, unique_id=1):
             for parameter in pair_potential['parameters']:
                 parameters[tuple(parameter['elements'])] = [float(_) for _ in parameter['coefficients']]
 
-        filename = '/tmp/lammps.%d.%d.%s' % (i, unique_id, potential_lammps_name)
+        filename = '/tmp/lammps.%d.%s.%s' % (i, unique_id, potential_lammps_name)
         if pair_potential['type'] in {'tersoff-2', 'tersoff'}:
             lammps_files[filename] = write_tersoff_potential(parameters)
         elif pair_potential['type'] == 'stillinger-weber':
@@ -377,7 +380,7 @@ def write_potential_files(potential, elements, unique_id=1):
             for (e1, e2), parameters in parameters.items():
                 float_parameters = [float(_) for _ in parameters]
                 f_r = functools.partial(potential_func, *float_parameters)
-                filename = '/tmp/lammps.%s.%s.%d.%d.%s' % (e1, e2, i, unique_id, potential_lammps_name)
+                filename = '/tmp/lammps.%s.%s.%d.%s.%s' % (e1, e2, i, unique_id, potential_lammps_name)
                 lammps_files[filename] = write_table_pair_potential(f_r, samples=samples, bounds=cutoff)
     return lammps_files
 
@@ -391,7 +394,7 @@ def write_potential(potential, elements, unique_id=1):
         schema representation of potential
     elements: list
         list specifying the index of each element
-    unique_id: int
+    unique_id: str
         an id that can be used for files to guarentee uniqueness
 
     Supported Potentials:
@@ -445,7 +448,7 @@ def write_potential(potential, elements, unique_id=1):
             for parameter in pair_potential['parameters']:
                 e1, e2 = parameter['elements']
                 ij = ' '.join([str(_) for _ in sorted([element_map[e1], element_map[e2]])])
-                filename = '/tmp/lammps.%s.%s.%d.%d.%s' % (e1, e2, i, unique_id, potential_lammps_name)
+                filename = '/tmp/lammps.%s.%s.%d.%s.%s' % (e1, e2, i, unique_id, potential_lammps_name)
                 pair_coeffs.append((ij, potential_lammps_name, '%s PAIR' % filename))
 
             samples = pair_potential.get('samples', 1000)
@@ -454,7 +457,7 @@ def write_potential(potential, elements, unique_id=1):
                 'pair_coeff': pair_coeffs
             })
         elif pair_potential['type'] in {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber', 'vashishta', 'vashishta-mixing', 'comb', 'comb-3'}:
-            filename = '/tmp/lammps.%d.%d.%s' % (i, unique_id, potential_lammps_name)
+            filename = '/tmp/lammps.%d.%s.%s' % (i, unique_id, potential_lammps_name)
             if pair_potential['type'] == 'comb-3':
                 pair_style = '%s polar_off' % (potential_lammps_name)
             else:
