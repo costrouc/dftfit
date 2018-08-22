@@ -1,0 +1,18 @@
+version: v1
+kind: Potential
+spec:
+  pair:
+    - type: vashishta-mixing
+      parameters:
+        # H  eta  Z  lambda1  D  lambda4
+        # W  rc  B  gamma  r0  C  cos(theta)
+        # We set three-body terms to 0 for now
+        - elements: ['Li']
+          coefficients: [1000.0, 7.0,  1.0, 4.5, 26.0, 2.75,
+                         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        - elements: ['Ta']
+          coefficients: [1000.0, 7.0,  5.0, 4.5, 26.0, 2.75,
+                         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        - elements: ['O']
+          coefficients: [1000.0, 7.0, -2.0, 4.5, 26.0, 2.75,
+                         0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]

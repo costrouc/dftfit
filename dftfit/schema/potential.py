@@ -71,6 +71,7 @@ class PairPotentialSchema(BaseSchema):
         'stillinger-weber',
         'gao-weber',
         'vashishta',
+        'vashishta-mixing',
         'comb',
         'comb-3'
     }

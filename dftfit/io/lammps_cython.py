@@ -309,6 +309,7 @@ LAMMPS_POTENTIAL_NAME_MAPPING = {
     'stillinger-weber': 'sw',
     'gao-weber': 'gw',
     'vashishta': 'vashishta',
+    'vashishta-mixing': 'vashishta',
     'comb': 'comb',
     'comb-3': 'comb3',
     'python-function': 'table'
@@ -340,6 +341,11 @@ def write_potential_files(potential, elements, unique_id=1):
                 elif len(parameter['elements']) == 2:
                     mixing_parameters[tuple(sorted(parameter['elements']))] = parameter['coefficients'][0]
             parameters = tersoff_2_to_tersoff(element_parameters, mixing_parameters)
+        elif pair_potential['type'] == 'vashishta-mixing':
+            element_parameters = {}
+            for parameter in pair_potential['parameters']:
+                element_parameters[parameter['elements'][0]] = parameter['coefficients']
+            parameters = vashishta_mixed_to_vashishta(element_parameters)
         elif pair_potential['type'] in {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber', 'vashishta', 'comb', 'comb-3', 'python-function'}:
             parameters = {}
             for parameter in pair_potential['parameters']:
@@ -352,7 +358,7 @@ def write_potential_files(potential, elements, unique_id=1):
             lammps_files[filename] = write_stillinger_weber_potential(parameters)
         elif pair_potential['type'] == 'gao-weber':
             lammps_files[filename] = write_gao_weber_potential(parameters)
-        elif pair_potential['type'] == 'vashishta':
+        elif pair_potential['type'] in {'vashishta', 'vashishta-mixing'}:
             lammps_files[filename] = write_vashishta_potential(parameters)
         elif pair_potential['type'] == 'comb':
             lammps_files[filename] = write_comb_potential(parameters)
@@ -447,7 +453,7 @@ def write_potential(potential, elements, unique_id=1):
                 'pair_style': 'table linear %d' % samples,
                 'pair_coeff': pair_coeffs
             })
-        elif pair_potential['type'] in {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber', 'vashishta', 'comb', 'comb-3'}:
+        elif pair_potential['type'] in {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber', 'vashishta', 'vashishta-mixing', 'comb', 'comb-3'}:
             filename = '/tmp/lammps.%d.%d.%s' % (i, unique_id, potential_lammps_name)
             if pair_potential['type'] == 'comb-3':
                 pair_style = '%s polar_off' % (potential_lammps_name)

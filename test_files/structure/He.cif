@@ -17,6 +17,10 @@ loop_
  _symmetry_equiv_pos_as_xyz
   1  'x, y, z'
 loop_
+_atom_type_symbol
+_atom_type_oxidation_number
+He1 0
+loop_
  _atom_site_type_symbol
  _atom_site_label
  _atom_site_symmetry_multiplicity
