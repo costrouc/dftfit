@@ -101,7 +101,8 @@ class SiestaReader(DFTReader):
 
     def _parse_stress(self, xml_stress):
         eVA32GPa = 160.21766208 # http://greif.geo.berkeley.edu/~driver/conversions.html
-        return np.array([float(_) for _ in xml_stress.text.split()]).reshape(3, 3) * eVA32GPa
+        GPa2Bar = 1e4 # GPa -> Bar
+        return np.array([float(_) for _ in xml_stress.text.split()]).reshape(3, 3) * eVA32GPa * GPa2Bar
 
     def _parse_forces(self, xml_forces):
         return np.array([float(_) for _ in xml_forces.text.split()]).reshape(-1, 3)

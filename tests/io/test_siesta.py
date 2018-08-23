@@ -16,9 +16,10 @@ def test_siesta_reader():
     assert np.all(np.isclose(calculation.forces[0], first_row_forces))
 
     eVA32GPa = 160.21766208 # http://greif.geo.berkeley.edu/~driver/conversions.html
+    GPa2Bar = 1e4 # GPa -> bars
     stresses = np.array([
         [-2.765925809224e-3, -3.009750267323e-5, 1.171322722617e-4],
         [-2.908082457191e-5, -3.180769833963e-3, -1.264574964357e-4],
         [1.174490293284e-4, -1.258277686581e-4, -1.767562635815e-3]
-    ]) * eVA32GPa
+    ]) * eVA32GPa * GPa2Bar
     assert np.all(np.isclose(calculation.stress, stresses))
