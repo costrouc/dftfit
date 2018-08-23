@@ -76,7 +76,7 @@ class LammpsCythonWorker:
                     [S[0], S[3], S[5]],
                     [S[3], S[1], S[4]],
                     [S[5], S[4], S[2]]
-                ])
+                ]) * 1e-4  # bars -> GPa
             })
         return results
 
@@ -212,7 +212,7 @@ class LammpsCythonMDCalculator(MDCalculator):
                 [S[0], S[3], S[5]],
                 [S[3], S[1], S[4]],
                 [S[5], S[4], S[2]]
-            ])
+            ]) * 1e-4  # bars -> GPa
 
         if 'energy' in properties:
             results['energy'] = lmp.thermo.computes['thermo_pe'].scalar + lmp.thermo.computes['my_ke'].scalar
