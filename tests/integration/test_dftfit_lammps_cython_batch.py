@@ -31,4 +31,4 @@ def test_lammps_cython_algorithms():
                                     potential_schema=potential_schema,
                                     configuration_schema=configuration_schema,
                                     batch_schema=batch_schema)
-            assert num_jobs == 4
+            assert len(num_jobs) == 4

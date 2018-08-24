@@ -20,7 +20,6 @@ from . import utils
 
 class Training:
     def __init__(self, schema, cache_filename=None):
-        print(schema)
         schema_load, errors = TrainingSchema().load(schema)
         self.schema = schema_load
         self._gather_calculations(cache_filename=cache_filename)
