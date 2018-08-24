@@ -12,20 +12,7 @@ import pymatgen as pmg
 
 from ..schema import PotentialSchema
 from ..parameter import FloatParameter
-
-
-def naive_attr_path(d, attr_path):
-    """ Allow simple nested dict key access
-
-    example: pair.1.parameters.1.coefficients.2
-    """
-    attr_keys = attr_path.split('.')
-    for key in attr_keys:
-        if re.match('[0-9]+', key):
-            d = d[int(key)]
-        else:
-            d = d[key]
-    return d
+from ..utils import get_naive_attr_path
 
 
 class Potential:
@@ -53,10 +40,10 @@ class Potential:
                 parameter.computed = lambda: -sum(float(charges[element.symbol]) * amount for element, amount in composition.items() if element.symbol != charge_element)
             elif constraint == 'equations':
                 for equation in value:
-                    left = naive_attr_path(self.schema['spec'], equation['left'])
+                    left = get_naive_attr_path(self.schema['spec'], equation['left'])
                     right_terms = []
                     for right_term in equation['right']:
-                        v = naive_attr_path(self.schema['spec'], right_term[0])
+                        v = get_naive_attr_path(self.schema['spec'], right_term[0])
                         right_terms.append([v, right_term[1]])
 
                     left.computed = lambda: sum(float(v[0]) * v[1] for v in right_terms)
