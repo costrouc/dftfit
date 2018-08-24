@@ -58,14 +58,15 @@ def naive_scheduler(full_schemas, scheduler_frequency=5, max_cpus=None):
 
     submitted_tasks = 0
     while len(full_schemas) or len(running_jobs):
-        next_cpus_requested = full_schemas[0]['configuration']['spec'].get('problem', {}).get('num_workers', 1)
-        if max_cpus - current_cpu_used >= next_cpus_requested:
-            full_schema = full_schemas.pop(0)
-            p = multiprocessing.Process(target=run_dftfit, args=(
-                full_schema, submitted_tasks, result_queue))
-            p.start()
-            running_jobs.append((p, next_cpus_requested))
-            current_cpu_used += next_cpus_requested
+        if len(full_schemas):
+            next_cpus_requested = full_schemas[0]['configuration']['spec'].get('problem', {}).get('num_workers', 1)
+            if max_cpus - current_cpu_used >= next_cpus_requested:
+                full_schema = full_schemas.pop(0)
+                p = multiprocessing.Process(target=run_dftfit, args=(
+                    full_schema, submitted_tasks, result_queue))
+                p.start()
+                running_jobs.append((p, next_cpus_requested))
+                current_cpu_used += next_cpus_requested
 
         time.sleep(scheduler_frequency)
         completed_jobs = [num_cpus for p, num_cpus in running_jobs if not p.is_alive()]
