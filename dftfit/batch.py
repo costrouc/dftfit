@@ -67,6 +67,7 @@ def naive_scheduler(full_schemas, scheduler_frequency=5, max_cpus=None):
                 p.start()
                 running_jobs.append((p, next_cpus_requested))
                 current_cpu_used += next_cpus_requested
+                submitted_tasks += 1
 
         time.sleep(scheduler_frequency)
         completed_jobs = [num_cpus for p, num_cpus in running_jobs if not p.is_alive()]
