@@ -1,5 +1,6 @@
 import random
 import json
+import logging
 
 import yaml
 import os
@@ -16,6 +17,7 @@ class Configuration:
 
         # Logging
         init_logging(self.schema['spec'].get('logging', 'WARNING'))
+        logger = logging.getLogger(__name__)
 
         # Name and Labels
         self.run_name = self.schema['metadata'].get('name')
@@ -29,6 +31,7 @@ class Configuration:
         self.db_write_interval = self.schema['spec'].get('database', {}).get('interval', 10)
         if self.schema['spec'].get('database', {}).get('filename'):
             database_filename = os.path.expanduser(self.schema['spec']['database']['filename'])
+            logger.info('(configuration) using sqlite database %s' % database_filename)
             database_directory, filename = os.path.split(database_filename)
             os.makedirs(database_directory, exist_ok=True)
             self.dbm = DatabaseManager(database_filename)
