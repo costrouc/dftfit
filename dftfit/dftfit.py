@@ -1,3 +1,5 @@
+import logging
+
 from .potential import Potential
 from .training import Training
 from .config import Configuration
@@ -5,6 +7,8 @@ from .optimize import Optimize
 from .batch import apply_batch_schema_on_schemas, naive_scheduler
 
 from .db import write_run_initial, write_run_final
+
+logger = logging.getLogger(__name__)
 
 
 def dftfit(configuration_schema, potential_schema, training_schema):
@@ -31,12 +35,14 @@ def dftfit(configuration_schema, potential_schema, training_schema):
         )
 
         # if include initial guess replace one random guess with initial
+        logger.info('(population) initializing with %d guesses' % configuration.population)
         if configuration.include_initial_guess:
             population_size = configuration.population - 1
         else:
             population_size = configuration.population
         population = optimize.population(configuration.population, seed=configuration.seed)
         if configuration.include_initial_guess:
+            logger.info('(population) including initial potential guess')
             population.push_back(potential.optimization_parameters)
 
         optimize.optimize(population, steps=configuration.steps, seed=configuration.seed)

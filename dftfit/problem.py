@@ -1,8 +1,6 @@
 import asyncio
 import logging
 
-import pymatgen as pmg
-
 from .db import write_evaluations_batch
 from .io.lammps import LammpsLocalDFTFITCalculator
 from .io.lammps_cython import LammpsCythonDFTFITCalculator

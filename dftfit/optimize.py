@@ -1,8 +1,11 @@
 import functools
+import logging
 
 import pygmo
 
 from .problem import DFTFITSingleProblem, DFTFITMultiProblem
+
+logger = logging.getLogger(__name__)
 
 
 available_algorithms = {
@@ -62,6 +65,7 @@ class Optimize:
             self._algorithm = pygmo.algorithm(_algorithm)
         else:
             self._algorithm = pygmo.algorithm(algorithm_constructor(gen=steps, seed=seed, **self.algorithm_kwargs))
+
         results = self._algorithm.evolve(population)
         self._internal_problem.finalize()
         return results
