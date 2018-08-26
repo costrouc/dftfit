@@ -20,6 +20,8 @@ def apply_batch_schema_on_schemas(configuration_schema, potential_schema, traini
     if num_jobs is None:
         num_jobs = 1
 
+    logger.info('(batch) %d jobs will be scheduled' % num_jobs)
+
     # All available schemas
     full_schemas = []
     for i in range(num_jobs):
@@ -75,6 +77,7 @@ def naive_scheduler(full_schemas, scheduler_frequency=5, max_cpus=None):
         if len(full_schemas):
             next_cpus_requested = full_schemas[0]['configuration']['spec'].get('problem', {}).get('num_workers', 1)
             if max_cpus - current_cpu_used >= next_cpus_requested:
+                logger.info('(batch) scheduled dftfit task id: %d' % submitted_tasks)
                 full_schema = full_schemas.pop(0)
                 p = multiprocessing.Process(target=run_dftfit, args=(
                     full_schema, submitted_tasks, result_queue))
@@ -86,10 +89,14 @@ def naive_scheduler(full_schemas, scheduler_frequency=5, max_cpus=None):
         time.sleep(scheduler_frequency)
         completed_jobs = [num_cpus for p, num_cpus in running_jobs if not p.is_alive()]
         running_jobs = [(p, num_cpus) for p, num_cpus in running_jobs if p.is_alive()]
+
+        if completed_jobs:
+            logger.info('(batch) %d dftfit jobs just completed' % len(completed_jobs))
         current_cpu_used = current_cpu_used - sum(completed_jobs)
 
     results = []
     while not result_queue.empty():
         results.append(result_queue.get())
     run_ids = [run_id for task_id, run_id in sorted(results, key=lambda r: r[0])]
+    logger.info('(batch) run ids of completed jobs: %s' % run_ids)
     return run_ids

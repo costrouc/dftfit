@@ -25,14 +25,17 @@ class DFTFITProblemBase:
         structures = [c.structure for c in self.training.calculations]
         self.dftfit_calculator = dftfit_calculator_mapper[calculator](structures=structures, potential=potential, **kwargs)
         self.loop.run_until_complete(self.dftfit_calculator.create())
+        logger.info('(problem) initialized dftfit calculator %s' % calculator)
 
         # MD Calculator Initialization
         self.md_calculator = None
         if training.material_properties:
             self.md_calculator = Predict(calculator, loop=self.loop)
+            logger.info('(problem) initialized md calculator %s' % calculator)
 
         # Potential Initialization
         self.potential = potential
+        logger.info('(problem) potential has %d parameters' % len(potential.optimization_parameters))
 
         # Objective Initialization
         self.features = features
@@ -54,6 +57,7 @@ class DFTFITProblemBase:
                 self.md_calculations.add('lattice_constants')
             elif feature in {'elastic_constants', 'bulk_modulus', 'shear_modulus'}:
                 self.md_calculations = self.md_calculations | {'lattice_constants', 'elastic_constants'}
+        logger.info('(problem) optimizing features with weights: ' + ', '.join('{}={:.2f}'.format(f, w) for f, w in zip(self.features, self.weights)))
 
         # Database Logging Initialization
         self.dbm = dbm

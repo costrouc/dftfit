@@ -65,6 +65,7 @@ class Optimize:
             self._algorithm = pygmo.algorithm(_algorithm)
         else:
             self._algorithm = pygmo.algorithm(algorithm_constructor(gen=steps, seed=seed, **self.algorithm_kwargs))
+        logger.info('(algorithm) using %s algorithm with steps: %d seed: %d' % (self.algorithm_name, steps, seed))
 
         results = self._algorithm.evolve(population)
         self._internal_problem.finalize()

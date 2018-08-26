@@ -63,6 +63,7 @@ def dftfit_batch(configuration_schema, potential_schema, training_schema, batch_
 
     if key value is a list all lists must be the same length
     """
+    configuration = Configuration(configuration_schema)
     full_schemas = apply_batch_schema_on_schemas(
         configuration_schema,
         potential_schema,
