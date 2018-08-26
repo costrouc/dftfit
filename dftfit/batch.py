@@ -1,8 +1,11 @@
 import copy
 import multiprocessing
 import time
+import logging
 
 from .utils import set_naive_attr_path
+
+logger = logging.getLogger(__name__)
 
 
 def apply_batch_schema_on_schemas(configuration_schema, potential_schema, training_schema, batch_schema):
@@ -44,6 +47,17 @@ def naive_scheduler(full_schemas, scheduler_frequency=5, max_cpus=None):
     from .dftfit import dftfit
 
     max_cpus = max_cpus or multiprocessing.cpu_count()
+
+    def filter_jobs_to_many_cpus(full_schemas):
+        filtered_full_schemas = []
+        for i, full_schema in enumerate(full_schemas):
+            if full_schema['configuration']['spec'].get('problem', {}).get('num_workers', 0) > max_cpus:
+                logger.warning('skipping job %d becuase requsted cpus is larger than allotment' % i+1)
+            else:
+                filtered_full_schemas.append(full_schema)
+        return filtered_full_schemas
+
+    full_schemas = filter_jobs_to_many_cpus(full_schemas)
 
     running_jobs = []
     current_cpu_used = 0
