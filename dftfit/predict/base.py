@@ -1,6 +1,7 @@
 import asyncio
 import os
 import json
+import math
 
 import numpy as np
 
@@ -60,7 +61,7 @@ class Predict:
             'forces': np.array(result['results']['forces'])
         }
 
-    def pair(self, specie_a, specie_b, potential, separations):
+    def pair(self, element_a, element_b, potential, separations):
         max_r = np.max(separations)
         lattice = Lattice.from_parameters(10*max_r, 10*max_r, 10*max_r, 90, 90, 90)
 
@@ -76,8 +77,35 @@ class Predict:
                 coord_b = (lattice.a*0.5+(sep/2), lattice.b*0.5, lattice.c*0.5)
                 structure = Structure(
                     lattice,
-                    [specie_a, specie_b],
+                    [element_a, element_b],
                     [coord_a, coord_b], coords_are_cartesian=True)
+                futures.append(await self.calculator.submit(
+                    structure, potential,
+                    properties={'energy'},
+                    **kwargs))
+            return await asyncio.gather(*futures)
+        results = self.loop.run_until_complete(calculate())
+        return np.array([r['results']['energy'] for r in results])
+
+    def three_body(self, element_a, element_b, potential, separation, angles):
+        max_r = separation
+        lattice = Lattice.from_parameters(10*max_r, 10*max_r, 10*max_r, 90, 90, 90)
+
+        if self.calculator_type == 'lammps':
+            kwargs = {'lammps_set': load_lammps_set('static')}
+        elif self.calculator_type == 'lammps_cython':
+            kwargs = {'lammps_additional_commands': ['run 0']}
+
+        async def calculate():
+            futures = []
+            for angle in angles:
+                coord_a = (lattice.a*0.5 + separation, lattice.b*0.5, lattice.c*0.5)
+                coord_b = (lattice.a*0.5, lattice.b*0.5, lattice.c*0.5) # b in center
+                coord_c = (lattice.a*0.5 + (math.cos(angle) * separation), lattice.b*0.5 + (math.sin(angle) * separation), lattice.c*0.5)
+                structure = Structure(
+                    lattice,
+                    [element_b, element_a, element_b],
+                    [coord_a, coord_b, coord_c], coords_are_cartesian=True)
                 futures.append(await self.calculator.submit(
                     structure, potential,
                     properties={'energy'},
