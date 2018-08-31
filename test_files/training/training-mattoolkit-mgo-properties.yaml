@@ -51,3 +51,23 @@ spec:
     data: 151
   - type: shear_modulus
     data: 119
+  - type: point_defects
+    data:
+      # from Ben's dissertation
+      mg_interstial:
+        - {"opp": "+", "element": "Mg", "position": [0.5, 0.5, 0.0], "energy": -1.0}
+      o_interstial:
+        - {"opp": "+", "element": "O", "position": [0.5, 0.5, 0.0], "energy": -3.5}
+      mg_vacancy:
+        - {"opp": "-", "element": "Mg", "position": [0.0, 0.0, 0.0], "energy": -1.0}
+      o_vacancy:
+        - {"opp": "-", "element": "O", "position": [0.5, 0.5, 0.5], "energy": 1.8}
+  - type: displacement_energies
+    data:
+      # from Ben's dissertation
+      mg_1: { "element": "Mg", "position": [0, 0, 0], "direction": [1, 0, 0], "energy": 122.5}
+      mg_2: { "element": "Mg", "position": [0, 0, 0], "direction": [1, 1, 0], "energy": 29.5}
+      mg_3: { "element": "Mg", "position": [0, 0, 0], "direction": [1, 1, 1], "energy": 122.5}
+      o_1: { "element": "O", "position": [0.5, 0.5, 0.5], "direction": [1, 0, 0], "energy": 150.0}
+      o_2: { "element": "O", "position": [0.5, 0.5, 0.5], "direction": [1, 1, 0], "energy": 25.5}
+      o_3: { "element": "O", "position": [0.5, 0.5, 0.5], "direction": [1, 1, 1], "energy": 65.5}

@@ -201,9 +201,11 @@ class LammpsCythonMDCalculator(MDCalculator):
             results['lattice'] = pmg.Lattice.from_parameters(*lengths, *angles).matrix
 
         if 'positions' in properties:
-            bounds, tilt, rotation_matrix = pmg.Structure(lmp.system.lattice, symbols, lmp.system.positions, coords_are_cart=True)
+            lengths, angles_r = lmp.box.lengths_angles
+            angles = [math.degrees(_) for _ in angles_r]
+            bounds, tilt, rotation_matrix = lammps.core.lattice_const_to_lammps_box(lengths, angles)
             inv_rotation_matrix = np.linalg.inv(rotation_matrix)
-            cart_coords = transform_cartesian_vector_to_lammps_vector(positions, inv_rotation_matrix)
+            cart_coords = lammps.core.transform_cartesian_vector_to_lammps_vector(lmp.system.positions, inv_rotation_matrix)
             results['positions'] = cart_coords
 
         if 'stress' in properties:
@@ -225,6 +227,9 @@ class LammpsCythonMDCalculator(MDCalculator):
 
         if 'velocities' in properties:
             results['velocities'] = lmp.system.velocities
+
+        if 'timesteps' in properties:
+            results['timesteps'] = lmp.time_step
 
         # compatibility...
         future = asyncio.Future()

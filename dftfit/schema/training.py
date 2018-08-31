@@ -78,6 +78,24 @@ class ShearModulusTrainingSetSchema(BaseSchema):
     data = fields.Float(required=True)
 
 
+# point defects
+class PointDefectsTrainingSetSchema(BaseSchema):
+    type = fields.String(required=True, validate=validate.Equal('point_defects'))
+    data = fields.Dict(required=True)
+
+
+# displacement energies
+class DisplacementEnergiesTrainingSetSchema(BaseSchema):
+    type = fields.String(required=True, validate=validate.Equal('displacement_energies'))
+    data = fields.Dict(required=True)
+
+
+# melting point
+class MeltingPointEnergiesTrainingSetSchema(BaseSchema):
+    type = fields.String(required=True, validate=validate.Equal('melting_point'))
+    data = fields.Float(required=True)
+
+
 _TYPE_TO_SCHEMA = {
     'mattoolkit': MTKTrainingSetSchema,
     'Siesta': SiestaTrainingSetSchema,
@@ -85,7 +103,10 @@ _TYPE_TO_SCHEMA = {
     'lattice_constants': LatticeConstantTrainingSetSchema,
     'elastic_constants': ElasticConstantTrainingSetSchema,
     'bulk_modulus': BulkModulusTrainingSetSchema,
-    'shear_modulus': ShearModulusTrainingSetSchema
+    'shear_modulus': ShearModulusTrainingSetSchema,
+    'point_defects': PointDefectsTrainingSetSchema,
+    'displacement_energies': DisplacementEnergiesTrainingSetSchema,
+    'melting_point': MeltingPointEnergiesTrainingSetSchema
 }
 
 

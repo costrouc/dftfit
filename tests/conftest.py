@@ -5,6 +5,7 @@ import pymatgen as pmg
 from pymatgen.io.cif import CifParser
 
 from dftfit.potential import Potential
+from dftfit.training import Training
 
 
 @pytest.fixture
@@ -36,6 +37,13 @@ def structure():
 def potential():
     def f(filename, format=None):
         return Potential.from_file(filename, format=format)
+    return f
+
+
+@pytest.fixture
+def training():
+    def f(filename, format=None, cache_filename=None):
+        return Training.from_file(filename, format=format, cache_filename=cache_filename)
     return f
 
 
