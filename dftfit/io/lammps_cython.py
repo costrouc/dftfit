@@ -174,12 +174,22 @@ class LammpsCythonMDCalculator(MDCalculator):
 
     async def submit(self, structure, potential, properties=None, lammps_additional_commands=None):
         properties = properties or {'stress', 'energy', 'forces'}
+        results = {}
+
         lammps_additional_commands = lammps_additional_commands or ['run 0']
         lmp = lammps.Lammps(units='metal', style='full', args=[
             '-log', 'none', '-screen', 'none'
         ])
         elements = lmp.system.add_pymatgen_structure(structure)
         lmp.thermo.add('my_ke', 'ke', 'all')
+        if 'initial_positions' in properties:
+            # lengths, angles_r = lmp.box.lengths_angles
+            # angles = [math.degrees(_) for _ in angles_r]
+            # bounds, tilt, rotation_matrix = lammps.core.lattice_const_to_lammps_box(lengths, angles)
+            # inv_rotation_matrix = np.linalg.inv(rotation_matrix)
+            # cart_coords = np.ascontiguousarray(
+            #     lammps.core.transform_cartesian_vector_to_lammps_vector(lmp.system.positions.copy(), inv_rotation_matrix))
+            results['initial_positions'] = lmp.system.positions.copy()
 
         lammps_files = write_potential_files(potential, elements=elements, unique_id=self.unique_id)
         for filename, content in lammps_files.items():
@@ -194,19 +204,19 @@ class LammpsCythonMDCalculator(MDCalculator):
             lmp.command(command)
 
         # to handle non-orthogonal unit cells
-        results = {}
         if 'lattice' in properties:
             lengths, angles_r = lmp.box.lengths_angles
             angles = [math.degrees(_) for _ in angles_r]
             results['lattice'] = pmg.Lattice.from_parameters(*lengths, *angles).matrix
 
         if 'positions' in properties:
-            lengths, angles_r = lmp.box.lengths_angles
-            angles = [math.degrees(_) for _ in angles_r]
-            bounds, tilt, rotation_matrix = lammps.core.lattice_const_to_lammps_box(lengths, angles)
-            inv_rotation_matrix = np.linalg.inv(rotation_matrix)
-            cart_coords = lammps.core.transform_cartesian_vector_to_lammps_vector(lmp.system.positions, inv_rotation_matrix)
-            results['positions'] = cart_coords
+            # lengths, angles_r = lmp.box.lengths_angles
+            # angles = [math.degrees(_) for _ in angles_r]
+            # bounds, tilt, rotation_matrix = lammps.core.lattice_const_to_lammps_box(lengths, angles)
+            # inv_rotation_matrix = np.linalg.inv(rotation_matrix)
+            # cart_coords = np.ascontiguousarray(
+            #     lammps.core.transform_cartesian_vector_to_lammps_vector(lmp.system.positions.copy(), inv_rotation_matrix))
+            results['positions'] = lmp.system.positions.copy()
 
         if 'stress' in properties:
             S = lmp.thermo.computes['thermo_press'].vector

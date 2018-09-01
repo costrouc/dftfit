@@ -53,6 +53,11 @@ def test_lammps_cython_md_calculator_point_defects(benchmark, structure, potenti
     point_defects_schema = training.schema['spec'][7]['data']
 
     predict = Predict('lammps_cython')
+
+    # Equilibrium structure
+    old_lattice, new_lattice = predict.lattice_constant(structure, potential)
+    structure.modify_lattice(new_lattice)
+
     @benchmark
     def test():
         predict.point_defects(structure, potential, point_defects_schema, supercell=(2, 2, 2))
@@ -68,6 +73,11 @@ def test_lammps_cython_md_calculator_displacement_energies(benchmark, structure,
     displacement_energy_schema = training.schema['spec'][8]['data']
 
     predict = Predict('lammps_cython')
+
+    # Equilibrium structure
+    old_lattice, new_lattice = predict.lattice_constant(structure, potential)
+    structure.modify_lattice(new_lattice)
+
     @benchmark
     def test():
-        predict.displacement_energies(structure, potential, displacement_energy_schema, supercell=(2, 2, 2))
+        predict.displacement_energies(structure, potential, displacement_energy_schema, supercell=(2, 2, 2), max_displacement_energy=100, site_radius=0.5, num_steps=1000, resolution=25, timestep=0.001)

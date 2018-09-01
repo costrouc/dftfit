@@ -9,6 +9,7 @@ import numpy as np
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.core import Lattice, Structure, Element
 from pymatgen.analysis.elasticity import DeformedStructureSet, ElasticTensor, Stress, Strain
+from pymatgen.util.coord import pbc_diff
 
 from ..io.lammps import LammpsLocalMDCalculator
 from ..io.lammps_cython import LammpsCythonMDCalculator
@@ -223,26 +224,26 @@ class Predict:
             energies[point_defect_name] = result['results']['energy']
         return energies
 
-    def displacement_energies(self, structure, potential, displacement_energies_schema, supercell=(1, 1, 1), tollerance=0.1, max_displacement_energy=75, resolution=1, num_steps=100):
+    def displacement_energies(self, structure, potential, displacement_energies_schema, supercell=(1, 1, 1), tollerance=0.1, max_displacement_energy=75, resolution=1, num_steps=1000, site_radius=0.5, timestep=0.001):
         """ Calculate displacement energy for each atom.
 
         Uses bisection method to determine displacement energy.
         """
         def ev2Aps(Z, energy):
             # sqrt((2 * energy[eV] [J/eV]) / (amu [g/mole] [kg/g])) * [m/s] [A/ps]
-            return math.sqrt((2 * energy * 1.6021766208e-19) / (Z / (6.02214085e23 * 1e3))) * 1e-2 * 1e-3
+            return math.sqrt((2 * energy * 1.6021766208e-19) / (Z / (6.02214085e23 * 1e3))) * 1e-2
 
         if self.calculator_type == 'lammps':
             logger.warning('"lammps" calculator is depriciated use "lammps_cython" cannot promise working')
             relax_lammps_script = load_lammps_set('nve')
             relax_lammps_script['thermo'] = []
             relax_lammps_script
-            relax_lammps_script['timestep'] = 0.001 # fs
+            relax_lammps_script['timestep'] = timestep # fs
             relax_lammps_script['run'] = num_steps
             kwargs = {'lammps_set': relax_lammps_script}
         elif self.calculator_type == 'lammps_cython':
             kwargs = {'lammps_additional_commands': [
-                'timestep 0.001',
+                'timestep %f' % timestep,
                 'velocity all zero linear',
                 'fix 1 all nve',
                 'run %d' % num_steps
@@ -257,6 +258,7 @@ class Predict:
             base_structure = base_structure * supercell
             site = base_structure.get_sites_in_sphere(cart_coords, tollerance)[0][0]
             original_positions = base_structure.cart_coords
+            original_frac_positions = base_structure.lattice.get_fractional_coords(original_positions)
             index = base_structure.index(site)
 
             min_energy, max_energy = 0.0, max_displacement_energy
@@ -271,16 +273,21 @@ class Predict:
                 async def calculate():
                     future = await self.calculator.submit(
                         base_structure, potential,
-                        properties={'positions'},
+                        properties={'positions', 'initial_positions'},
                         **kwargs)
                     await future
                     return future.result()
 
                 print('starting calculation (displacement energy): %s ion %s velocity: %f [eV] %f [A/ps]' % (displacement_energy_name, d['element'], guess_energy, ev2Aps(Element(d['element']).atomic_mass, guess_energy)))
                 result = self.loop.run_until_complete(calculate())
-                final_frac_coords = base_structure.lattice.get_fractional_coords(result['results']['positions']) % 1.0
-                displacements = np.linalg.norm(base_structure.lattice.get_cartesian_coords(final_frac_coords) - original_positions, axis=1)
-                is_original_state = np.any(displacements < tollerance)
+                initial_frac_positions = base_structure.lattice.get_fractional_coords(result['results']['initial_positions'])
+                final_frac_positions = base_structure.lattice.get_fractional_coords(result['results']['positions'])
+                displacements = np.linalg.norm(
+                    base_structure.lattice.get_cartesian_coords(
+                        pbc_diff(final_frac_positions, initial_frac_positions)), axis=1)
+                # print(initial_frac_positions[displacements > site_radius])
+                # print(final_frac_positions[displacements > site_radius])
+                is_original_state = np.all(displacements < site_radius)
                 print('finished calculation (displacement energy): %s resulted in ground_state (%s) max displacment %f [A] median %f [A] min %f [A]' % (displacement_energy_name, is_original_state, np.max(displacements), np.median(displacements), np.min(displacements)))
                 if is_original_state:
                     min_energy = guess_energy
