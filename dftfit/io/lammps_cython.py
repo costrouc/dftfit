@@ -180,16 +180,11 @@ class LammpsCythonMDCalculator(MDCalculator):
         lmp = lammps.Lammps(units='metal', style='full', args=[
             '-log', 'none', '-screen', 'none'
         ])
-        elements = lmp.system.add_pymatgen_structure(structure)
+        elements, rotation_matrix = lmp.system.add_pymatgen_structure(structure)
+        inv_rotation_matrix = np.linalg.inv(rotation_matrix)
         lmp.thermo.add('my_ke', 'ke', 'all')
         if 'initial_positions' in properties:
-            # lengths, angles_r = lmp.box.lengths_angles
-            # angles = [math.degrees(_) for _ in angles_r]
-            # bounds, tilt, rotation_matrix = lammps.core.lattice_const_to_lammps_box(lengths, angles)
-            # inv_rotation_matrix = np.linalg.inv(rotation_matrix)
-            # cart_coords = np.ascontiguousarray(
-            #     lammps.core.transform_cartesian_vector_to_lammps_vector(lmp.system.positions.copy(), inv_rotation_matrix))
-            results['initial_positions'] = lmp.system.positions.copy()
+            results['initial_positions'] = np.dot(lmp.system.positions.copy(), inv_rotation_matrix)
 
         lammps_files = write_potential_files(potential, elements=elements, unique_id=self.unique_id)
         for filename, content in lammps_files.items():
@@ -210,13 +205,7 @@ class LammpsCythonMDCalculator(MDCalculator):
             results['lattice'] = pmg.Lattice.from_parameters(*lengths, *angles).matrix
 
         if 'positions' in properties:
-            # lengths, angles_r = lmp.box.lengths_angles
-            # angles = [math.degrees(_) for _ in angles_r]
-            # bounds, tilt, rotation_matrix = lammps.core.lattice_const_to_lammps_box(lengths, angles)
-            # inv_rotation_matrix = np.linalg.inv(rotation_matrix)
-            # cart_coords = np.ascontiguousarray(
-            #     lammps.core.transform_cartesian_vector_to_lammps_vector(lmp.system.positions.copy(), inv_rotation_matrix))
-            results['positions'] = lmp.system.positions.copy()
+            results['positions'] = np.dot(lmp.system.positions.copy(), inv_rotation_matrix)
 
         if 'stress' in properties:
             S = lmp.thermo.computes['thermo_press'].vector
@@ -236,7 +225,7 @@ class LammpsCythonMDCalculator(MDCalculator):
             results['symbols'] = [elements[i-1] for i in lmp.system.types[0]]
 
         if 'velocities' in properties:
-            results['velocities'] = lmp.system.velocities
+            results['velocities'] = np.dot(lmp.system.velocities.copy(), inv_rotation_matrix)
 
         if 'timesteps' in properties:
             results['timesteps'] = lmp.time_step
@@ -247,7 +236,7 @@ class LammpsCythonMDCalculator(MDCalculator):
         return future
 
 
-def vashishta_mixed_to_vashishta(element_parameters):
+def vashishta_mixed_to_vashishta(element_parameters, override_parameters):
     """ Vashishta mixing potential
 
     Using tersoff for two body mixing rules.
@@ -278,7 +267,11 @@ def vashishta_mixed_to_vashishta(element_parameters):
 
     parameters = {}
     for e1, e2, e3 in itertools.product(element_parameters, repeat=3):
-        parameters[(e1, e2, e3)] = mixing_params_from_singles(e1, e2)
+        mixing_parameters = mixing_params_from_singles(e1, e2)
+        if (e1, e2, e3) in override_parameters:
+            parameters[(e1, e2, e3)] = [float(p2) if p2 else p1 for p1, p2 in zip(mixing_parameters, override_parameters)]
+        else:
+            parameters[(e1, e2, e3)] = mixing_parameters
     return parameters
 
 
@@ -361,9 +354,13 @@ def write_potential_files(potential, elements, unique_id=1):
             parameters = tersoff_2_to_tersoff(element_parameters, mixing_parameters)
         elif pair_potential['type'] == 'vashishta-mixing':
             element_parameters = {}
+            override_parameters = {}
             for parameter in pair_potential['parameters']:
-                element_parameters[parameter['elements'][0]] = parameter['coefficients']
-            parameters = vashishta_mixed_to_vashishta(element_parameters)
+                if len(parameter['elements']) == 1:
+                    element_parameters[parameter['elements'][0]] = parameter['coefficients']
+                elif len(parameter['elements']) == 3:
+                    override_parameters[tuple(parameter['elements'])] = parameter['coefficients']
+            parameters = vashishta_mixed_to_vashishta(element_parameters, override_parameters)
         elif pair_potential['type'] in {'tersoff-2', 'tersoff', 'stillinger-weber', 'gao-weber', 'vashishta', 'comb', 'comb-3', 'python-function'}:
             parameters = {}
             for parameter in pair_potential['parameters']:

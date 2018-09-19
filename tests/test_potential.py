@@ -43,6 +43,7 @@ def test_potential_from_schema():
     ('LiTaO3-tersoff-2.yaml', 0, 36),
     ('LiTaO3-tersoff-2-charge.yaml', 0, 40),
     ('LiTaO3-vashishta-mixing.yaml', 14, 39),
+    ('LiTaO3-vashishta-mixing-threebody.yaml', 20, 44),
     ('LiNbO3-charge-buck-harmonic.yaml', 0, 25),
     ('SiC-tersoff.yaml', 0, 112),
     ('SiC-gao-weber.yaml', 0, 112),

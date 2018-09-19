@@ -42,7 +42,7 @@ def test_lammps_cython_md_calculator_elastic_constant(benchmark, structure, pote
     def test():
         predict.elastic_constant(structure, potential)
 
-
+@pytest.mark.long
 @pytest.mark.lammps_cython
 @pytest.mark.calculator
 @pytest.mark.benchmark(group='predict', min_rounds=1)
@@ -62,7 +62,7 @@ def test_lammps_cython_md_calculator_point_defects(benchmark, structure, potenti
     def test():
         predict.point_defects(structure, potential, point_defects_schema, supercell=(2, 2, 2))
 
-
+@pytest.mark.long
 @pytest.mark.lammps_cython
 @pytest.mark.calculator
 @pytest.mark.benchmark(group='predict', min_rounds=1)
@@ -80,4 +80,8 @@ def test_lammps_cython_md_calculator_displacement_energies(benchmark, structure,
 
     @benchmark
     def test():
-        predict.displacement_energies(structure, potential, displacement_energy_schema, supercell=(2, 2, 2), max_displacement_energy=100, site_radius=0.5, num_steps=1000, resolution=25, timestep=0.001)
+        predict.displacement_energies(structure, potential, displacement_energy_schema,
+                                      supercell=(2, 2, 2),
+                                      max_displacement_energy=50,
+                                      site_radius=0.5,
+                                      num_steps=2000, resolution=10, timestep=0.001)

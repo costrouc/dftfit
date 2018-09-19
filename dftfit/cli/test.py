@@ -5,6 +5,7 @@ from pymatgen.io.cif import CifParser
 from pymatgen.io.vasp import Poscar
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.core import Structure
+import pymatgen as pmg
 import numpy as np
 
 from .utils import is_file_type, is_not_file_type
@@ -84,7 +85,9 @@ def add_subcommand_test_pair(subparsers):
 
 def get_structure(filename):
     if filename.lower().endswith('.cif'):
-        return CifParser(filename).get_structures()[0]
+        structure = CifParser(filename).get_structures()[0]
+        lattice = pmg.Lattice.from_parameters(*structure.lattice.abc, *structure.lattice.angles)
+        return pmg.Structure(lattice, structure.species, structure.frac_coords, coords_are_cartesian=False)
     elif filename.lower().endswith('poscar'):
         return Poscar.from_file(filename).structure
     else:

@@ -285,8 +285,6 @@ class Predict:
                 displacements = np.linalg.norm(
                     base_structure.lattice.get_cartesian_coords(
                         pbc_diff(final_frac_positions, initial_frac_positions)), axis=1)
-                # print(initial_frac_positions[displacements > site_radius])
-                # print(final_frac_positions[displacements > site_radius])
                 is_original_state = np.all(displacements < site_radius)
                 print('finished calculation (displacement energy): %s resulted in ground_state (%s) max displacment %f [A] median %f [A] min %f [A]' % (displacement_energy_name, is_original_state, np.max(displacements), np.median(displacements), np.min(displacements)))
                 if is_original_state:

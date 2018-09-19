@@ -17,6 +17,8 @@ def structure():
 
         if filename.suffix == '.cif':
             s = CifParser(str(filename)).get_structures()[0]
+            l = pmg.Lattice.from_parameters(*s.lattice.abc, *s.lattice.angles)
+            s = pmg.Structure(l, s.species, s.frac_coords, coords_are_cartesian=False)
         elif filename.stem == 'POSCAR':
             s = pmg.io.vasp.inputs.Poscar(str(filename)).structure
         else:

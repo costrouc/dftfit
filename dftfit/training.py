@@ -9,6 +9,7 @@ import hashlib
 import collections
 
 import yaml
+import pymatgen as pmg
 from pymatgen.io.cif import CifParser
 from pymatgen.io.vasp import Poscar
 
@@ -57,7 +58,10 @@ class Training:
         data = structure_schema['data']
         format = structure_schema['format']
         if format == 'cif':
+            # cif lattice can be weird non standard shape
             structure = (CifParser.from_string(data)).get_structures()[0]
+            lattice = pmg.Lattice.from_parameters(*structure.lattice.abc, *structure.lattice.angles)
+            structure = pmg.Structure(lattice, structure.species, structure.frac_coords, coords_are_cartesian=False)
         elif format == 'POSCAR':
             structure = (Poscar.from_string(data)).structure
         return structure

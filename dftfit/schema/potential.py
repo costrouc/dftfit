@@ -56,7 +56,7 @@ class KspaceSchema(BaseSchema):
 
 class ParametersSchema(BaseSchema):
     elements = fields.List(fields.String(validate=validate.OneOf(element_symbols)), required=True)
-    coefficients = fields.List(FloatParameterField())
+    coefficients = fields.List(FloatParameterField(allow_none=True))
 
 
 class PairPotentialSchema(BaseSchema):
