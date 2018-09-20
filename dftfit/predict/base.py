@@ -35,7 +35,14 @@ class Predict:
         self.calculator_type = calculator
         self.calculator = calculator_mapper[calculator](**kwargs)
         self.loop = loop or asyncio.get_event_loop()
-        self.loop.run_until_complete(self.calculator.create())
+        self._run_async_func(self.calculator.create())
+
+    def _run_async_func(self, async_function):
+        if self.loop.is_running():
+            future = self.loop.create_task(async_function)
+            return future.result()
+        else:
+            return self.loop.run_until_complete(async_function)
 
     def conventional_structure(self, structure):
         sga = SpacegroupAnalyzer(structure)
@@ -58,7 +65,7 @@ class Predict:
                 **kwargs)
             await future
             return future.result()
-        result = self.loop.run_until_complete(calculate())
+        result = self._run_async_func(calculate())
         return {
             'energy': result['results']['energy'],
             'stress': np.array(result['results']['stress']) * 1e-4,  # convert to GPa
@@ -88,7 +95,7 @@ class Predict:
                     properties={'energy'},
                     **kwargs))
             return await asyncio.gather(*futures)
-        results = self.loop.run_until_complete(calculate())
+        results = self._run_async_func(calculate())
         return np.array([r['results']['energy'] for r in results])
 
     def three_body(self, element_a, element_b, potential, separation, angles):
@@ -115,7 +122,7 @@ class Predict:
                     properties={'energy'},
                     **kwargs))
             return await asyncio.gather(*futures)
-        results = self.loop.run_until_complete(calculate())
+        results = self._run_async_func(calculate())
         return np.array([r['results']['energy'] for r in results])
 
     def lattice_constant(self, structure, potential, supercell=(1, 1, 1), etol=1e-6, ftol=1e-6, nsearch=2000, neval=10000):
@@ -140,7 +147,7 @@ class Predict:
             await future
             return future.result()
 
-        result = self.loop.run_until_complete(calculate())
+        result = self._run_async_func(calculate())
         lattice = Lattice(result['results']['lattice'])
         return conventional_structure.lattice, Lattice(lattice.matrix / np.array(supercell))
 
@@ -179,7 +186,7 @@ class Predict:
                 stress = Stress(np.array(result['results']['stress']) * 1e-4) # Convert to GPa
                 stresses.append(stress)
 
-        self.loop.run_until_complete(calculate())
+        self.loop._run_async_func(calculate())
         return ElasticTensor.from_independent_strains(strains, stresses, Stress(np.zeros((3, 3))))
 
     def point_defects(self, structure, potential, point_defect_schemas, supercell=(1, 1, 1), etol=1e-6, ftol=1e-6, nsearch=2000, neval=10000):
@@ -218,7 +225,7 @@ class Predict:
                 return future.result()
 
             logger.info('starting calculation (point defect): %s' % point_defect_name)
-            result = self.loop.run_until_complete(calculate())
+            result = self._run_async_func(calculate())
             num_eval = result['results']['timesteps']
             logger.info('finished calculation (point defect): %s in evals: %d' % (point_defect_name, num_eval))
             energies[point_defect_name] = result['results']['energy']
@@ -279,7 +286,7 @@ class Predict:
                     return future.result()
 
                 print('starting calculation (displacement energy): %s ion %s velocity: %f [eV] %f [A/ps]' % (displacement_energy_name, d['element'], guess_energy, ev2Aps(Element(d['element']).atomic_mass, guess_energy)))
-                result = self.loop.run_until_complete(calculate())
+                result = self._run_async_func(calculate())
                 initial_frac_positions = base_structure.lattice.get_fractional_coords(result['results']['initial_positions'])
                 final_frac_positions = base_structure.lattice.get_fractional_coords(result['results']['positions'])
                 displacements = np.linalg.norm(
