@@ -43,14 +43,10 @@ class Predict:
 
         Jupyter uses the event loop with tornado. Compatibility see
         https://github.com/jupyter/notebook/issues/3397
+
+        See https://github.com/erdewit/nest_asyncio
         """
-        if self.loop.is_running():
-            future = self.loop.create_task(async_function)
-            while not future.done():
-                time.sleep(0.01)
-            return future.result()
-        else:
-            return self.loop.run_until_complete(async_function)
+        return self.loop.run_until_complete(async_function)
 
     def conventional_structure(self, structure):
         sga = SpacegroupAnalyzer(structure)
