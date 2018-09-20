@@ -38,6 +38,10 @@ class Predict:
         self._run_async_func(self.calculator.create())
 
     def _run_async_func(self, async_function):
+        """Added to handle other application that manager event loop
+
+        Jupyter uses the event loop with tornado
+        """
         if self.loop.is_running():
             future = self.loop.create_task(async_function)
             return future.result()
@@ -186,7 +190,7 @@ class Predict:
                 stress = Stress(np.array(result['results']['stress']) * 1e-4) # Convert to GPa
                 stresses.append(stress)
 
-        self.loop._run_async_func(calculate())
+        self._run_async_func(calculate())
         return ElasticTensor.from_independent_strains(strains, stresses, Stress(np.zeros((3, 3))))
 
     def point_defects(self, structure, potential, point_defect_schemas, supercell=(1, 1, 1), etol=1e-6, ftol=1e-6, nsearch=2000, neval=10000):
