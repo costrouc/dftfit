@@ -4,6 +4,7 @@ import json
 import math
 import copy
 import logging
+import time
 
 import numpy as np
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
@@ -40,10 +41,13 @@ class Predict:
     def _run_async_func(self, async_function):
         """Added to handle other application that manager event loop
 
-        Jupyter uses the event loop with tornado
+        Jupyter uses the event loop with tornado. Compatibility see
+        https://github.com/jupyter/notebook/issues/3397
         """
         if self.loop.is_running():
             future = self.loop.create_task(async_function)
+            while not future.done():
+                time.sleep(0.01)
             return future.result()
         else:
             return self.loop.run_until_complete(async_function)
