@@ -17,7 +17,7 @@ available_algorithms = {
     'pygmo.sga': (pygmo.sga, 'S'), # S-U
     # 'pygmo.simulated_annealing': simulated_annealing # api does not match others
     'pygmo.bee_colony': (pygmo.bee_colony, 'S'), # S-U
-    'pygmo.cmaes': (pygmo.cmaes, 'S'), # S-U population > 5 and % 4
+    'pygmo.cmaes': (pygmo.cmaes, 'S'), # S-U population > 5 and % 4 and most likely will need to set force_bounds=True
     'pygmo.nsga2': (pygmo.nsga2, 'M'), # M-U
     'pygmo.moead': (pygmo.moead, 'M'), # M-U
     'nlopt.cobyla': (functools.partial(pygmo.nlopt, solver='cobyla'), 'S'), # S-U

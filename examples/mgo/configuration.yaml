@@ -3,21 +3,25 @@ kind: Configuration
 metadata:
   name: testing
   labels:
-    algorithm: "pygmo.sade"
+    algorithm: "pygmo.cmaes"
     test: test
 spec:
   logging: INFO
-  database: "/tmp/dftfit/database.db"
-  steps: 5
-  population: 10
+  database:
+    filename: "/tmp/dftfit/database.db"
+    interval: 10
   algorithm:
-    name: 'pygmo.sade'
+    name: 'pygmo.cmaes'
+    steps: 5
+    population: 8
+    include_initial_guess: False
+    force_bounds: True
   problem:
-    calculator: 'lammps'
-    command: 'lammps'
+    calculator: 'lammps_cython'
     num_workers: 2
-    w_f: 0.3
-    w_s: 0.6
-    w_e: 0.1
+    weights:
+      forces: 0.3
+      stress: 0.6
+      energy: 0.1
   training:
     cache_filename: "./cache/cache.db"
