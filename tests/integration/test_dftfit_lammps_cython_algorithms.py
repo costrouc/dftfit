@@ -21,6 +21,7 @@ from dftfit.dftfit import dftfit
     'pygmo.sga',
     'pygmo.bee_colony',
     # 'pygmo.cmaes',
+    # 'pygmo.xnes',
     'pygmo.nsga2',
     # 'pygmo.moead'
     'nlopt.cobyla',
@@ -42,8 +43,11 @@ def test_lammps_cython_algorithms(algorithm):
         'name': algorithm,
         'steps': 1,
         # Local optimization methods only opperate on one value
-        'population': 1 if 'nlopt' in algorithm else 8
+        'population': 1 if 'nlopt' in algorithm else 8,
     })
+
+    if algorithm in {'pygmo.xnes', 'pygmo.cmaes'}:
+        configuration_schema['spec']['algorithm']['force_bounds'] = True
 
     num_features = len(configuration_schema['spec']['problem']['weights'])
 

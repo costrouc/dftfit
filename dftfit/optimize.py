@@ -9,21 +9,23 @@ logger = logging.getLogger(__name__)
 
 
 available_algorithms = {
-    'pygmo.de': (pygmo.de, 'S'), # S-U
-    'pygmo.sade': (pygmo.sade, 'S'), # S-U
-    'pygmo.de1220': (pygmo.de1220, 'S'), # S-U
-    'pygmo.pso': (pygmo.pso, 'S'), # S-U
-    'pygmo.sea': (pygmo.sea, 'S'), # S-U
-    'pygmo.sga': (pygmo.sga, 'S'), # S-U
+    'pygmo.de': (pygmo.de, 'S'),                                            # S-U
+    'pygmo.sade': (pygmo.sade, 'S'),                                        # S-U
+    'pygmo.de1220': (pygmo.de1220, 'S'),                                    # S-U
+    'pygmo.pso': (pygmo.pso, 'S'),                                          # S-U
+    'pygmo.sea': (pygmo.sea, 'S'),                                          # S-U
+    'pygmo.sga': (pygmo.sga, 'S'),                                          # S-U
     # 'pygmo.simulated_annealing': simulated_annealing # api does not match others
-    'pygmo.bee_colony': (pygmo.bee_colony, 'S'), # S-U
-    'pygmo.cmaes': (pygmo.cmaes, 'S'), # S-U population > 5 and % 4 and most likely will need to set force_bounds=True
-    'pygmo.nsga2': (pygmo.nsga2, 'M'), # M-U
-    'pygmo.moead': (pygmo.moead, 'M'), # M-U
+    'pygmo.bee_colony': (pygmo.bee_colony, 'S'),                            # S-U
+    # population > 5 and % 4 and most likely will need to set force_bounds=True
+    'pygmo.cmaes': (pygmo.cmaes, 'S'),                                      # S-U
+    'pygmo.xnes': (pygmo.xnes, 'S'),                                        # S-U
+    'pygmo.nsga2': (pygmo.nsga2, 'M'),                                      # M-U
+    'pygmo.moead': (pygmo.moead, 'M'),                                      # M-U
     'nlopt.cobyla': (functools.partial(pygmo.nlopt, solver='cobyla'), 'S'), # S-U
     'nlopt.bobyqa': (functools.partial(pygmo.nlopt, solver='bobyqa'), 'S'), # S-U
     'nlopt.newuoa': (functools.partial(pygmo.nlopt, solver='newuoa'), 'S'), # S-U
-    'nlopt.sbplx': (functools.partial(pygmo.nlopt, solver='sbplx'), 'S'), # S-U
+    'nlopt.sbplx': (functools.partial(pygmo.nlopt, solver='sbplx'), 'S'),   # S-U
 }
 
 
