@@ -10,6 +10,7 @@ name = "pypi"
 pytest = "*"
 pytest-cov = "*"
 pytest-benchmark = "*"
+lammps-cython = "*"
 
 
 [dev-packages]
