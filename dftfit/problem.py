@@ -108,7 +108,7 @@ class DFTFITProblemBase:
 
         self.store_evaluation(potential, errors, value)
         formatted_errors = ', '.join('{:10.4g}'.format(_) for _ in errors)
-        logger.info(f'evaluation = {value:10.4g} errors = [ {formatted_errors} ]')
+        logger.debug(f'evaluation = {value:10.4g} errors = [ {formatted_errors} ]')
         return errors, value
 
     def __deepcopy__(self, memo):
