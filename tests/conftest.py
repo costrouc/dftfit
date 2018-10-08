@@ -16,17 +16,11 @@ def structure():
             raise ValueError(f'given filename "{filename}" is not a file')
 
         if filename.suffix == '.cif':
-            s = CifParser(str(filename)).get_structures()[0]
-            l = pmg.Lattice.from_parameters(*s.lattice.abc, *s.lattice.angles)
-            s = pmg.Structure(l, s.species, s.frac_coords, coords_are_cartesian=False)
+            s = CifParser(str(filename)).get_structures(primitive=(not conventional))[0]
         elif filename.stem == 'POSCAR':
             s = pmg.io.vasp.inputs.Poscar(str(filename)).structure
         else:
             raise ValueError(f'do not know how to convert filename {filename} to structure')
-
-        if conventional:
-            spga = pmg.symmetry.analyzer.SpacegroupAnalyzer(s)
-            s = spga.get_conventional_standard_structure()
 
         if not oxidized:
             s.remove_oxidation_states()

@@ -7,7 +7,7 @@ from dftfit.io.lammps_cython import LammpsCythonDFTFITCalculator
 
 @pytest.mark.parametrize('structure_filename, supercell, num_atoms, potential_filename', [
     ('Ne.cif', (2, 2, 2), 32, 'Ne-lennard-jones.yaml'),             # lennard-jones
-    ('He.cif', (3, 3, 3), 54, 'He-beck.yaml'),                      # beck
+    ('He.cif', (3, 3, 3), 108, 'He-beck.yaml'),                      # beck
     ('MgO.cif', (2, 2, 2), 64, 'MgO-charge-buck-fitting.yaml'),     # buckingham
     ('MgO.cif', (2, 2, 2), 64, 'MgO-charge-buck-zbl.yaml'),         # zbl
     ('MgO.cif', (2, 2, 2), 64, 'MgO-charge-func.yaml'),             # python-function
@@ -18,7 +18,7 @@ from dftfit.io.lammps_cython import LammpsCythonDFTFITCalculator
     ('3C-SiC.cif', (2, 2, 2), 64, 'SiC-vashishta.yaml'),            # vashishta
     ('LiTaO3.cif', (1, 1, 1), 30, 'LiTaO3-vashishta-mixing.yaml'),  # vashishta-mixing
     ('CdTe.cif', (2, 2, 2), 64, 'CdTe-stillinger-weber.yaml'),      # stillinger-weber
-    ('SiO2.cif', (2, 2, 2), 96, 'SiO2-comb.yaml'),                  # comb
+    ('SiO2.cif', (1, 1, 1), 24, 'SiO2-comb.yaml'),                  # comb
     # ('Ti4Cu2O.cif', (1, 1, 1), 112, 'Ti4Cu2O-comb-3.yaml')        # comb-3 (comb-3 freezes...)
 ])
 @pytest.mark.benchmark(group='apply-potential', min_rounds=10)

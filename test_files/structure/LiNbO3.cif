@@ -1,53 +1,56 @@
-# Part of the Crystallography Open Database
-# All data on this site have been placed in the public domain by the
-# contributors.
-#------------------------------------------------------------------------------
-#$Date: 2010-01-30 13:59:17 +0000 (Sat, 30 Jan 2010) $
-#$Revision: 966 $
-#$URL: svn://cod.ibt.lt/cod/cif/2/2101182.cif $
-#------------------------------------------------------------------------------
-#
-# This file is available in the Crystallography Open Database (COD),
-# http://www.crystallography.net/. The original data for this entry
-# were provided by IUCr Journals, http://journals.iucr.org/.
-#
-# The file may be used within the scientific community so long as
-# proper attribution is given to the journal article from which the
-# data were obtained.
-#
-data_2101182
+# generated using pymatgen
+data_LiNbO3
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   5.22298993
+_cell_length_b   5.22298993
+_cell_length_c   14.12924231
+_cell_angle_alpha   90.00000000
+_cell_angle_beta   90.00000000
+_cell_angle_gamma   120.00000000
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   LiNbO3
+_chemical_formula_sum   'Li6 Nb6 O18'
+_cell_volume   333.80119136
+_cell_formula_units_Z   6
 loop_
-_publ_author_name
-'Boysen, H.'
-'Altorfer, F.'
-_publ_section_title
-;
- A neutron powder investigation of the high-temperature structure and
- phase transition in LiNbO~3~
-;
-_journal_issue                   4
-_journal_name_full               'Acta Crystallographica Section B'
-_journal_page_first              405
-_journal_page_last               414
-_journal_volume                  50
-_journal_year                    1994
-_chemical_formula_sum            'Li Nb O3'
-_symmetry_cell_setting           trigonal
-_symmetry_space_group_name_H-M   'R 3 c {rhombohedral axes}'
-_cell_angle_alpha                90
-_cell_angle_beta                 90
-_cell_angle_gamma                120
-_cell_formula_units_Z            6
-_cell_length_a                   5.2719(8)
-_cell_length_b                   5.2719(8)
-_cell_length_c                   13.8601(8)
-_[local]_cod_data_source_file    se0126.cif
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
 loop_
-_atom_site_label
-_atom_site_fract_x
-_atom_site_fract_y
-_atom_site_fract_z
-Li .0000 .0000 .2762(13)
-Nb .0000 .0000 .0093(7)
-O(1) .0569(9) .3297(15) .0833
-_cod_database_code 2101182
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Li  Li1  1  0.666667  0.333333  0.050502  1
+  Li  Li2  1  0.000000  0.000000  0.217168  1
+  Li  Li3  1  0.333333  0.666667  0.383835  1
+  Li  Li4  1  0.666667  0.333333  0.550502  1
+  Li  Li5  1  0.000000  0.000000  0.717168  1
+  Li  Li6  1  0.333333  0.666667  0.883835  1
+  Nb  Nb7  1  0.666667  0.333333  0.332564  1
+  Nb  Nb8  1  0.333333  0.666667  0.165897  1
+  Nb  Nb9  1  0.333333  0.666667  0.665897  1
+  Nb  Nb10  1  0.000000  0.000000  0.499231  1
+  Nb  Nb11  1  0.000000  0.000000  0.999231  1
+  Nb  Nb12  1  0.666667  0.333333  0.832564  1
+  O  O13  1  0.009949  0.379633  0.270000  1
+  O  O14  1  0.369684  0.990051  0.270000  1
+  O  O15  1  0.620367  0.630316  0.270000  1
+  O  O16  1  0.676615  0.963649  0.103334  1
+  O  O17  1  0.287034  0.323385  0.103334  1
+  O  O18  1  0.036351  0.712966  0.103334  1
+  O  O19  1  0.676615  0.712966  0.603334  1
+  O  O20  1  0.036351  0.323385  0.603334  1
+  O  O21  1  0.287034  0.963649  0.603334  1
+  O  O22  1  0.343282  0.296983  0.436667  1
+  O  O23  1  0.953701  0.656718  0.436667  1
+  O  O24  1  0.703017  0.046299  0.436667  1
+  O  O25  1  0.343282  0.046299  0.936667  1
+  O  O26  1  0.703017  0.656718  0.936667  1
+  O  O27  1  0.953701  0.296983  0.936667  1
+  O  O28  1  0.009949  0.630316  0.770000  1
+  O  O29  1  0.620367  0.990051  0.770000  1
+  O  O30  1  0.369684  0.379633  0.770000  1
