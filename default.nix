@@ -19,12 +19,12 @@ pkgs.mkShell {
     python36Packages.pytest
     python36Packages.pytest-benchmark
     python36Packages.pytestcov
+    # jupyter lab demonstrations
   ];
 
   shellHook = ''
     export NIX_PATH="nixpkgs=nixpkgs:."
     # usually link in a nix-built vendor directory or other housekeeping
-
 
   '';
 }

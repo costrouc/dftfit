@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import time
 
 from .db import write_evaluations_batch
 from .io.lammps import LammpsLocalDFTFITCalculator
@@ -67,10 +68,16 @@ class DFTFITProblemBase:
         if self.dbm and not isinstance(self._run_id, int):
             raise ValueError('cannot write evaluation to database without integer run_id')
 
+        # Timing
+        self.start_time = time.time()
+
     def store_evaluation(self, potential, errors, value):
         if self.dbm:
             self._evaluation_buffer.append([potential, errors, value])
             if len(self._evaluation_buffer) >= self.db_write_interval:
+                total_time = time.time() - self.start_time
+                logger.info('md evaluations per second: %f' % ((len(self._evaluation_buffer) * len(self.training.calculations)) / total_time))
+                self.start_time = time.time()
                 write_evaluations_batch(self.dbm, self._run_id, self._evaluation_buffer)
                 self._evaluation_buffer = []
 
