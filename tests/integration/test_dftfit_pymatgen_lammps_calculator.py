@@ -1,4 +1,5 @@
 import pytest
+import shutil
 
 from dftfit.cli.utils import load_filename
 from dftfit.dftfit import dftfit
@@ -13,9 +14,14 @@ def test_pymatgen_lammps_calculator():
     training_schema = load_filename(base_directory + 'training.yaml')
     potential_schema = load_filename(base_directory + 'potential.yaml')
     configuration_schema = load_filename(base_directory + 'configuration.yaml')
+
+    command = None
+    if shutil.which('lammps'): command = 'lammps'
+    elif shutil.which('lmp_serial'): command = 'lmp_serial'
+
     configuration_schema['spec']['problem'].update({
         'calculator': 'lammps',
-        'command': 'lammps',
+        'command': command,
         'num_workers': 1
     })
 

@@ -1,4 +1,5 @@
 import asyncio
+import shutil
 
 import pymatgen as pmg
 import numpy as np
@@ -27,8 +28,12 @@ def test_calculator_equivalency(structure):
     potential_schema['spec']['charge']['O']['initial'] = -1.4
     potential = Potential(potential_schema)
 
+    command = None
+    if shutil.which('lammps'): command = 'lammps'
+    elif shutil.which('lmp_serial'): command = 'lmp_serial'
+
     calculators = [
-        LammpsLocalDFTFITCalculator(structures=[s], potential=potential, command='lammps', num_workers=1),
+        LammpsLocalDFTFITCalculator(structures=[s], potential=potential, command=command, num_workers=1),
         LammpsCythonDFTFITCalculator(structures=[s], potential=potential)
     ]
 
