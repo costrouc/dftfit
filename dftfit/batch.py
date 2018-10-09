@@ -4,6 +4,8 @@ import time
 import logging
 
 from .utils import set_naive_attr_path
+from .config import Configuration
+from .db import DatabaseManager
 
 logger = logging.getLogger(__name__)
 
@@ -40,13 +42,13 @@ def apply_batch_schema_on_schemas(configuration_schema, potential_schema, traini
     return full_schemas
 
 
-def naive_scheduler(full_schemas, scheduler_frequency=5, max_cpus=None):
+def naive_scheduler(full_schemas, scheduler_frequency=5, monitor_interval=60, max_cpus=None):
     """ Naive Scheduler (FIFO) schedules up to max cpus
     uses num_workers field in configuration + 1 (to account for master)
     dask would be a good choice in the future (if can account for jobs that
     take more than more processor).
     """
-    from .dftfit import dftfit
+    from .dftfit import dftfit_process
 
     max_cpus = max_cpus or multiprocessing.cpu_count()
 
@@ -64,39 +66,61 @@ def naive_scheduler(full_schemas, scheduler_frequency=5, max_cpus=None):
     running_jobs = []
     current_cpu_used = 0
     result_queue = multiprocessing.Queue()
-
-    def run_dftfit(full_schema, task_id, result_queue):
-        run_id = dftfit(
-            full_schema['configuration'],
-            full_schema['potential'],
-            full_schema['training'])
-        result_queue.put((task_id, run_id))
-
+    results_dict = {}
     submitted_tasks = 0
+
     while len(full_schemas) or len(running_jobs):
+        # Schedule a process
         if len(full_schemas):
             next_cpus_requested = full_schemas[0]['configuration']['spec'].get('problem', {}).get('num_workers', 1)
             if max_cpus - current_cpu_used >= next_cpus_requested:
                 logger.info('(batch) scheduled dftfit task id: %d' % submitted_tasks)
                 full_schema = full_schemas.pop(0)
-                p = multiprocessing.Process(target=run_dftfit, args=(
+                p = multiprocessing.Process(target=dftfit_process, args=(
                     full_schema, submitted_tasks, result_queue))
                 p.start()
-                running_jobs.append((p, next_cpus_requested))
+                results_dict[submitted_tasks] = {
+                    'process': p,
+                    'num_cpus': next_cpus_requested,
+                    'run_id': None,
+                    'last_id': None,
+                    'last_time': None,
+                    'dbm': None}
                 current_cpu_used += next_cpus_requested
                 submitted_tasks += 1
 
+        # Update completed and running jobs
         time.sleep(scheduler_frequency)
-        completed_jobs = [num_cpus for p, num_cpus in running_jobs if not p.is_alive()]
-        running_jobs = [(p, num_cpus) for p, num_cpus in running_jobs if p.is_alive()]
+        completed_jobs = [v['num_cpus'] for k, v in results_dict.items() if not v['process'].is_alive()]
+        running_jobs = [k for k, v in results_dict.items() if v['process'].is_alive()]
 
         if completed_jobs:
             logger.info('(batch) %d dftfit jobs just completed' % len(completed_jobs))
         current_cpu_used = current_cpu_used - sum(completed_jobs)
 
-    results = []
-    while not result_queue.empty():
-        results.append(result_queue.get())
-    run_ids = [run_id for task_id, run_id in sorted(results, key=lambda r: r[0])]
+        # Check that running taks are making progress
+        while not result_queue.empty():
+            task_id, database_filename, run_id = result_queue.get()
+            results_dict[task_id].update({
+                'last_time': time.time(),
+                'run_id': run_id,
+                'dbm': DatabaseManager(database_filename)})
+
+        for task_id, value in results_dict.items():
+            # skipped finished tasks
+            if not value['process'].is_alive():
+                continue
+            run_id = value['run_id']
+            last_id = value['last_id'] or 0
+            count = value['dbm'].connection.execute('SELECT count(*) FROM evaluation WHERE run_id = ? AND evaluation_id > ?', (run_id, last_id)).fetchone()
+            if count > 0:
+                value['time_elapsed'] = time.time()
+            elif (time.time() - value['last_time']) > monitor_interval:
+                logger.warning('(batch) killing process task id %d' % (k))
+                value['process'].kill()
+                value['process'].wait()
+                current_cpu_used -= value['num_cpus']
+
+    run_ids = sorted([v['run_id'] for k, v in results_dict.items()])
     logger.info('(batch) run ids of completed jobs: %s' % run_ids)
     return run_ids

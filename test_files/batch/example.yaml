@@ -3,6 +3,7 @@ kind: Batch
 spec:
   max_cpus: 4
   scheduler_frequency: 5
+  monitor_interval: 60 # seconds
   jobs:
     "configuration.spec.algorithm.name": 'pygmo.sade'
     "configuration.spec.algorithm.steps": [1, 2, 3, 4]

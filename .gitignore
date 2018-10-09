@@ -114,3 +114,6 @@ iterate.dat
 *.db
 .tmp
 .pytest_cache
+
+# nix
+result
