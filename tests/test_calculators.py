@@ -17,7 +17,8 @@ from dftfit.potential import Potential
 def test_calculator_equivalency(structure):
     target_a = 4.1990858
     s = structure('test_files/structure/MgO.cif')
-    s.apply_strain(target_a / s.lattice.a - 1)
+    lattice = pmg.Lattice.from_parameters(target_a, target_a, target_a, 90, 90, 90)
+    s.modify_lattice(lattice)
     assert np.all(np.isclose(s.lattice.abc, (target_a, target_a, target_a)))
     s = s * (2, 2, 2)
     assert len(s) == 64

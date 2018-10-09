@@ -33,8 +33,8 @@ basePythonPackages.buildPythonPackage rec {
       pandas scipy numpy scikitlearn
       lammps-cython pymatgen-lammps ];
 
-  # tests require git lfs download. and is quite large so skip tests
-  doCheck = true;
+  # tests take long time and cif has weird behavior
+  doCheck = false;
 
   checkPhase = ''
     pytest -m "not long"
