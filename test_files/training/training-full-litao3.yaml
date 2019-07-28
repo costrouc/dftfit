@@ -1,7 +1,0 @@
-version: v1
-kind: Training
-spec:
-  - type: Siesta
-    selector:
-      fileglob: test_files/siesta/*.xml
-      num_samples: 4

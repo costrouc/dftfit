@@ -1,0 +1,710 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Potentials &mdash; dftfit 0.3.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Training Sets" href="training.html" />
+    <link rel="prev" title="Tutorial" href="tutorial.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> dftfit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Potentials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#two-body-potentials">Two Body Potentials</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#python-functions">Python Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#coloumbic-interaction-potential">Coloumbic Interaction Potential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zbl-potential">ZBL Potential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lennard-jones-potential">Lennard Jones Potential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#beck-potential">Beck Potential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#buckingham-potential">Buckingham Potential</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#three-body-potentials">Three Body Potentials</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tersoff-potential">Tersoff Potential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stillinger-weber-potential">Stillinger Weber Potential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gao-weber-potential">Gao Weber Potential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#vashishta-potential">Vashishta Potential</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#comb-potential">COMB Potential</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="training.html">Training Sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commands.html">Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="performance.html">Improving Performance</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">dftfit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Potentials</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/potentials.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="potentials">
+<h1>Potentials<a class="headerlink" href="#potentials" title="Permalink to this headline">¶</a></h1>
+<p>Read a potential from a python <code class="docutils literal notranslate"><span class="pre">dict</span></code></p>
+<p>Read a potential from <code class="docutils literal notranslate"><span class="pre">json</span></code> or <code class="docutils literal notranslate"><span class="pre">yaml</span></code> file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dftfit.potential</span> <span class="kn">import</span> <span class="n">Potential</span>
+<span class="n">potential</span> <span class="o">=</span> <span class="n">Potential</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>DFTFIT can define very complex potentials. Unlike similar potential
+fitting software, DFTFIT allows any combination of potentials defined
+bellow. This allows a user for example to mix a ZBL and buckingham
+with a coulombic interaction <a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-zbl.yaml">seen here</a>. Even
+though it may not make sense a user can mix a Tersoff, ZBL, Stillinger
+Weber, and python custom pair potential. The performance impact of
+mixing several potentials is almost negligible for small systems of
+less than 1000 atoms.</p>
+<p>DFTFIT uses a <code class="docutils literal notranslate"><span class="pre">json</span></code> schema to represent any potential. To make
+DFTFIT optimize any float value in the potential replace the float
+value for with somthing similar to <code class="docutils literal notranslate"><span class="pre">{&quot;initial&quot;:</span> <span class="pre">1.0,</span> <span class="pre">&quot;bounds</span> <span class="pre">&quot;:</span> <span class="pre">[2.0,</span>
+<span class="pre">3.0]}</span></code>. This tells DFTFIT that the initial guess should be <code class="docutils literal notranslate"><span class="pre">1.0</span></code>
+and to restrict the optimization values between <code class="docutils literal notranslate"><span class="pre">2.0</span></code> and
+<code class="docutils literal notranslate"><span class="pre">3.0</span></code>. An example is shown <a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-fitting.yaml">here</a>
+for MgO.</p>
+<p>Note that the yaml schema is not the only way to provide a
+potential. <code class="docutils literal notranslate"><span class="pre">json</span></code> can be used to represent any DFTFIT yaml
+specification. Additionally they can be represented with normal python
+datastructures <code class="docutils literal notranslate"><span class="pre">dict</span></code> and <code class="docutils literal notranslate"><span class="pre">list</span></code>.</p>
+<p>Bellow is a list of all the supported potentials. Soon EAM and
+arbitrary splines for potentials will be supported see <a class="reference external" href="https://gitlab.com/costrouc/dftfit/issues/17">issue 17</a></p>
+<div class="section" id="two-body-potentials">
+<h2>Two Body Potentials<a class="headerlink" href="#two-body-potentials" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="python-functions">
+<h3>Python Functions<a class="headerlink" href="#python-functions" title="Permalink to this headline">¶</a></h3>
+<p>DFTFIT allows for arbitrary python functions to be used for pair
+potentials. The only requirement is that you define a function named
+<code class="docutils literal notranslate"><span class="pre">potential</span></code> with the last arguments being the <cite>r</cite> that will be
+supplied by dftfit. All the other parameters to the function will be
+optimized. See this <a class="reference external" href="https://stackoverflow.com/questions/19139869/vectorizing-a-function-python">stack-overflow question</a>
+if you need clarification on what numpy function vectorization
+is. Under the covers DFTFIT evaluates the function at a set number of
+points (<code class="docutils literal notranslate"><span class="pre">np.linspace(cutoff[0],</span> <span class="pre">cutoff[1],</span> <span class="pre">samples)</span></code>) to calculate the
+energies and forces (via the finite centered difference).</p>
+<p>An example of the buckingham potential is below. You are free to
+import and call any functions within the block.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">potential</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">A</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">r</span><span class="o">/</span><span class="n">p</span><span class="p">)</span> <span class="o">-</span> <span class="n">C</span> <span class="o">/</span> <span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>yaml schema</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pair</span><span class="p">:</span>
+ <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python-function</span>
+   <span class="nt">cutoff</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">10.0</span><span class="p p-Indicator">]</span>
+   <span class="nt">samples</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1000</span>
+   <span class="nt">function</span><span class="p">:</span> <span class="p p-Indicator">|</span>
+     <span class="no">import numpy as np</span>
+
+     <span class="no">def potential(A, p, C, r):</span>
+         <span class="no">return A * np.exp(-r/p) - C / (r**6)</span>
+   <span class="nt">parameters</span><span class="p">:</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Mg&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Mg&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1309362.2766468062</span><span class="p p-Indicator">,</span> <span class="nv">0.104</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Mg&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;O&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">9892.357</span><span class="p p-Indicator">,</span> <span class="nv">0.20199</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;O&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;O&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">2145.7345</span><span class="p p-Indicator">,</span> <span class="nv">0.3</span><span class="p p-Indicator">,</span> <span class="nv">30.2222</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="coloumbic-interaction-potential">
+<h3>Coloumbic Interaction Potential<a class="headerlink" href="#coloumbic-interaction-potential" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_coul.html)=">lammps documentation</a></li>
+<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck.yaml">example potential</a></li>
+<li>n parameters: where n is number of elements - 1</li>
+</ul>
+</div></blockquote>
+<p>The coloumbic interaction potential has more knobs that other pair
+potentials to allow for how the long range interactions are
+integrated. Additionally a <code class="docutils literal notranslate"><span class="pre">constraint</span></code> allows for ensure that the
+total charge of the system is balanced. Complex forumla can be used
+e.g. <code class="docutils literal notranslate"><span class="pre">LiTaO3</span></code>.</p>
+<div class="math notranslate nohighlight">
+\[E = \frac{C q_i q_j}{\epsilon r}\]</div>
+<p>yaml schema</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">constraint</span><span class="p">:</span>
+    <span class="nt">charge_balance</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MgO</span>
+  <span class="nt">charge</span><span class="p">:</span>
+    <span class="nt">Mg</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.4</span>
+    <span class="nt">O</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">-1.4</span>
+  <span class="nt">kspace</span><span class="p">:</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pppm</span>
+    <span class="nt">tollerance</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1e-5</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="zbl-potential">
+<h3>ZBL Potential<a class="headerlink" href="#zbl-potential" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_zbl.html">lammps documentation</a></li>
+<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-zbl.yaml">example potential</a></li>
+<li>2 parameters: Z_1, Z_2</li>
+</ul>
+</div></blockquote>
+<div class="math notranslate nohighlight">
+\[E_{ij} = \frac{Z_i Z_j e^2}{4 \pi \epsilon_0 r_{ij}} \phi(r_{ij}/a)\]</div>
+<div class="math notranslate nohighlight">
+\[a = \frac{0.46850}{Z_i^{0.23} + Z_j^{0.23}}\]</div>
+<div class="math notranslate nohighlight">
+\[\phi{x} = 0.18175e^{-3.19980x} + 0.50986e^{-0.94229x} + 0.28022e^{-0.40290x} + 0.02817e^{-0.20162x}\]</div>
+<p>yaml schema</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pair</span><span class="p">:</span>
+ <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">zbl</span>
+   <span class="nt">cutoff</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">3.0</span><span class="p p-Indicator">,</span> <span class="nv">4.0</span><span class="p p-Indicator">]</span>
+   <span class="nt">parameters</span><span class="p">:</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Mg&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Mg&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">12</span><span class="p p-Indicator">,</span> <span class="nv">12</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Mg&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;O&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">12</span><span class="p p-Indicator">,</span> <span class="nv">8</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;O&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;O&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">8</span><span class="p p-Indicator">,</span> <span class="nv">8</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="lennard-jones-potential">
+<h3>Lennard Jones Potential<a class="headerlink" href="#lennard-jones-potential" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_lj.html">lammps documentation</a></li>
+<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/Ne-lennard-jones.yaml">example potential</a></li>
+<li>parameters 2: ε, σ</li>
+</ul>
+</div></blockquote>
+<div class="math notranslate nohighlight">
+\[E = 4 \epsilon \left[ \left(\frac{\sigma}{r} \right)^{12} - \left( \frac{\sigma}{r} \right)^6 \right]\]</div>
+<p>yaml schema</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pair</span><span class="p">:</span>
+ <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lennard-jones</span>
+   <span class="nt">cutoff</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">10.0</span><span class="p p-Indicator">]</span>
+   <span class="nt">parameters</span><span class="p">:</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Ne&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Ne&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">33.921</span><span class="p p-Indicator">,</span> <span class="nv">2.801</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="beck-potential">
+<h3>Beck Potential<a class="headerlink" href="#beck-potential" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_beck.html">lammps documentation</a></li>
+<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/He-beck.yaml">example potential</a></li>
+<li>5 parameters: A, B, a, α, β</li>
+</ul>
+</div></blockquote>
+<div class="math notranslate nohighlight">
+\[E(r) = A \exp \left[ -\alpha r - \beta r^6 \right] -\frac{B}{(r^2 + a^2)^3} \left( 1 + \frac{2.709 + 3a^2}{r^2 + a^2} \right)\]</div>
+<p>yaml schema</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pair</span><span class="p">:</span>
+ <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">beck</span>
+   <span class="nt">cutoff</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">8.0</span><span class="p p-Indicator">]</span>
+   <span class="nt">parameters</span><span class="p">:</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;He&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;He&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">399.671876712</span><span class="p p-Indicator">,</span> <span class="nv">0.0000867636112694</span><span class="p p-Indicator">,</span> <span class="nv">0.675</span><span class="p p-Indicator">,</span> <span class="nv">4.390</span><span class="p p-Indicator">,</span> <span class="nv">0.0003746</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="buckingham-potential">
+<h3>Buckingham Potential<a class="headerlink" href="#buckingham-potential" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_buck.html">lammps documentation</a></li>
+<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck.yaml">example potential</a></li>
+<li>3 parameters: A, ρ, C</li>
+</ul>
+</div></blockquote>
+<div class="math notranslate nohighlight">
+\[\psi(r) = A \exp^{-\frac{r}{\rho}} - \frac{C}{r^6}\]</div>
+<p>yaml schema</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pair</span><span class="p">:</span>
+ <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">buckingham</span>
+   <span class="nt">cutoff</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">10.0</span><span class="p p-Indicator">]</span>
+   <span class="nt">parameters</span><span class="p">:</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Mg&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Mg&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1309362.2766468062</span><span class="p p-Indicator">,</span> <span class="nv">0.104</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Mg&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;O&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">9892.357</span><span class="p p-Indicator">,</span> <span class="nv">0.20199</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;O&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;O&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">2145.7345</span><span class="p p-Indicator">,</span> <span class="nv">0.3</span><span class="p p-Indicator">,</span> <span class="nv">30.2222</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="three-body-potentials">
+<h2>Three Body Potentials<a class="headerlink" href="#three-body-potentials" title="Permalink to this headline">¶</a></h2>
+<p>Three Body potentials tend to have <strong>many</strong> more parameters. Because
+of this there are often mixing rules that help to reduce the number of
+parameters. They define some rules such that given interaction
+element_{i, i} <span class="math notranslate nohighlight">\(\nabla_i\)</span> and element_{j,j} <span class="math notranslate nohighlight">\(\nabla_i\)</span> the
+potential for intercation element_{ij} can be calculated via
+<span class="math notranslate nohighlight">\(f(\nabda_i, \nabla_j)\)</span>.</p>
+<dl class="docutils">
+<dt>Currently defined mixes:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/LiTaO3-tersoff-2.yaml">tersoff-2</a></li>
+</ul>
+</dd>
+</dl>
+<div class="section" id="tersoff-potential">
+<h3>Tersoff Potential<a class="headerlink" href="#tersoff-potential" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_tersoff.html">lammmps documentation</a></li>
+<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiC-tersoff.yaml">example potential</a></li>
+<li>14 parameters: <span class="math notranslate nohighlight">\(m, \gamma, \lambda_3, c, d, \cos(\theta_0), n, beta, \lambda_2, B, R, D, \lambda_1, A\)</span></li>
+</ul>
+</div></blockquote>
+<p>yaml schema</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pair</span><span class="p">:</span>
+ <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">tersoff</span>
+   <span class="nt">parameters</span><span class="p">:</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">3.0</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">38049</span><span class="p p-Indicator">,</span> <span class="nv">4.3484</span><span class="p p-Indicator">,</span> <span class="nv">-0.57058</span><span class="p p-Indicator">,</span> <span class="nv">0.72751</span><span class="p p-Indicator">,</span> <span class="nv">0.00000015724</span><span class="p p-Indicator">,</span> <span class="nv">2.2119</span><span class="p p-Indicator">,</span> <span class="nv">346.7</span><span class="p p-Indicator">,</span> <span class="nv">1.95</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">3.4879</span><span class="p p-Indicator">,</span> <span class="nv">1393.6</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">3.0</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">100390</span><span class="p p-Indicator">,</span> <span class="nv">16.217</span><span class="p p-Indicator">,</span> <span class="nv">-0.59825</span> <span class="p p-Indicator">,</span><span class="nv">0.78734</span><span class="p p-Indicator">,</span> <span class="nv">0.0000011</span><span class="p p-Indicator">,</span> <span class="nv">1.73222</span><span class="p p-Indicator">,</span> <span class="nv">471.18</span><span class="p p-Indicator">,</span> <span class="nv">2.85</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">2.4799</span><span class="p p-Indicator">,</span> <span class="nv">1830.8</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">3.0</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">100390</span><span class="p p-Indicator">,</span> <span class="nv">16.217</span><span class="p p-Indicator">,</span> <span class="nv">-0.59825</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">2.36</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">3.0</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">100390</span><span class="p p-Indicator">,</span> <span class="nv">16.217</span><span class="p p-Indicator">,</span> <span class="nv">-0.59825</span><span class="p p-Indicator">,</span> <span class="nv">0.787340</span><span class="p p-Indicator">,</span> <span class="nv">0.0000011</span><span class="p p-Indicator">,</span> <span class="nv">1.97205</span><span class="p p-Indicator">,</span> <span class="nv">395.126</span><span class="p p-Indicator">,</span> <span class="nv">2.36</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">2.9839</span><span class="p p-Indicator">,</span> <span class="nv">1597.3111</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">3.0</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">38049</span><span class="p p-Indicator">,</span> <span class="nv">4.3484</span><span class="p p-Indicator">,</span> <span class="nv">-0.57058</span><span class="p p-Indicator">,</span> <span class="nv">0.72751</span><span class="p p-Indicator">,</span> <span class="nv">0.00000015724</span><span class="p p-Indicator">,</span> <span class="nv">1.97205</span><span class="p p-Indicator">,</span> <span class="nv">395.126</span><span class="p p-Indicator">,</span> <span class="nv">2.36</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">2.9839</span><span class="p p-Indicator">,</span> <span class="nv">1597.3111</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">3.0</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">38049</span><span class="p p-Indicator">,</span> <span class="nv">4.3484</span><span class="p p-Indicator">,</span> <span class="nv">-0.57058</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">1.95</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">3.0</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">38049</span><span class="p p-Indicator">,</span> <span class="nv">4.3484</span><span class="p p-Indicator">,</span> <span class="nv">-0.57058</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">2.36</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">3.0</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">100390</span><span class="p p-Indicator">,</span> <span class="nv">16.217</span><span class="p p-Indicator">,</span> <span class="nv">-0.59825</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">2.85</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>Equations</p>
+<div class="math notranslate nohighlight">
+\[E = \frac{1}{2} \sum_i \sum_{j \ne i} V_{ij}\]</div>
+<div class="math notranslate nohighlight">
+\[V_{ij} = f_c\left(r_{ij}\right) \left[f_R(r_{ij}) + b_{ij} f_A(r_{ij})\right]\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}f_c(r_{ij}) = \left\{
+  \begin{array}{lr}
+    1 &amp; r_{ij} &lt; R_{ij} - D_{ij} \\
+    \frac{1}{2} - \frac{1}{2} \sin \left[\frac{\pi}{2}(r_{ij} - R_{ij})/D_{ij}\right] &amp; R_{ij} - S_{ij} &lt; r_{ij} &lt; R_{ij} + D_{ij} \\
+    0 &amp; r_{ij} &gt; R_{ij} + D_{ij}
+  \end{array}
+\right.\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[f_R(r) = A_{ij} \exp ( -{\lambda_{1, ij}} r )\]</div>
+<div class="math notranslate nohighlight">
+\[f_A(r) = -B_{ij} \exp ( -\lambda_{2, ij} r )\]</div>
+<div class="math notranslate nohighlight">
+\[b_{ij} = (1 + \beta_i^{n_i} \zeta_{ij}^{n_i})^{-\frac{1}{2{n_i}}}\]</div>
+<div class="math notranslate nohighlight">
+\[\zeta_{ij} = \sum_{k \ne i, j} f_c(r_{ik}) g(\theta_{ijk}) \exp [\lambda_{3, ij}^m (r_{ij} - r_{ik}) ^ m ]\]</div>
+<div class="math notranslate nohighlight">
+\[g(\theta_{ijk}) = \gamma_{ik}\left( 1 + \frac{c_i^2}{d_i^2} - \frac{c_i^2}{[d_i^2 + (\cos \theta_{0, i} - \cos \theta_{ijk})^2]}\right)\]</div>
+<p>Variables: <span class="math notranslate nohighlight">\(R_{ij}, D_{ij}, A_{ij}, \lambda_{1, ij}, B_{ij}, \lambda_{2, ij}, \beta_i, n_i, \gamma_{ik}, c_i, d_i, m_i, \lambda_{3, ij}, \theta_{0, i}\)</span></p>
+<p>Two body terms (6): <span class="math notranslate nohighlight">\(n_i, \beta_i, \lambda_{2, ij}, B_{ij}, \lambda_{1, ij}, A_{ij}\)</span></p>
+<p>Three body terms (6): <span class="math notranslate nohighlight">\(m_i, \gamma_{ik}, \lambda_{3, ij}, c_i, d_i, \theta_{0, i}\)</span></p>
+<p>Terms that only depend on primary atom (6): <span class="math notranslate nohighlight">\(n_i, \beta_i, m_i, c_i, d_i, \theta_{0, i}\)</span></p>
+<p>Usually Fixed Terms $`m, gamma, beta`$</p>
+<p>Mixing Terms <span class="math notranslate nohighlight">\(\lambda, A, B, R, D\)</span></p>
+<p>__m must be 3 or <a href="#id16"><span class="problematic" id="id17">1__</span></a></p>
+<p>Original tersoff [1] form achieved when <span class="math notranslate nohighlight">\(m = 3\)</span> and <span class="math notranslate nohighlight">\(\gamma = 1\)</span></p>
+<p>Tersoff [2] has the the following contstraints:</p>
+<p><span class="math notranslate nohighlight">\(\lambda_{3, i} = 0\)</span> thus m has not effect. In original paper <span class="math notranslate nohighlight">\(\gamma_{ik} = 1\)</span>.</p>
+<p>Additional assumptions are the following: <span class="math notranslate nohighlight">\(\lambda_3 = 0\)</span>, <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">=</span> <span class="pre">3</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">gamma</span> <span class="pre">=</span> <span class="pre">1</span></code> thus these parameters are not included.</p>
+<p>The order of the parameters are <span class="math notranslate nohighlight">\(c, d, \cos(\theta_0), n, \beta, \lambda_2, B,
+R, D, \lambda_1, A\)</span>. Additional models may be added if necessary.</p>
+<div class="math notranslate nohighlight">
+\[\lambda_{ij} = \frac{1}{2} (\lambda_{i} + \lambda_{j})\]</div>
+<div class="math notranslate nohighlight">
+\[A_{ij} = \sqrt{A_i A_j}\]</div>
+<div class="math notranslate nohighlight">
+\[B_{ij} = \chi_{ij} \sqrt{B_i B_j}\]</div>
+<p>A mixing parameter is required for elements (N -1) see paper</p>
+<div class="math notranslate nohighlight">
+\[R_{ij} = \sqrt{R_i R_j}\]</div>
+<div class="math notranslate nohighlight">
+\[D_{ij} = \sqrt{D_i D_j}\]</div>
+<p>Albe [3] when <span class="math notranslate nohighlight">\(\beta = 1\)</span> and <span class="math notranslate nohighlight">\(m = 1\)</span>.</p>
+<p>From [4] an R is 1.95, 2.85 for C-C-C and Si-Si-Si respectively and
+0.15 for D (units Angstroms). R and D are chosen so as to include the
+first neighbor shell only.</p>
+<ol class="arabic simple">
+<li><a class="reference external" href="https://doi.org/10.1103/PhysRevB.37.6991">Tersoff Original Paper J. Tersoff, Phys Rev B, 37, 6991 (1988).</a></li>
+<li><a class="reference external" href="http://iopscience.iop.org/article/10.1088/0953-8984/15/32/324/meta">Albe Form</a></li>
+<li><a class="reference external" href="https://doi.org/10.1103/PhysRevB.39.5566">Tersoff 2</a></li>
+<li><a class="reference external" href="http://lammps.sandia.gov/doc/pair_tersoff.html">Lammps Implementation</a></li>
+</ol>
+</div>
+<div class="section" id="stillinger-weber-potential">
+<h3>Stillinger Weber Potential<a class="headerlink" href="#stillinger-weber-potential" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_sw.html">lammps documentation</a></li>
+<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/CdTe-stillinger-weber.yaml">example potential</a></li>
+<li>11 parameters: <span class="math notranslate nohighlight">\(\epsilon, \sigma, a, \lambda, \gamma, \cos(\theta_0), A, B, p, q, tol\)</span></li>
+</ul>
+</div></blockquote>
+<p>yaml schema</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pair</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">stillinger-weber</span>
+    <span class="nt">parameters</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Cd&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Cd&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Cd&quot;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1.03</span><span class="p p-Indicator">,</span> <span class="nv">2.51</span><span class="p p-Indicator">,</span> <span class="nv">1.80</span><span class="p p-Indicator">,</span> <span class="nv">25.0</span><span class="p p-Indicator">,</span> <span class="nv">1.20</span><span class="p p-Indicator">,</span> <span class="nv">-0.333333333333</span><span class="p p-Indicator">,</span> <span class="nv">5.1726</span><span class="p p-Indicator">,</span> <span class="nv">0.8807</span><span class="p p-Indicator">,</span> <span class="nv">4.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Te&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Te&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Te&quot;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1.03</span><span class="p p-Indicator">,</span> <span class="nv">2.51</span><span class="p p-Indicator">,</span> <span class="nv">1.80</span><span class="p p-Indicator">,</span> <span class="nv">25.0</span><span class="p p-Indicator">,</span> <span class="nv">1.20</span><span class="p p-Indicator">,</span> <span class="nv">-0.333333333333</span><span class="p p-Indicator">,</span> <span class="nv">8.1415</span><span class="p p-Indicator">,</span> <span class="nv">0.6671</span><span class="p p-Indicator">,</span> <span class="nv">4.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Cd&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Cd&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Te&quot;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1.03</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span> <span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">25.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">-0.333333333333</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Cd&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Te&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Te&quot;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1.03</span><span class="p p-Indicator">,</span> <span class="nv">2.51</span><span class="p p-Indicator">,</span> <span class="nv">1.80</span><span class="p p-Indicator">,</span> <span class="nv">25.0</span><span class="p p-Indicator">,</span> <span class="nv">1.20</span><span class="p p-Indicator">,</span> <span class="nv">-0.333333333333</span><span class="p p-Indicator">,</span> <span class="nv">7.0496</span><span class="p p-Indicator">,</span> <span class="nv">0.6022</span><span class="p p-Indicator">,</span> <span class="nv">4.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Te&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Cd&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Cd&quot;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1.03</span><span class="p p-Indicator">,</span> <span class="nv">2.51</span><span class="p p-Indicator">,</span> <span class="nv">1.80</span><span class="p p-Indicator">,</span> <span class="nv">25.0</span><span class="p p-Indicator">,</span> <span class="nv">1.20</span><span class="p p-Indicator">,</span> <span class="nv">-0.333333333333</span><span class="p p-Indicator">,</span> <span class="nv">7.0496</span><span class="p p-Indicator">,</span> <span class="nv">0.6022</span><span class="p p-Indicator">,</span> <span class="nv">4.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Te&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Cd&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Te&quot;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1.03</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">25.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">-0.333333333333</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Te&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Te&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Cd&quot;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1.03</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">25.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">-0.333333333333</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;Cd&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Te&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Cd&quot;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1.03</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">25.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">-0.333333333333</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>Equations</p>
+<div class="math notranslate nohighlight">
+\[E = \sum_i \sum_{j &gt; i} \phi_2(r_{ij}) + \sum_i \sum_{j \ne i} \sum_{k &gt; j} \phi_3(r_{ij}, r_{ik}, \theta_{ijk})\]</div>
+<div class="math notranslate nohighlight">
+\[\phi_2(r_{ij}) = A_{ij} \epsilon_{ij} \left[ B_{ij} \left( \frac{\sigma_{ij}}{r_{ij}} \right)^{p_{ij}} - \left( \frac{\sigma_{ij}}{r_{ij}} \right)^{q_{ij}} \right] \exp \left( \frac{\sigma_{ij}}{r_{ij} - a_{ij} \sigma_{ij}} \right)\]</div>
+<div class="math notranslate nohighlight">
+\[\phi_3(r_{ij}, r_{ik}, \theta_{ijk}) = \lambda_{ijk} \epsilon_{ijk} \left[ cos \theta_{ijk} - cos \theta_{0ijk} \right]^2 exp \left( \frac{\gamma_{ij} \sigma_{ij}}{r_{ij} - a_{ij}\sigma_{ij}} \right) exp \left( \frac{\gamma_{ij} \sigma_{ik}}{r_{ik} - a_{ik}\sigma_{ik}} \right)\]</div>
+<p>Parameters: <span class="math notranslate nohighlight">\(\epsilon, \sigma, a, \lambda, \gamma, \cos(\theta_0), A, B, p, q, tol\)</span></p>
+<p>Mixing terms: <span class="math notranslate nohighlight">\(\sigma, \epsilon\)</span></p>
+<p>### Mixing Rules</p>
+<p>Analysis of the mixing rules for the Stillinger–Weber potential: a case-study of Ge–Si interactions in the liquid phase</p>
+<p><a class="reference external" href="https://doi.org/10.1016/j.jnoncrysol.2006.07.017">https://doi.org/10.1016/j.jnoncrysol.2006.07.017</a></p>
+<p>With such systems, however, there arises a problem of choosing
+suitable parameters for unlike-species interactions, i.e. devising
+<span class="math notranslate nohighlight">\(\sigma_{ij}, \epsilon_{ij} from \sigma_i, sigma_j, \epsilon_i,
+\epsilon_j\)</span> (for the two-body term) and <span class="math notranslate nohighlight">\(\epsilon_{ijk},
+\lambda_{ijk}\)</span> from <span class="math notranslate nohighlight">\(\epsilon_i, \epsilon_j, \lambda_i, and
+\lambda_j\)</span>, where i, j, and k label the species of atoms in bond pairs
+and triplets.  The two-body parameters were usually approximated using
+the geometric mean for the energy parameter and the arithmetic mean
+for the length parameter (the so-called Lorentz–Berthelot mixing
+rules). This had no rigoristic justification in first principles, but
+was analogous to what was usually done for other potentials. - page
+4233</p>
+<p>Choosing mixed-species paramters <span class="math notranslate nohighlight">\(\epsilon_{ijk}, \lambda_{ijk}\)</span>
+for the three-body part is less obvious. Usually the choice of
+<span class="math notranslate nohighlight">\(\epsilon_{ijk} = \sqrt{\epsilon_{ij}\epsilon_{ik}} =
+\epsilon^{\frac{1}{4}}_j \epsilon^{\frac{1}{2}}_j
+\epsilon^{\frac{1}{4}}_j\)</span> and <span class="math notranslate nohighlight">\(\lambda_{ijk} =
+\sqrt{\lambda_{ij}\lambda_{ik}} = \lambda^{\frac{1}{4}}_j
+\lambda^{\frac{1}{2}}_j \lambda^{\frac{1}{4}}_j\)</span>, first made by Grabow
+and Gilmer in [1] was iterated, even though the original authors had
+not justified it in any way.</p>
+<p>In our study we decided to further test this traditional choice
+against other ways of constructing the parameters,
+eg. <span class="math notranslate nohighlight">\(\lambda_{Si Si Ge} = \sqrt[3]{\lambda_{Si} \lambda_{Si}
+\lambda_{Ge}}\)</span>.</p>
+<p>Since the resultant parameters differed by only a few percent, we
+expected to obtain similar results, regardless of the type of the
+mixing rule employed, which would then confirm the validity of the
+Grabow–Gilmer mixing as one of several that work.  Surprisingly, this
+was not the case. It turned out that the simulations performed with
+only slightly different parameters resulted in radically different
+final atomic configurations.</p>
+<ol class="arabic simple">
+<li>M.H. Grabow, G.H. Gilmer, Surf. Sci. 194 (1987) 333</li>
+</ol>
+</div>
+<div class="section" id="gao-weber-potential">
+<h3>Gao Weber Potential<a class="headerlink" href="#gao-weber-potential" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>[lammps documentation](<a class="reference external" href="https://lammps.sandia.gov/doc/pair_gw.html">https://lammps.sandia.gov/doc/pair_gw.html</a>)</li>
+<li>[example potential](<a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiC-gao-weber.yaml">https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiC-gao-weber.yaml</a>)</li>
+<li>14 parameters: $`m, gamma, lambda_3, c, d, h, n, beta ,lambda_2, B, R, D, lambda_1, A`$</li>
+</ul>
+</div></blockquote>
+<p>yaml schema</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pair</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gao-weber</span>
+    <span class="nt">parameters</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">0.013318</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">14</span><span class="p p-Indicator">,</span> <span class="nv">2.1</span><span class="p p-Indicator">,</span> <span class="nv">-1</span><span class="p p-Indicator">,</span> <span class="nv">0.78000</span><span class="p p-Indicator">,</span> <span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">1.80821400248640</span><span class="p p-Indicator">,</span> <span class="nv">632.658058300867</span><span class="p p-Indicator">,</span> <span class="nv">2.35</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">2.38684248328205</span><span class="p p-Indicator">,</span> <span class="nv">1708.79738703139</span><span class="p p-Indicator">]</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">0.013318</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">14</span><span class="p p-Indicator">,</span> <span class="nv">2.1</span><span class="p p-Indicator">,</span> <span class="nv">-1</span><span class="p p-Indicator">,</span> <span class="nv">0.78000</span><span class="p p-Indicator">,</span> <span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">1.80821400248640</span><span class="p p-Indicator">,</span> <span class="nv">632.658058300867</span><span class="p p-Indicator">,</span> <span class="nv">2.35</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">2.38684248328205</span><span class="p p-Indicator">,</span> <span class="nv">1708.79738703139</span><span class="p p-Indicator">]</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">0.013318</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">14</span><span class="p p-Indicator">,</span> <span class="nv">2.1</span><span class="p p-Indicator">,</span> <span class="nv">-1</span><span class="p p-Indicator">,</span> <span class="nv">0.78000</span><span class="p p-Indicator">,</span> <span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">1.96859970919818</span><span class="p p-Indicator">,</span> <span class="nv">428.946015420752</span><span class="p p-Indicator">,</span> <span class="nv">2.35</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">3.03361215187440</span><span class="p p-Indicator">,</span> <span class="nv">1820.05673775234</span><span class="p p-Indicator">]</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">0.011304</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">19</span><span class="p p-Indicator">,</span> <span class="nv">2.5</span><span class="p p-Indicator">,</span> <span class="nv">-1</span><span class="p p-Indicator">,</span> <span class="nv">0.80468</span><span class="p p-Indicator">,</span> <span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">1.96859970919818</span><span class="p p-Indicator">,</span> <span class="nv">428.946015420752</span><span class="p p-Indicator">,</span> <span class="nv">2.35</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">3.03361215187440</span><span class="p p-Indicator">,</span> <span class="nv">1820.05673775234</span><span class="p p-Indicator">]</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">0.011304</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">19</span><span class="p p-Indicator">,</span> <span class="nv">2.5</span><span class="p p-Indicator">,</span> <span class="nv">-1</span><span class="p p-Indicator">,</span> <span class="nv">0.80469</span><span class="p p-Indicator">,</span> <span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">1.76776695296637</span><span class="p p-Indicator">,</span> <span class="nv">203.208547714849</span><span class="p p-Indicator">,</span> <span class="nv">2.35</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">2.54558441227157</span><span class="p p-Indicator">,</span> <span class="nv">458.510465798439</span><span class="p p-Indicator">]</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">0.011304</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">19</span><span class="p p-Indicator">,</span> <span class="nv">2.5</span><span class="p p-Indicator">,</span> <span class="nv">-1</span><span class="p p-Indicator">,</span> <span class="nv">0.80469</span><span class="p p-Indicator">,</span> <span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">1.96859970919818</span><span class="p p-Indicator">,</span> <span class="nv">428.946015420752</span><span class="p p-Indicator">,</span> <span class="nv">2.35</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">3.03361215187440</span><span class="p p-Indicator">,</span> <span class="nv">1820.05673775234</span><span class="p p-Indicator">]</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">0.013318</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">14</span><span class="p p-Indicator">,</span> <span class="nv">2.1</span><span class="p p-Indicator">,</span> <span class="nv">-1</span><span class="p p-Indicator">,</span> <span class="nv">0.78000</span><span class="p p-Indicator">,</span> <span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">1.96859970919818</span><span class="p p-Indicator">,</span> <span class="nv">428.946015420752</span><span class="p p-Indicator">,</span> <span class="nv">2.35</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">3.03361215187440</span><span class="p p-Indicator">,</span> <span class="nv">1820.05673775234</span><span class="p p-Indicator">]</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">0.011304</span><span class="p p-Indicator">,</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">19</span><span class="p p-Indicator">,</span> <span class="nv">2.5</span><span class="p p-Indicator">,</span> <span class="nv">-1</span><span class="p p-Indicator">,</span> <span class="nv">0.80469</span><span class="p p-Indicator">,</span> <span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">1.76776695296637</span><span class="p p-Indicator">,</span> <span class="nv">203.208547714849</span><span class="p p-Indicator">,</span> <span class="nv">2.35</span><span class="p p-Indicator">,</span> <span class="nv">0.15</span><span class="p p-Indicator">,</span> <span class="nv">2.54558441227157</span><span class="p p-Indicator">,</span> <span class="nv">458.510465798439</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>Equations</p>
+<p>Not documented see publication: Gao and Weber, Nuclear Instruments and Methods in Physics Research B 191 (2012) 504.</p>
+</div>
+<div class="section" id="vashishta-potential">
+<h3>Vashishta Potential<a class="headerlink" href="#vashishta-potential" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_vashishta.html">lammps documentation</a></li>
+<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiC-vashishta.yaml">example potential</a></li>
+<li>14 parameters: <span class="math notranslate nohighlight">\(H, \eta, Z_i, Z_j, \lambda_1, D, \lambda_4,
+W, rc, B, \gamma, r_0, C, \cos(\theta)\)</span></li>
+</ul>
+</div></blockquote>
+<p>yaml schema</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pair</span><span class="p">:</span>
+ <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">vashishta</span>
+   <span class="nt">parameters</span><span class="p">:</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">471.74538</span><span class="p p-Indicator">,</span> <span class="nv">7</span><span class="p p-Indicator">,</span> <span class="nv">-1.201</span><span class="p p-Indicator">,</span> <span class="nv">-1.201</span><span class="p p-Indicator">,</span> <span class="nv">5.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">3.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">7.35</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">23.67291</span><span class="p p-Indicator">,</span> <span class="nv">7</span><span class="p p-Indicator">,</span> <span class="nv">1.201</span><span class="p p-Indicator">,</span> <span class="nv">1.201</span><span class="p p-Indicator">,</span> <span class="nv">5.0</span><span class="p p-Indicator">,</span> <span class="nv">15.575</span><span class="p p-Indicator">,</span> <span class="nv">3.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">7.35</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">447.09026</span><span class="p p-Indicator">,</span> <span class="nv">9</span><span class="p p-Indicator">,</span> <span class="nv">-1.201</span><span class="p p-Indicator">,</span> <span class="nv">1.201</span><span class="p p-Indicator">,</span> <span class="nv">5.0</span><span class="p p-Indicator">,</span> <span class="nv">7.7874</span><span class="p p-Indicator">,</span> <span class="nv">3.0</span><span class="p p-Indicator">,</span> <span class="nv">61.4694</span><span class="p p-Indicator">,</span> <span class="nv">7.35</span><span class="p p-Indicator">,</span> <span class="nv">9.003</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">2.90</span><span class="p p-Indicator">,</span> <span class="nv">5.0</span><span class="p p-Indicator">,</span> <span class="nv">-0.333333333333</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">447.09026</span><span class="p p-Indicator">,</span> <span class="nv">9</span><span class="p p-Indicator">,</span> <span class="nv">1.201</span><span class="p p-Indicator">,</span> <span class="nv">-1.201</span><span class="p p-Indicator">,</span> <span class="nv">5.0</span><span class="p p-Indicator">,</span> <span class="nv">7.7874</span><span class="p p-Indicator">,</span> <span class="nv">3.0</span><span class="p p-Indicator">,</span> <span class="nv">61.4694</span><span class="p p-Indicator">,</span> <span class="nv">7.35</span><span class="p p-Indicator">,</span> <span class="nv">9.003</span><span class="p p-Indicator">,</span> <span class="nv">1.0</span><span class="p p-Indicator">,</span> <span class="nv">2.90</span><span class="p p-Indicator">,</span> <span class="nv">5.0</span><span class="p p-Indicator">,</span> <span class="nv">-0.333333333333</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+     <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Si&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;C&#39;</span><span class="p p-Indicator">]</span>
+       <span class="nt">coefficients</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">,</span> <span class="nv">0.0</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>Equations</p>
+<div class="math notranslate nohighlight">
+\[U = \sum^N_i \sum^N_{j &gt; i} U_{ij}^{(2)}(r_{ij}) + \sum^N_i \sum^N_{j \ne i} \sum^N_{k&gt;j,k \ne i} U_{ijk}^{(3)} (r_{ij}, r_{ik}, \theta_{ijk})\]</div>
+<div class="math notranslate nohighlight">
+\[U_{ij}^{(2)}(r) = \frac{H_{ij}}{r^{eta_{ij}}} + \frac{Z_i Z_j}{r} \exp(-r/\lambda_{1, ij}) - \frac{D_{ij}}{r^4} \exp(-r/\lambda_{4, ij}) - \frac{W_{ij}}{r^6}, r&lt;r_{c, ij}\]</div>
+<div class="math notranslate nohighlight">
+\[U_{ijk}^{(3)} (r_{ij}, r_{ik}, \theta_{ijk}) = B_{ijk} \frac{[\cos \theta_{ijk} - \cos \theta_{0ijk}]^2}{1 + C_{ijk}[\cos \theta_{ijk} - \cos \theta_{0ijk}]^2} \times \exp \left( \frac{\gamma_{ij}}{r_{ij} - r_{0, ij}} \right) \exp \left( \frac{\gamma_ik}{r_{ik} - r_{0, ik}} \right), r_{ij} &lt; r_{0, ij}, r_{ik} &lt; r_{0, ik}\]</div>
+</div>
+<div class="section" id="comb-potential">
+<h3>COMB Potential<a class="headerlink" href="#comb-potential" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_comb.html">lammps documentation</a></li>
+<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiO2-comb.yaml">example comb potential</a></li>
+<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/Ti4Cu2O-comb-3.yaml">example comb3 potential</a></li>
+<li>46 parameters (comb), 71 parameters (comb3)</li>
+</ul>
+</div></blockquote>
+<p>Spec not provided here because is so large. See examples.</p>
+<p>Equations</p>
+<div class="math notranslate nohighlight">
+\[E = \sum_i [E_i^{self} (q_i) + \sum_{j&gt;i}[E_{ij}^{short}(r_{ij}, q_i, q_j) + E_{ij}^{Coul}(r_{ij}, q_i, q_j)] + E^{polar}(q_i, r_{ij}) + E^{vdw}(r_{ij}) + E^{barr}(q_i) + E^{corr}(r_{ij}, \theta_{jik})]\]</div>
+<dl class="docutils">
+<dt>See publication for full parameter list.</dt>
+<dd><ul class="first last simple">
+<li>COMB - T.-R. Shan, B. D. Dvine, T. W. Kemper, S. B. Sinnott, and S. R. Phillpot, Phys. Rev. B 81, 125328 (2010)</li>
+<li>COMB3 - T. Liang, T.-R. Shan, Y.-T. Cheng, B. D. Devine, M. Noordhoek, Y. Li, Z. Lu, S. R. Phillpot, and S. B. Sinnott, Mat. Sci. &amp; Eng: R 74, 255-279 (2013).</li>
+</ul>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="training.html" class="btn btn-neutral float-right" title="Training Sets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tutorial.html" class="btn btn-neutral float-left" title="Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 1970, Chris Ostrouchov
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

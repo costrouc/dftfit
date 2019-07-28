@@ -1,0 +1,399 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorial &mdash; dftfit 0.3.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Potentials" href="potentials.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> dftfit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#simple-mgo-example">Simple MgO Example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="potentials.html">Potentials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="training.html">Training Sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commands.html">Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="performance.html">Improving Performance</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">dftfit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Tutorial</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/tutorial.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="simple-mgo-example">
+<h2>Simple MgO Example<a class="headerlink" href="#simple-mgo-example" title="Permalink to this headline">¶</a></h2>
+<p>DFTFIT is a software that is used to produce interatomic potentials
+for molecular dynamics simulations. The goal of the code is to enable
+scientists to use more accurate simulation methods to guide the
+construction of these potentials. For this example we will be using
+VASP calculations.</p>
+<p>The dft training data consists of:</p>
+<blockquote>
+<div><ul class="simple">
+<li>equilibrium structure</li>
+<li>displaced structures <span class="math notranslate nohighlight">\(0.01 \unicode{x212B} - 0.04 \unicode{x212B}\)</span></li>
+<li>deformed structures <span class="math notranslate nohighlight">\(\pm\%2\)</span> normal, <span class="math notranslate nohighlight">\(\pm\%8\)</span> shear</li>
+<li>random perturbed structures <span class="math notranslate nohighlight">\(0.04 \unicode{x212B}\)</span></li>
+</ul>
+</div></blockquote>
+<img alt="_images/mgo-training-sets-goal.png" src="_images/mgo-training-sets-goal.png" />
+<p>For this example all the training structures are stored in a <a class="reference external" href="https://gitlab.com/costrouc/dftfit/tree/master/examples/mgo/cache/">cached
+database</a>. DFTFIT
+uses a cache so that it does not have to reparse all input vasp and
+quantum espresso input files. From this cache we get 131 training
+structures.</p>
+<blockquote>
+<div><ul class="simple">
+<li>1 equilibrium structure</li>
+<li>6 x 10 deformed structures</li>
+<li>2 x 5 displaced structures</li>
+<li>60 perturbed structures</li>
+</ul>
+</div></blockquote>
+<p>Now that we have all of our input files we now need to configure our
+dftfit potential fitting. We are studing $MgO$ which most commonly
+uses a buckingham potential with each atom having a charge.</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}U_{Mg - Mg} (A_1, \rho_1, C_1) \quad U_{Mg - O} (A_2, \rho_2, C_2) \quad U_{O - O} (A_3, \rho_3, C_3)\\q_{Mg} = -q_{O}\end{aligned}\end{align} \]</div>
+<p>This leads to 10 free parameters.</p>
+<div class="math notranslate nohighlight">
+\[A_1, \rho_1, C_1, A_2, \rho_2, C_2, A_3, \rho_3, C_3, q_{Mg}\]</div>
+<p>DFTFIT configuration is intentionally separated into 3 parts:
+potential, training structures, dftfit configuration. Let us look at
+an example potential file. In this case we will be looking at the
+<a class="reference external" href="https://doi.org/10.1088/0022-3719/18/6/010">lewis-catlow potential for MgO</a>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Potential</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">constraint</span><span class="p">:</span>
+    <span class="nt">charge_balance</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MgO</span>
+  <span class="nt">charge</span><span class="p">:</span>
+    <span class="nt">Mg</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt">&#39;initial&#39;</span><span class="p">:</span> <span class="nv">2.0</span><span class="p p-Indicator">,</span><span class="nt"> &#39;bounds&#39;</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1.3</span><span class="p p-Indicator">,</span> <span class="nv">2</span><span class="p p-Indicator">]}</span>
+    <span class="nt">O</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt">&#39;initial&#39;</span><span class="p">:</span> <span class="nv">-2.0</span><span class="p p-Indicator">,</span><span class="nt"> &#39;bounds&#39;</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">-2</span><span class="p p-Indicator">,</span> <span class="nv">-1.3</span><span class="p p-Indicator">]}</span>
+  <span class="nt">kspace</span><span class="p">:</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pppm</span>
+    <span class="nt">tollerance</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1e-5</span>
+  <span class="nt">pair</span><span class="p">:</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">buckingham</span>
+    <span class="nt">cutoff</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10.0</span>
+    <span class="nt">parameters</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Mg&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;Mg&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span>
+           <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nt">&#39;initial&#39;</span><span class="p">:</span> <span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="nt"> &#39;bounds&#39;</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1e-6</span><span class="p p-Indicator">,</span> <span class="nv">1000</span><span class="p p-Indicator">]}</span>
+           <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nt">&#39;initial&#39;</span><span class="p">:</span> <span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="nt"> &#39;bounds&#39;</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1e-6</span><span class="p p-Indicator">,</span> <span class="nv">1e2</span><span class="p p-Indicator">]}</span>
+           <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">0.0</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;Mg&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;O&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span>
+           <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nt">&#39;initial&#39;</span><span class="p">:</span> <span class="nv">821.61</span><span class="p p-Indicator">,</span><span class="nt"> &#39;bounds&#39;</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">10</span><span class="p p-Indicator">,</span> <span class="nv">1e4</span><span class="p p-Indicator">]}</span>
+           <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nt">&#39;initial&#39;</span><span class="p">:</span> <span class="nv">0.324199</span><span class="p p-Indicator">,</span><span class="nt"> &#39;bounds&#39;</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1e-6</span><span class="p p-Indicator">,</span> <span class="nv">1e2</span><span class="p p-Indicator">]}</span>
+           <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">0.0</span>
+      <span class="p p-Indicator">-</span> <span class="nt">elements</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;O&#39;</span><span class="p p-Indicator">,</span> <span class="s">&#39;O&#39;</span><span class="p p-Indicator">]</span>
+        <span class="nt">coefficients</span><span class="p">:</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nt">&#39;initial&#39;</span><span class="p">:</span> <span class="nv">22764.915</span><span class="p p-Indicator">,</span><span class="nt"> &#39;bounds&#39;</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1e3</span><span class="p p-Indicator">,</span> <span class="nv">1e6</span><span class="p p-Indicator">]}</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nt">&#39;initial&#39;</span><span class="p">:</span> <span class="nv">0.14899</span><span class="p p-Indicator">,</span><span class="nt"> &#39;bounds&#39;</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1e-3</span><span class="p p-Indicator">,</span> <span class="nv">1e2</span><span class="p p-Indicator">]}</span>
+          <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nt">&#39;initial&#39;</span><span class="p">:</span> <span class="nv">20.3705</span><span class="p p-Indicator">,</span><span class="nt"> &#39;bounds&#39;</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span> <span class="nv">1e3</span><span class="p p-Indicator">]}</span>
+</pre></div>
+</div>
+<p>Currently DFTFIT supports any float value in the input file to be a
+parameter for the optimization. This even means that the buckingham
+cutoff radius can be an optimization parameter. Additionally, DFTFIT
+has been designed such that it is possible to determine if two
+potential parameter files are using the same potential form (I am
+quite proud of this feature). It is not perfect but will work for %90
+of all cases. The form for a parameter is <code class="docutils literal notranslate"><span class="pre">{'initial':</span> <span class="pre">&lt;value&gt;,</span>
+<span class="pre">'bound':</span> <span class="pre">[&lt;lower&gt;,&lt;upper&gt;]}</span></code>. There is planned support in the future
+for spline function parameters. This would be useful for example in
+constructing EAM potentials.</p>
+<p>Next the training structures need to be defined for input. The current
+input file uses calculations generated with my own framework
+<code class="docutils literal notranslate"><span class="pre">mattoolkit</span></code> however vasp and quantum espresso are also supported. The
+actual input file in the examples is much longer. We can see that it
+is a list of calculations to include. In the case of mattoolkit all
+calculations are chosen using a selector. All calculations that match
+the labels <code class="docutils literal notranslate"><span class="pre">project:potential_fitting</span></code>, <code class="docutils literal notranslate"><span class="pre">structrue:MgO</span></code>,
+<code class="docutils literal notranslate"><span class="pre">calculation_type:static</span></code>, <code class="docutils literal notranslate"><span class="pre">calculation_group:lattice_constant</span></code>. If
+you haven’t done it already, when you accumulate a lot of data it is
+important to assign metadata to all of your calculations. This makes
+the calculations much easier to select.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Training</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mattoolkit</span>
+    <span class="nt">selector</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">project:potential_fitting</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">structrue:MgO</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">calculation_type:static</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">calculation_group:lattice_constant</span>
+</pre></div>
+</div>
+<p>Finally we have the DFTFIT configuration. The configuration is quite
+flexible.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Configuration</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">testing</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">algorithm</span><span class="p">:</span> <span class="s">&quot;pygmo.sade&quot;</span>
+    <span class="nt">test</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">logging</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">INFO</span>
+  <span class="nt">database</span><span class="p">:</span>
+    <span class="nt">interval</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+    <span class="nt">filename</span><span class="p">:</span> <span class="s">&quot;/tmp/dftfit/database.db&quot;</span>
+  <span class="nt">algorithm</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="s">&#39;pygmo.sade&#39;</span>
+    <span class="nt">steps</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+    <span class="nt">population</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+  <span class="nt">problem</span><span class="p">:</span>
+    <span class="nt">calculator</span><span class="p">:</span> <span class="s">&#39;lammps_cython&#39;</span>
+    <span class="nt">num_workers</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+    <span class="nt">weights</span><span class="p">:</span>
+      <span class="nt">force</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.3</span>
+      <span class="nt">stress</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.6</span>
+      <span class="nt">energy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1</span>
+  <span class="nt">training</span><span class="p">:</span>
+    <span class="nt">cache_filename</span><span class="p">:</span> <span class="s">&quot;./cache/cache.db&quot;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">metadata</span></code> section is for providing information about the
+calculation. The <code class="docutils literal notranslate"><span class="pre">name</span></code> property needs to be a string. While the
+<code class="docutils literal notranslate"><span class="pre">labels</span></code> are key value pairs that must both be strings. The key value
+pairs can be anything. Now we have the parameters that actually affect
+the calculation.</p>
+<dl class="docutils">
+<dt>logging</dt>
+<dd><em>default is WARNING</em> it is used to print information during the
+run. Stick with WARNING for a much much cleaner stdout</dd>
+<dt>database</dt>
+<dd>if specified provide the location for the sqlite3 database</dd>
+<dt>steps</dt>
+<dd><em>required</em> number of optimization steps</dd>
+<dt>population</dt>
+<dd><em>required</em> number of potential parameters sets to solve at each iteration</dd>
+<dt>algorithm</dt>
+<dd><em>required</em> the optimization algorithm to use a good one to start using is SADE. See <a class="reference external" href="https://esa.github.io/pagmo2/docs/algorithm_list.html">pagmo2 algorithmn documentation</a>.</dd>
+<dt>problem.calculator</dt>
+<dd>molecular dynamics calculator to use lammps is the only one for now</dd>
+<dt>problem.command</dt>
+<dd>command to run to start calculator <em>make sure command matches calculator!</em></dd>
+<dt>problem.num_workers</dt>
+<dd>determines the parallelism. Currently DFTFIT doesn’t scale well past 8 processors. Each processor does about 150 calculations/second.</dd>
+<dt>weights</dt>
+<dd>features to calculate and the associated weights. Can be <code class="docutils literal notranslate"><span class="pre">None</span></code> for value.</dd>
+<dt>training.cache_filename</dt>
+<dd>where to store the caches parsed training calculations</dd>
+</dl>
+<p>If is a global optimization algorithm is chosen random population
+points will be chosen. After the configuration file has been setup you
+are ready to go!  The optimization can be simply run using the
+<code class="docutils literal notranslate"><span class="pre">dftfit</span></code> command installed when installing the python package. Run the
+command within the <code class="docutils literal notranslate"><span class="pre">examples/mgo</span></code> folder.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>dftfit train -c configuration.yaml -p potential.yaml -t training.yaml
+</pre></div>
+</div>
+<p>Since the example configuration only run 10 * 10 = 100 optimization
+steps the potential really will not improve. For my calculations I
+do 100,000 optimization steps with each step taking less than a
+fraction of a second. In total 100,000 steps takes about 10-12
+hours.</p>
+<p>DFTFIT comes with tools for investigating the results from the
+optimization.</p>
+<p>TODO add more.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="potentials.html" class="btn btn-neutral float-right" title="Potentials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 1970, Chris Ostrouchov
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

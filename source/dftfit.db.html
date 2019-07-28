@@ -1,0 +1,280 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dftfit.db package &mdash; dftfit 0.3.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> dftfit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../potentials.html">Potentials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training.html">Training Sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../commands.html">Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Improving Performance</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">dftfit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>dftfit.db package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/source/dftfit.db.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dftfit-db-package">
+<h1>dftfit.db package<a class="headerlink" href="#dftfit-db-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-dftfit.db.actions">
+<span id="dftfit-db-actions-module"></span><h2>dftfit.db.actions module<a class="headerlink" href="#module-dftfit.db.actions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="dftfit.db.actions.write_evaluation">
+<code class="descclassname">dftfit.db.actions.</code><code class="descname">write_evaluation</code><span class="sig-paren">(</span><em>dbm</em>, <em>run_id</em>, <em>potential</em>, <em>errors</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.db.actions.write_evaluation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="dftfit.db.actions.write_evaluations_batch">
+<code class="descclassname">dftfit.db.actions.</code><code class="descname">write_evaluations_batch</code><span class="sig-paren">(</span><em>dbm</em>, <em>run_id</em>, <em>eval_batch</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.db.actions.write_evaluations_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="dftfit.db.actions.write_run_final">
+<code class="descclassname">dftfit.db.actions.</code><code class="descname">write_run_final</code><span class="sig-paren">(</span><em>dbm</em>, <em>run_id</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.db.actions.write_run_final" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="dftfit.db.actions.write_run_initial">
+<code class="descclassname">dftfit.db.actions.</code><code class="descname">write_run_initial</code><span class="sig-paren">(</span><em>dbm</em>, <em>potential</em>, <em>training</em>, <em>configuration</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.db.actions.write_run_initial" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="dftfit-db-query-module">
+<h2>dftfit.db.query module<a class="headerlink" href="#dftfit-db-query-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-dftfit.db.table">
+<span id="dftfit-db-table-module"></span><h2>dftfit.db.table module<a class="headerlink" href="#module-dftfit.db.table" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dftfit.db.table.DatabaseManager">
+<em class="property">class </em><code class="descclassname">dftfit.db.table.</code><code class="descname">DatabaseManager</code><span class="sig-paren">(</span><em>filename=None</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.db.table.DatabaseManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="staticmethod">
+<dt id="dftfit.db.table.DatabaseManager.adapt_datetime">
+<em class="property">static </em><code class="descname">adapt_datetime</code><span class="sig-paren">(</span><em>datetime</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.db.table.DatabaseManager.adapt_datetime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="dftfit.db.table.DatabaseManager.adapt_json">
+<em class="property">static </em><code class="descname">adapt_json</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.db.table.DatabaseManager.adapt_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dftfit.db.table.DatabaseManager.connection">
+<code class="descname">connection</code><a class="headerlink" href="#dftfit.db.table.DatabaseManager.connection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="dftfit.db.table.DatabaseManager.convert_datetime">
+<em class="property">static </em><code class="descname">convert_datetime</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.db.table.DatabaseManager.convert_datetime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="dftfit.db.table.DatabaseManager.convert_json">
+<em class="property">static </em><code class="descname">convert_json</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.db.table.DatabaseManager.convert_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dftfit.db.table.DatabaseManager.create_tables">
+<code class="descname">create_tables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.db.table.DatabaseManager.create_tables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="dftfit.db.table.DatabaseManager.register_types">
+<code class="descname">register_types</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.db.table.DatabaseManager.register_types" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 1970, Chris Ostrouchov
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

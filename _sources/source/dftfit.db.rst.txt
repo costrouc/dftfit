@@ -1,0 +1,38 @@
+dftfit.db package
+=================
+
+Submodules
+----------
+
+dftfit.db.actions module
+------------------------
+
+.. automodule:: dftfit.db.actions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+dftfit.db.query module
+----------------------
+
+.. automodule:: dftfit.db.query
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+dftfit.db.table module
+----------------------
+
+.. automodule:: dftfit.db.table
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: dftfit.db
+    :members:
+    :undoc-members:
+    :show-inheritance:

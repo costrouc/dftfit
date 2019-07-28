@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Configuration &mdash; dftfit 0.3.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Commands" href="commands.html" />
+    <link rel="prev" title="Training Sets" href="training.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> dftfit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="potentials.html">Potentials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="training.html">Training Sets</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#metadata">Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optimization">Optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#problem">Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#algorithms">Algorithms</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sqlite-database">SQLite Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#md-calculator">MD Calculator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#miscellaneous">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="commands.html">Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="performance.html">Improving Performance</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">dftfit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Configuration</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/configuration.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>The configuration schema is where you specify all optimization
+settings and general DFTFIT settings such as which <code class="docutils literal notranslate"><span class="pre">sqlite</span></code> database
+to write to. See bellow for an example configuration file.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Configuration</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">simple test</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">test</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">simple</span>
+    <span class="nt">hello</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">world</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">logging</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">INFO</span>
+  <span class="nt">database</span><span class="p">:</span>
+    <span class="nt">filename</span><span class="p">:</span> <span class="s">&quot;test.db&quot;</span>
+    <span class="nt">interval</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+  <span class="nt">algorithm</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="s">&#39;pygmo.de&#39;</span>
+    <span class="nt">steps</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">10</span>
+    <span class="nt">population</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
+    <span class="nt">include_initial_guess</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span>
+  <span class="nt">problem</span><span class="p">:</span>
+    <span class="nt">calculator</span><span class="p">:</span> <span class="s">&#39;lammps&#39;</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="s">&#39;lammps_serial&#39;</span>
+    <span class="nt">weights</span><span class="p">:</span>
+      <span class="nt">force</span><span class="p">:</span>  <span class="l l-Scalar l-Scalar-Plain">0.8</span>
+      <span class="nt">stress</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1</span>
+      <span class="nt">energy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1</span>
+</pre></div>
+</div>
+<div class="section" id="metadata">
+<h2>Metadata<a class="headerlink" href="#metadata" title="Permalink to this headline">¶</a></h2>
+<p>DFTFIT allows a user to assign a name to an optimization run
+<code class="docutils literal notranslate"><span class="pre">metadata.name</span></code> along with arbitrary key value strings to the
+run. This metadata will be included in the SQLite database.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">metadata.name</span></code> string name to assign to run</li>
+<li><code class="docutils literal notranslate"><span class="pre">metadata.labels</span></code> key, value strings to assign to run</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="optimization">
+<h2>Optimization<a class="headerlink" href="#optimization" title="Permalink to this headline">¶</a></h2>
+<p>DFTFIT gives the user explicit control over the optimization
+procedure. In general the number of potential evaluations is equal to
+<code class="docutils literal notranslate"><span class="pre">spec.population</span> <span class="pre">*</span> <span class="pre">(spec.steps</span> <span class="pre">+</span> <span class="pre">1)</span></code>. This is because DFTFIT does
+one initial evaluations of guessed parameters. Note that optimization
+is broken into two parts. The problem is how DFTFIT evaluates the
+objective function. The algorithm is control over the optimization
+algorithm used on the objective function.</p>
+<div class="section" id="problem">
+<h3>Problem<a class="headerlink" href="#problem" title="Permalink to this headline">¶</a></h3>
+<p>DFTFIT uses the problem to specify how it evaluates the objective
+function.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">spec.problem.weights</span></code> weights to use in addition to the features
+to calculate. Available options include: force, stress, energy,
+lattice_constants, elastic_constants, bulk_modulus,
+shear_modulus. Note that even for multiobjective optimization
+functions a single objective value can be computed.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="algorithms">
+<h3>Algorithms<a class="headerlink" href="#algorithms" title="Permalink to this headline">¶</a></h3>
+<p>DFTFIT is unique in that it allows for both single and multi objective
+optimization. By using <a class="reference external" href="https://esa.github.io/pagmo2/docs/algorithm_list.html">pagmo2</a> for
+optimization DFTFIT is able to offer 20+ single objective and several
+multi-objective algorithms. A list of some of the notable algorithms
+include.</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://esa.github.io/pagmo2/docs/python/algorithms/py_algorithms.html#pygmo.sade">SADE</a></li>
+<li><a class="reference external" href="https://esa.github.io/pagmo2/docs/python/algorithms/py_algorithms.html#pygmo.nlopt">LBFGS</a></li>
+<li><a class="reference external" href="https://esa.github.io/pagmo2/docs/python/algorithms/py_algorithms.html#pygmo.bee_colony">Bee Colony</a></li>
+<li><a class="reference external" href="https://esa.github.io/pagmo2/docs/python/algorithms/py_algorithms.html#pygmo.moead">MOEAD</a></li>
+</ul>
+</div></blockquote>
+<p>Values</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">spec.algorithm.name</span></code> pagmo2 optimization algorithm to use</li>
+<li><code class="docutils literal notranslate"><span class="pre">spec.algorithm.steps</span></code> number of steps to take in optimization</li>
+<li><code class="docutils literal notranslate"><span class="pre">spec.algorithm.population</span></code> number of guesses per optimization step</li>
+<li><code class="docutils literal notranslate"><span class="pre">spec.algorithm.include_initial_guess</span></code> whether to include the initial values from the potential schema</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="sqlite-database">
+<h2>SQLite Database<a class="headerlink" href="#sqlite-database" title="Permalink to this headline">¶</a></h2>
+<p>Most scientific software writes output to a custom binary output file
+or <code class="docutils literal notranslate"><span class="pre">json</span></code> files. DFTFIT writes all optimization information to an
+SQLite database. This provides MANY benefits.</p>
+<blockquote>
+<div><ul class="simple">
+<li>several concurrent runs can write to the same file</li>
+<li>since sqlite is a database you can evaluate the progress of the optimization in realtime</li>
+<li>sqlite is fault tollerant meaning that the change of corruption is very low</li>
+</ul>
+</div></blockquote>
+<p>For easily viewing the results DFTFIT provides serveral methods in
+<code class="docutils literal notranslate"><span class="pre">dftfit.db_actions</span></code>. Also you may use any available SQLite viewer
+such as the free <a class="reference external" href="http://sqlitebrowser.org/">sqlitebrowser</a>.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">spec.database.filename</span></code> controls the sqlite filename that all information is written to</li>
+<li><code class="docutils literal notranslate"><span class="pre">spec.database.interval</span></code> controls how dftfit batches writes of evaluation information. Each write takes around 1-20 ms depending on system.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="md-calculator">
+<h2>MD Calculator<a class="headerlink" href="#md-calculator" title="Permalink to this headline">¶</a></h2>
+<p>DFTFIT originally only had one MD calculator <code class="docutils literal notranslate"><span class="pre">lammps</span></code>. However it
+worked by writting input files and then telling lammps to run
+them. This was not ideal so a new calculator was written that uses
+<a class="reference external" href="https://gitlab.com/costrouc/lammps-cython">lammps-cython</a>. This
+calculator integrated <cite>LAMMPS</cite> within the python process.</p>
+<p>It is at least 5X-10X faster and is the recommended calculator.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">spec.problem.calculator</span></code> set that DFTFIT calculator to use. Recommended <code class="docutils literal notranslate"><span class="pre">lammps_cython</span></code>. Available: “lammps”, “lammps_cython”</li>
+<li><code class="docutils literal notranslate"><span class="pre">spec.problem.command</span></code> only used by “lammps” calculator to
+specify the executable path.</li>
+<li><code class="docutils literal notranslate"><span class="pre">spec.problem.num_workers</span></code> allows for parallelism of DFTFIT
+optimization. Does not scale well past 6 workers (1500 lammps
+calculations/second).</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">spec.logging</span></code> controls the verbosity of DFTFIT (DEBUG, INFO, WARNING, CRITICAL)</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="commands.html" class="btn btn-neutral float-right" title="Commands" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="training.html" class="btn btn-neutral float-left" title="Training Sets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 1970, Chris Ostrouchov
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

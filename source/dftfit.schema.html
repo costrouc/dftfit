@@ -1,0 +1,540 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dftfit.schema package &mdash; dftfit 0.3.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> dftfit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../potentials.html">Potentials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training.html">Training Sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../commands.html">Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance.html">Improving Performance</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">dftfit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>dftfit.schema package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/source/dftfit.schema.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dftfit-schema-package">
+<h1>dftfit.schema package<a class="headerlink" href="#dftfit-schema-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-dftfit.schema.base">
+<span id="dftfit-schema-base-module"></span><h2>dftfit.schema.base module<a class="headerlink" href="#module-dftfit.schema.base" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dftfit.schema.base.BaseSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.base.</code><code class="descname">BaseSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.base.BaseSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">marshmallow.schema.Schema</span></code></p>
+<dl class="method">
+<dt id="dftfit.schema.base.BaseSchema.check_unknown_fields">
+<code class="descname">check_unknown_fields</code><span class="sig-paren">(</span><em>data</em>, <em>original_data</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.base.BaseSchema.check_unknown_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dftfit.schema.base.BaseSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.base.BaseSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-dftfit.schema.configuration">
+<span id="dftfit-schema-configuration-module"></span><h2>dftfit.schema.configuration module<a class="headerlink" href="#module-dftfit.schema.configuration" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dftfit.schema.configuration.ConfigurationSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.configuration.</code><code class="descname">ConfigurationSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.configuration.ConfigurationSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.configuration.ConfigurationSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.configuration.ConfigurationSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.configuration.KeyValueField">
+<em class="property">class </em><code class="descclassname">dftfit.schema.configuration.</code><code class="descname">KeyValueField</code><span class="sig-paren">(</span><em>default=&lt;marshmallow.missing&gt;</em>, <em>attribute=None</em>, <em>load_from=None</em>, <em>dump_to=None</em>, <em>error=None</em>, <em>validate=None</em>, <em>required=False</em>, <em>allow_none=None</em>, <em>load_only=False</em>, <em>dump_only=False</em>, <em>missing=&lt;marshmallow.missing&gt;</em>, <em>error_messages=None</em>, <em>**metadata</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.configuration.KeyValueField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">marshmallow.fields.Field</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.configuration.MetadataSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.configuration.</code><code class="descname">MetadataSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.configuration.MetadataSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.configuration.MetadataSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.configuration.MetadataSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-dftfit.schema.fields">
+<span id="dftfit-schema-fields-module"></span><h2>dftfit.schema.fields module<a class="headerlink" href="#module-dftfit.schema.fields" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dftfit.schema.fields.PolyField">
+<em class="property">class </em><code class="descclassname">dftfit.schema.fields.</code><code class="descname">PolyField</code><span class="sig-paren">(</span><em>serialization_schema_selector=None</em>, <em>deserialization_schema_selector=None</em>, <em>many=False</em>, <em>**metadata</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.fields.PolyField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">marshmallow.fields.Field</span></code></p>
+<p>A field that (de)serializes to one of many types. Passed in functions
+are called to disambiguate what schema to use for the (de)serialization
+Intended to assist in working with fields that can contain any subclass
+of a base type</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dftfit.schema.potential">
+<span id="dftfit-schema-potential-module"></span><h2>dftfit.schema.potential module<a class="headerlink" href="#module-dftfit.schema.potential" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dftfit.schema.potential.ConstraintSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.potential.</code><code class="descname">ConstraintSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.potential.ConstraintSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.potential.ConstraintSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.potential.ConstraintSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.potential.FloatParameterField">
+<em class="property">class </em><code class="descclassname">dftfit.schema.potential.</code><code class="descname">FloatParameterField</code><span class="sig-paren">(</span><em>default=&lt;marshmallow.missing&gt;</em>, <em>attribute=None</em>, <em>load_from=None</em>, <em>dump_to=None</em>, <em>error=None</em>, <em>validate=None</em>, <em>required=False</em>, <em>allow_none=None</em>, <em>load_only=False</em>, <em>dump_only=False</em>, <em>missing=&lt;marshmallow.missing&gt;</em>, <em>error_messages=None</em>, <em>**metadata</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.potential.FloatParameterField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">marshmallow.fields.Field</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.potential.KspaceSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.potential.</code><code class="descname">KspaceSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.potential.KspaceSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.potential.KspaceSchema.KSPACE_TYPES">
+<code class="descname">KSPACE_TYPES</code><em class="property"> = {'ewald', 'pppm'}</em><a class="headerlink" href="#dftfit.schema.potential.KspaceSchema.KSPACE_TYPES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dftfit.schema.potential.KspaceSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.potential.KspaceSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.potential.PairPotentialSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.potential.</code><code class="descname">PairPotentialSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.potential.PairPotentialSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.potential.PairPotentialSchema.PAIR_POTENTIALS">
+<code class="descname">PAIR_POTENTIALS</code><em class="property"> = {'beck', 'buckingham', 'comb', 'comb-3', 'gao-weber', 'harmonic', 'lennard-jones', 'python-function', 'stillinger-weber', 'tersoff', 'tersoff-2', 'vashishta', 'vashishta-mixing', 'zbl'}</em><a class="headerlink" href="#dftfit.schema.potential.PairPotentialSchema.PAIR_POTENTIALS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dftfit.schema.potential.PairPotentialSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.potential.PairPotentialSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.potential.ParameterSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.potential.</code><code class="descname">ParameterSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.potential.ParameterSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.potential.ParameterSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.potential.ParameterSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.potential.ParametersSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.potential.</code><code class="descname">ParametersSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.potential.ParametersSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.potential.ParametersSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.potential.ParametersSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.potential.PotentialSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.potential.</code><code class="descname">PotentialSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.potential.PotentialSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.potential.PotentialSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.potential.PotentialSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.potential.PotentialSpecSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.potential.</code><code class="descname">PotentialSpecSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.potential.PotentialSpecSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.potential.PotentialSpecSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.potential.PotentialSpecSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-dftfit.schema.training">
+<span id="dftfit-schema-training-module"></span><h2>dftfit.schema.training module<a class="headerlink" href="#module-dftfit.schema.training" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="dftfit.schema.training.BulkModulusTrainingSetSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.training.</code><code class="descname">BulkModulusTrainingSetSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.BulkModulusTrainingSetSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.training.BulkModulusTrainingSetSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.training.BulkModulusTrainingSetSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.training.DisplacementEnergiesTrainingSetSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.training.</code><code class="descname">DisplacementEnergiesTrainingSetSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.DisplacementEnergiesTrainingSetSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.training.DisplacementEnergiesTrainingSetSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.training.DisplacementEnergiesTrainingSetSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.training.ElasticConstantTrainingSetSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.training.</code><code class="descname">ElasticConstantTrainingSetSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.ElasticConstantTrainingSetSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="method">
+<dt id="dftfit.schema.training.ElasticConstantTrainingSetSchema.as_numpy_array">
+<code class="descname">as_numpy_array</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.ElasticConstantTrainingSetSchema.as_numpy_array" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dftfit.schema.training.ElasticConstantTrainingSetSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.training.ElasticConstantTrainingSetSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.training.GroundStateTrainingSetSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.training.</code><code class="descname">GroundStateTrainingSetSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.GroundStateTrainingSetSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.training.GroundStateTrainingSetSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.training.GroundStateTrainingSetSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.training.LatticeConstantTrainingSetSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.training.</code><code class="descname">LatticeConstantTrainingSetSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.LatticeConstantTrainingSetSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="method">
+<dt id="dftfit.schema.training.LatticeConstantTrainingSetSchema.as_numpy_array">
+<code class="descname">as_numpy_array</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.LatticeConstantTrainingSetSchema.as_numpy_array" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dftfit.schema.training.LatticeConstantTrainingSetSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.training.LatticeConstantTrainingSetSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.training.MTKSelectorSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.training.</code><code class="descname">MTKSelectorSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.MTKSelectorSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.training.MTKSelectorSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.training.MTKSelectorSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.training.MTKTrainingSetSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.training.</code><code class="descname">MTKTrainingSetSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.MTKTrainingSetSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.training.MTKTrainingSetSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.training.MTKTrainingSetSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.training.MeltingPointEnergiesTrainingSetSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.training.</code><code class="descname">MeltingPointEnergiesTrainingSetSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.MeltingPointEnergiesTrainingSetSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.training.MeltingPointEnergiesTrainingSetSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.training.MeltingPointEnergiesTrainingSetSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.training.PointDefectsTrainingSetSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.training.</code><code class="descname">PointDefectsTrainingSetSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.PointDefectsTrainingSetSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.training.PointDefectsTrainingSetSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.training.PointDefectsTrainingSetSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.training.ShearModulusTrainingSetSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.training.</code><code class="descname">ShearModulusTrainingSetSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.ShearModulusTrainingSetSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.training.ShearModulusTrainingSetSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.training.ShearModulusTrainingSetSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.training.SiestaSelectorSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.training.</code><code class="descname">SiestaSelectorSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.SiestaSelectorSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.training.SiestaSelectorSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.training.SiestaSelectorSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="dftfit.schema.training.SiestaSelectorSchema.validate_schema">
+<code class="descname">validate_schema</code><em class="property"> = functools.partial(&lt;function tag_processor&gt;, 'validates', pass_many=False, field_name=&lt;function SiestaSelectorSchema.validate_schema&gt;)</em><a class="headerlink" href="#dftfit.schema.training.SiestaSelectorSchema.validate_schema" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.training.SiestaTrainingSetSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.training.</code><code class="descname">SiestaTrainingSetSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.SiestaTrainingSetSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.training.SiestaTrainingSetSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.training.SiestaTrainingSetSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dftfit.schema.training.TrainingSchema">
+<em class="property">class </em><code class="descclassname">dftfit.schema.training.</code><code class="descname">TrainingSchema</code><span class="sig-paren">(</span><em>strict=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.TrainingSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dftfit.schema.base.BaseSchema" title="dftfit.schema.base.BaseSchema"><code class="xref py py-class docutils literal notranslate"><span class="pre">dftfit.schema.base.BaseSchema</span></code></a></p>
+<dl class="attribute">
+<dt id="dftfit.schema.training.TrainingSchema.opts">
+<code class="descname">opts</code><em class="property"> = &lt;marshmallow.schema.SchemaOpts object&gt;</em><a class="headerlink" href="#dftfit.schema.training.TrainingSchema.opts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="dftfit.schema.training.trainging_property_schema_deserialization_disambiguation">
+<code class="descclassname">dftfit.schema.training.</code><code class="descname">trainging_property_schema_deserialization_disambiguation</code><span class="sig-paren">(</span><em>object_dict</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.trainging_property_schema_deserialization_disambiguation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="dftfit.schema.training.training_property_schema_serialization_disambiguation">
+<code class="descclassname">dftfit.schema.training.</code><code class="descname">training_property_schema_serialization_disambiguation</code><span class="sig-paren">(</span><em>base_object</em>, <em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#dftfit.schema.training.training_property_schema_serialization_disambiguation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-dftfit.schema">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dftfit.schema" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 1970, Chris Ostrouchov
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

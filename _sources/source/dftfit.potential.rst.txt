@@ -1,0 +1,30 @@
+dftfit.potential package
+========================
+
+Submodules
+----------
+
+dftfit.potential.models module
+------------------------------
+
+.. automodule:: dftfit.potential.models
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+dftfit.potential.representation module
+--------------------------------------
+
+.. automodule:: dftfit.potential.representation
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: dftfit.potential
+    :members:
+    :undoc-members:
+    :show-inheritance:

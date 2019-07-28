@@ -1,1 +1,0 @@
-from .vasp import VaspReader

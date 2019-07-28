@@ -1,0 +1,407 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Commands &mdash; dftfit 0.3.2 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Visualization" href="visualization.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> dftfit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="potentials.html">Potentials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="training.html">Training Sets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#merging-databases">Merging Databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#evaluating-potentials">Evaluating Potentials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#summarizing-dftfit-runs">Summarizing DFTFIT runs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualize-progress-of-run">Visualize Progress of Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#training-set-radial-distribution">Training Set Radial Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualize-potential-error-on-training-set">Visualize Potential Error on Training Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualize-pair-potential">Visualize Pair Potential</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="performance.html">Improving Performance</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">dftfit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Commands</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/commands.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="commands">
+<h1>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="merging-databases">
+<h2>Merging Databases<a class="headerlink" href="#merging-databases" title="Permalink to this headline">¶</a></h2>
+<p>Everything in DFTFIT is backed by an SQLite3 database. Often times
+when running calcluations on supercomputers your calculations will be
+stored in several databases. In fact this is recommended because
+SQLite3 does not handle concurrency and distributed file systems <a class="reference external" href="https://www.sqlite.org/whentouse.html">well</a>. <code class="docutils literal notranslate"><span class="pre">dftfit</span> <span class="pre">db</span> <span class="pre">merge</span></code> will
+combine several databases into one. It can also de-duplicate
+calculations.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dftfit db merge database1.db  database2.db -o database.db
+</pre></div>
+</div>
+</div>
+<div class="section" id="evaluating-potentials">
+<h2>Evaluating Potentials<a class="headerlink" href="#evaluating-potentials" title="Permalink to this headline">¶</a></h2>
+<p>A challenging area of using potentials for molecular dynamics
+calculations is checking that the potential is stable for your
+work. DFTFIT makes this easy by taking in a potential plus the ground
+state structure. It will predict the:</p>
+<blockquote>
+<div><ul class="simple">
+<li>lattice constants</li>
+<li>elastic constants</li>
+<li>energy, forces, and stress of configuration</li>
+</ul>
+</div></blockquote>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dftfit <span class="nb">test</span> properties -p test_files/potential/mgo.yaml <span class="se">\</span>
+                       -s test_files/structure/MgO.cif
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Lattice</span> <span class="n">Constants</span><span class="p">:</span>
+      <span class="n">a</span><span class="p">:</span>  <span class="mf">4.199</span>    <span class="n">b</span><span class="p">:</span>  <span class="mf">4.199</span>     <span class="n">c</span><span class="p">:</span>  <span class="mf">4.199</span>
+  <span class="n">alpha</span><span class="p">:</span> <span class="mf">90.000</span> <span class="n">beta</span><span class="p">:</span> <span class="mf">90.000</span> <span class="n">gamma</span><span class="p">:</span> <span class="mf">90.000</span>
+
+<span class="n">Elastic</span><span class="p">:</span>
+<span class="n">Stiffness</span> <span class="n">Tensor</span>
+  <span class="o">-</span><span class="mf">313.8</span>   <span class="o">-</span><span class="mf">148.5</span>   <span class="o">-</span><span class="mf">179.1</span>     <span class="o">-</span><span class="mf">0.0</span>     <span class="o">-</span><span class="mf">0.0</span>     <span class="o">-</span><span class="mf">0.0</span>
+
+  <span class="o">-</span><span class="mf">117.1</span>   <span class="o">-</span><span class="mf">333.8</span>   <span class="o">-</span><span class="mf">179.1</span>     <span class="o">-</span><span class="mf">0.0</span>     <span class="o">-</span><span class="mf">0.0</span>     <span class="o">-</span><span class="mf">0.0</span>
+
+  <span class="o">-</span><span class="mf">117.1</span>   <span class="o">-</span><span class="mf">148.6</span>   <span class="o">-</span><span class="mf">353.2</span>     <span class="o">-</span><span class="mf">0.0</span>     <span class="o">-</span><span class="mf">0.0</span>     <span class="o">-</span><span class="mf">0.0</span>
+
+    <span class="o">-</span><span class="mf">0.0</span>     <span class="o">+</span><span class="mf">0.0</span>     <span class="o">-</span><span class="mf">0.0</span>   <span class="o">-</span><span class="mf">120.7</span>     <span class="o">-</span><span class="mf">0.0</span>     <span class="o">+</span><span class="mf">0.0</span>
+
+    <span class="o">-</span><span class="mf">0.0</span>     <span class="o">+</span><span class="mf">0.0</span>     <span class="o">-</span><span class="mf">0.0</span>     <span class="o">-</span><span class="mf">0.0</span>   <span class="o">-</span><span class="mf">120.7</span>     <span class="o">+</span><span class="mf">0.0</span>
+
+    <span class="o">-</span><span class="mf">0.0</span>     <span class="o">-</span><span class="mf">0.0</span>     <span class="o">-</span><span class="mf">0.0</span>     <span class="o">+</span><span class="mf">0.0</span>     <span class="o">-</span><span class="mf">0.0</span>   <span class="o">-</span><span class="mf">120.7</span>
+
+
+
+<span class="n">Shear</span> <span class="n">Modulus</span> <span class="n">G_V</span> <span class="o">-</span><span class="mf">105.36002528878238</span>
+<span class="n">Shear</span> <span class="n">Modulus</span> <span class="n">G_R</span> <span class="o">-</span><span class="mf">106.1332136372622</span>
+<span class="n">Shear</span> <span class="n">Modulus</span> <span class="n">G_vrh</span> <span class="o">-</span><span class="mf">105.74661946302228</span>
+<span class="n">Bulk</span> <span class="n">Modulus</span> <span class="n">K_V</span> <span class="o">-</span><span class="mf">210.04961372048925</span>
+<span class="n">Bulk</span> <span class="n">Modulus</span> <span class="n">K_R</span> <span class="o">-</span><span class="mf">211.15489789675007</span>
+<span class="n">Bulk</span> <span class="n">Modulus</span> <span class="n">K_vrh</span> <span class="o">-</span><span class="mf">210.60225580861965</span>
+<span class="n">Elastic</span> <span class="n">Anisotropy</span> <span class="o">-</span><span class="mf">0.04165984250465549</span>
+<span class="n">Poisons</span> <span class="n">Ration</span> <span class="mf">0.284937698051096</span>
+
+<span class="n">Static</span><span class="p">:</span>
+    <span class="n">Energy</span><span class="p">:</span> <span class="p">[</span><span class="n">eV</span><span class="p">]</span>
+               <span class="o">-</span><span class="mf">14.559</span>
+    <span class="n">Forces</span><span class="p">:</span> <span class="p">[</span><span class="n">eV</span><span class="o">/</span><span class="n">Angstrom</span><span class="p">]</span>
+                 <span class="mf">8.500</span>           <span class="mf">20.370</span>           <span class="o">-</span><span class="mf">9.638</span>
+                <span class="o">-</span><span class="mf">8.500</span>          <span class="o">-</span><span class="mf">20.370</span>            <span class="mf">9.638</span>
+    <span class="n">Stress</span><span class="p">:</span> <span class="p">[</span><span class="n">bars</span><span class="p">]</span>
+               <span class="mf">118.599</span>          <span class="mf">211.146</span>          <span class="o">-</span><span class="mf">29.249</span>
+               <span class="mf">211.146</span>          <span class="mf">399.328</span>          <span class="o">-</span><span class="mf">53.051</span>
+               <span class="o">-</span><span class="mf">29.249</span>          <span class="o">-</span><span class="mf">53.051</span>           <span class="mf">33.288</span>
+</pre></div>
+</div>
+<p>DFTFIT will perform the calculation on the input structure so it may
+be important to relax it with the potential beforehand.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dftfit <span class="nb">test</span> relax -p test_files/potential/mgo.yaml <span class="se">\</span>
+                  -s test_files/structure/MgO.cif <span class="se">\</span>
+                  -o MgO-relaxed.cif
+</pre></div>
+</div>
+</div>
+<div class="section" id="summarizing-dftfit-runs">
+<h2>Summarizing DFTFIT runs<a class="headerlink" href="#summarizing-dftfit-runs" title="Permalink to this headline">¶</a></h2>
+<p>After performing many calculations you may want to quickly look
+through the database and look at the progress. It will print
+interesting features that indicate the success of the optimization.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dftfit db summary test_files/database/database.db
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">run</span><span class="p">:</span> <span class="mi">1</span>
+      <span class="n">algo</span><span class="p">:</span> <span class="n">pygmo</span><span class="o">.</span><span class="n">sade</span>       <span class="n">steps</span><span class="p">:</span>         <span class="mi">21</span>
+      <span class="n">stats</span><span class="p">:</span>
+            <span class="n">mean</span><span class="p">:</span>    <span class="mf">1.0</span>
+            <span class="n">median</span><span class="p">:</span>  <span class="mf">1.0</span>
+            <span class="nb">min</span><span class="p">:</span>     <span class="mf">1.0</span>
+      <span class="n">final</span><span class="p">:</span>   <span class="o">-</span><span class="mf">1.98</span><span class="p">,</span>  <span class="mi">177</span><span class="p">,</span> <span class="mf">1.92</span><span class="p">,</span>  <span class="mi">871</span><span class="p">,</span> <span class="mf">74.6</span><span class="p">,</span> <span class="mf">1.82e+05</span><span class="p">,</span> <span class="mf">88.2</span><span class="p">,</span>  <span class="mi">976</span>
+      <span class="n">score</span><span class="p">:</span>   <span class="mf">0.9999780011307999</span>
+
+<span class="n">run</span><span class="p">:</span> <span class="mi">2</span>
+        <span class="n">algo</span><span class="p">:</span> <span class="n">pygmo</span><span class="o">.</span><span class="n">sade</span>       <span class="n">steps</span><span class="p">:</span>      <span class="mi">26248</span>
+        <span class="n">stats</span><span class="p">:</span>
+              <span class="n">mean</span><span class="p">:</span>   <span class="mf">0.932</span>
+              <span class="n">median</span><span class="p">:</span> <span class="mf">0.925</span>
+              <span class="nb">min</span><span class="p">:</span>    <span class="mf">0.86</span>
+        <span class="n">final</span><span class="p">:</span>   <span class="o">-</span><span class="mf">1.31</span><span class="p">,</span> <span class="mf">0.741</span><span class="p">,</span> <span class="mf">3.31</span><span class="p">,</span> <span class="mf">12.8</span><span class="p">,</span> <span class="mf">0.26</span><span class="p">,</span> <span class="mf">1.47e+03</span><span class="p">,</span> <span class="mf">0.404</span><span class="p">,</span>  <span class="mi">640</span>
+        <span class="n">score</span><span class="p">:</span>   <span class="mf">0.8522755981712459</span>
+
+<span class="n">run</span><span class="p">:</span> <span class="mi">3</span>
+        <span class="n">algo</span><span class="p">:</span> <span class="n">pygmo</span><span class="o">.</span><span class="n">sade</span>       <span class="n">steps</span><span class="p">:</span>      <span class="mi">26248</span>
+        <span class="n">stats</span><span class="p">:</span>
+              <span class="n">mean</span><span class="p">:</span>   <span class="mf">0.977</span>
+              <span class="n">median</span><span class="p">:</span> <span class="mf">0.973</span>
+              <span class="nb">min</span><span class="p">:</span>    <span class="mf">0.956</span>
+        <span class="n">final</span><span class="p">:</span>   <span class="o">-</span><span class="mf">1.31</span><span class="p">,</span> <span class="mf">46.6</span><span class="p">,</span> <span class="mf">0.143</span><span class="p">,</span> <span class="mf">20.4</span><span class="p">,</span> <span class="mf">0.614</span><span class="p">,</span> <span class="mf">3.67e+03</span><span class="p">,</span> <span class="mf">0.397</span><span class="p">,</span>  <span class="mi">995</span>
+        <span class="n">score</span><span class="p">:</span>   <span class="mf">0.8908135790668292</span>
+
+<span class="n">run</span><span class="p">:</span> <span class="mi">4</span>
+        <span class="n">algo</span><span class="p">:</span> <span class="n">pygmo</span><span class="o">.</span><span class="n">sade</span>       <span class="n">steps</span><span class="p">:</span>      <span class="mi">98366</span>
+        <span class="n">stats</span><span class="p">:</span>
+              <span class="n">mean</span><span class="p">:</span>   <span class="mf">0.795</span>
+              <span class="n">median</span><span class="p">:</span> <span class="mf">0.902</span>
+              <span class="nb">min</span><span class="p">:</span>    <span class="mf">0.393</span>
+        <span class="n">final</span><span class="p">:</span>   <span class="mf">1.77</span><span class="p">,</span>  <span class="mi">163</span><span class="p">,</span> <span class="mf">0.395</span><span class="p">,</span>  <span class="mi">348</span><span class="p">,</span> <span class="mf">0.38</span><span class="p">,</span> <span class="mf">1.88e+03</span><span class="p">,</span> <span class="mf">0.382</span><span class="p">,</span>  <span class="mi">811</span>
+        <span class="n">score</span><span class="p">:</span>   <span class="mf">0.37092898795248247</span>
+
+<span class="n">run</span><span class="p">:</span> <span class="mi">5</span>
+        <span class="n">algo</span><span class="p">:</span> <span class="n">pygmo</span><span class="o">.</span><span class="n">sade</span>       <span class="n">steps</span><span class="p">:</span>      <span class="mi">26220</span>
+        <span class="n">stats</span><span class="p">:</span>
+              <span class="n">mean</span><span class="p">:</span>   <span class="mf">0.909</span>
+              <span class="n">median</span><span class="p">:</span> <span class="mf">0.898</span>
+              <span class="nb">min</span><span class="p">:</span>    <span class="mf">0.823</span>
+        <span class="n">final</span><span class="p">:</span>   <span class="o">-</span><span class="mf">1.69</span><span class="p">,</span>  <span class="mf">2.5</span><span class="p">,</span> <span class="mf">96.5</span><span class="p">,</span> <span class="mf">4.66e+03</span><span class="p">,</span> <span class="mf">0.229</span><span class="p">,</span> <span class="mf">1.12e+03</span><span class="p">,</span> <span class="mf">0.411</span><span class="p">,</span>  <span class="mi">773</span>
+        <span class="n">score</span><span class="p">:</span>   <span class="mf">0.7009948887639249</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="visualize-progress-of-run">
+<h2>Visualize Progress of Run<a class="headerlink" href="#visualize-progress-of-run" title="Permalink to this headline">¶</a></h2>
+<p>The DFTFIT summary command only gives a some information about the
+convergence but cannot show the full progress through time. To address
+this you can visualize the convergence of a single run.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>dftfit db progress test_files/database/database.db --run-id<span class="o">=</span><span class="m">4</span>
+</pre></div>
+</div>
+<img alt="_images/database-run-4-convergence.png" src="_images/database-run-4-convergence.png" />
+</div>
+<div class="section" id="training-set-radial-distribution">
+<h2>Training Set Radial Distribution<a class="headerlink" href="#training-set-radial-distribution" title="Permalink to this headline">¶</a></h2>
+<p>One of DFTFIT’s main goals is to produce more transferable
+potentials. To enable this you can visualize the pair distribution of
+each atom combination. The picture below show training from 140
+structures close to equilibrium indicated by the sharp peaks.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>dftfit <span class="nb">test</span> radial -t test_files/training/training-full-mgo.yaml
+</pre></div>
+</div>
+</div>
+<div class="section" id="visualize-potential-error-on-training-set">
+<h2>Visualize Potential Error on Training Set<a class="headerlink" href="#visualize-potential-error-on-training-set" title="Permalink to this headline">¶</a></h2>
+<p>So far the only indicator for progress was <span class="math notranslate nohighlight">\(\Delta E, \Delta F,
+\Delta S\)</span>. It is not easy to visualize how the potential is fitting
+the DFT data. For this DFTFIT provides methods to visualize the error
+or the energy, stresses, and forces. Bellow is an example of
+visualizing the force error. In this image we can see that the MD
+predicted forces tend to be higher than the DFT forces. The red dashed
+line indicates a one to one match between the data.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>dftfit <span class="nb">test</span> training forces -p test_files/potential/mgo.yaml <span class="se">\</span>
+                            -t test_files/training/training-full-mgo.yaml
+</pre></div>
+</div>
+<img alt="_images/dft-vs-md-force-error-201803.png" src="_images/dft-vs-md-force-error-201803.png" />
+</div>
+<div class="section" id="visualize-pair-potential">
+<h2>Visualize Pair Potential<a class="headerlink" href="#visualize-pair-potential" title="Permalink to this headline">¶</a></h2>
+<p>Often times complex pair potentials are used in combination with three
+body and n body terms. This leads to a complicated pair potential
+interaction. This command will visualize the resulting pair potential
+from the model for each pair of atoms. This method just does a simple
+evaluation of the pair of atoms at different separations in a large
+periodic box (much larger than separation).</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>dftfit <span class="nb">test</span> pair -p test_files/potential/mgo.yaml
+</pre></div>
+</div>
+<img alt="_images/mgo-pair-potential-energies-201803.png" src="_images/mgo-pair-potential-energies-201803.png" />
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="visualization.html" class="btn btn-neutral float-right" title="Visualization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="configuration.html" class="btn btn-neutral float-left" title="Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 1970, Chris Ostrouchov
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
