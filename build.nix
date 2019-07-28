@@ -1,49 +1,90 @@
-{ pkgs ? import <nixpkgs> {}, pythonPackages ? "python36Packages" }:
+{ pkgs ? import <nixpkgs> {}, pythonPackages ? "python3Packages" }:
 
-let
-  elem = builtins.elem;
-  basename = path: with pkgs.lib; last (splitString "/" path);
-  startsWith = prefix: full: let
-    actualPrefix = builtins.substring 0 (builtins.stringLength prefix) full;
-  in actualPrefix == prefix;
+rec {
+  package = pythonPackages.buildPythonPackage rec {
+    pname = "dftfit";
+    version = "master";
+    disabled = pythonPackages.isPy27;
 
-  src-filter = path: type: with pkgs.lib;
-    let
-      ext = last (splitString "." path);
-    in
-      !elem (basename path) [".git" "__pycache__" ".eggs"] &&
-      !elem ext ["egg-info" "pyc"] &&
-      !startsWith "result" path;
+    src = builtins.filterSource
+      (path: _: !builtins.elem  (builtins.baseNameOf path) [".git" "result" "docs"])
+      ./.;
 
-   basePythonPackages = if builtins.isAttrs pythonPackages
-     then pythonPackages
-     else builtins.getAttr pythonPackages pkgs;
-in
-basePythonPackages.buildPythonPackage rec {
-  pname = "dftfit";
-  version = "0.5.0";
-  disabled = (!basePythonPackages.isPy3k);
+    buildInputs = with pythonPackages; [
+      pytestrunner
+      pkgs.lammps
+    ];
 
-  src = builtins.filterSource src-filter ./.;
+    checkInputs = with pythonPackages; [
+      pytest
+      pytestcov
+      pytest-benchmark
+      pkgs.openssh
+      pkgs.lammps
+    ];
 
-  buildInputs = with basePythonPackages; [ pytestrunner pkgs.lammps ];
-  checkInputs = with basePythonPackages; [ pytest pytestcov pytest-benchmark pkgs.openssh ];
-  propagatedBuildInputs = with basePythonPackages; [
-      pymatgen marshmallow pyyaml pygmo
-      pandas scipy numpy scikitlearn
-      lammps-cython pymatgen-lammps ];
+    propagatedBuildInputs = with pythonPackages; [
+      pymatgen
+      marshmallow
+      pyyaml
+      pygmo
+      pandas
+      scipy
+      numpy
+      scikitlearn
+      lammps-cython
+      pymatgen-lammps
+    ];
 
-  # tests take long time and cif has weird behavior
-  doCheck = false;
+    checkPhase = ''
+      pytest -m "not long" \
+             --ignore tests/integration/test_md_lammps_cython_calculator.py \
+             --ignore tests/integration/test_dftfit_lammps_cython_calculator.py \
+    '';
 
-  checkPhase = ''
-    pytest -m "not long"
-  '';
+    meta = with pkgs; {
+      description = "Ab-Initio Molecular Dynamics Potential Development";
+      homepage = https://gitlab.com/costrouc/dftfit;
+      license = lib.licenses.mit;
+      maintainers = with lib.maintainers; [ costrouc ];
+    };
+  };
 
-  meta = with pkgs; {
-    description = "Ab-Initio Molecular Dynamics Potential Development";
-    homepage = https://gitlab.com/costrouc/dftfit;
-    license = lib.licenses.mit;
-    maintainers = with lib.maintainers; [ costrouc ];
+    docs = pkgs.stdenv.mkDerivation {
+    name = "dftfit-docs";
+    version = "master";
+
+    src = builtins.filterSource
+        (path: _: !builtins.elem  (builtins.baseNameOf path) [".git" "result"])
+        ./.;
+
+    buildInputs = with pythonPackages; [
+      package
+      sphinx
+      sphinx_rtd_theme
+    ];
+
+    buildPhase = ''
+      cd docs;
+      sphinx-apidoc -o source/ ../dftfit
+      sphinx-build -b html -d build/doctrees . build/html
+    '';
+
+    installPhase = ''
+     mkdir -p $out
+     cp -r build/html/* $out
+     touch $out/.nojekyll
+    '';
+  };
+
+  docker = pkgs.dockerTools.buildLayeredImage {
+    name = "dftfit-docker";
+    tag = "latest";
+    contents = [
+      (pythonPackages.python.withPackages
+        (ps: with ps; [ jupyterlab package ipython ]))
+    ];
+    config.Cmd = [ "ipython" ];
+    maxLayers = 120;
   };
 }

@@ -6,8 +6,8 @@ from dftfit.training import Training
 # mattoolkit is not running (but we will use cache to keep it alive)
 @pytest.mark.parametrize('filename, num_calculations, material_properties', [
     ('training-mattoolkit-mgo.yaml', 3, set()),
-    ('training-subset-litao3.yaml', 12, set()),
-    ('training-full-litao3.yaml', 16, set()),
+    ('training-subset-litao3.yaml', 5, set()),
+    ('training-full-litao3.yaml', 4, set()),
     ('training-mattoolkit-mgo-properties.yaml', 3, {'lattice_constants', 'elastic_constants', 'bulk_modulus', 'shear_modulus'}),
     ('training-properties-mgo.yaml', 0, {'lattice_constants', 'elastic_constants'}),
 ])

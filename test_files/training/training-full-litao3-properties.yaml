@@ -3,7 +3,7 @@ kind: Training
 spec:
   - type: Siesta
     selector:
-      fileglob: ../data/abinitio/litao3/d1_*ev.xml
+      fileglob: ../data/abinitio/litao3/d3_*ev.xml
       num_samples: 4
   - type: ground_state
     format: cif
