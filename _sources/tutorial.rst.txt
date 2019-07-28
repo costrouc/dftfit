@@ -23,7 +23,7 @@ The dft training data consists of:
 
 For this example all the training structures are stored in a `cached
 database
-<https://gitlab.com/costrouc/dftfit/tree/master/examples/mgo/cache/>`_. DFTFIT
+<https://github.com/costrouc/dftfit/tree/master/examples/mgo/cache/>`_. DFTFIT
 uses a cache so that it does not have to reparse all input vasp and
 quantum espresso input files. From this cache we get 131 training
 structures.

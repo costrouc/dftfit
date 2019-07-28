@@ -3,7 +3,7 @@ Installation
 ============
 
 For ``pypi`` installation. Note that installation of `lammps-cython`
-may fail and is required. You will need to install ``LAMMPS`` as documented `here <https://costrouc.gitlab.io/lammps-cython/installation.html#pip>`_.
+may fail and is required. You will need to install ``LAMMPS`` as documented `here <https://chrisostrouchov.com/lammps-cython/installation.html#pip>`_.
 
 .. code-block:: shell
 

@@ -189,7 +189,7 @@
 <p>DFTFIT can define very complex potentials. Unlike similar potential
 fitting software, DFTFIT allows any combination of potentials defined
 bellow. This allows a user for example to mix a ZBL and buckingham
-with a coulombic interaction <a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-zbl.yaml">seen here</a>. Even
+with a coulombic interaction <a class="reference external" href="https://github.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-zbl.yaml">seen here</a>. Even
 though it may not make sense a user can mix a Tersoff, ZBL, Stillinger
 Weber, and python custom pair potential. The performance impact of
 mixing several potentials is almost negligible for small systems of
@@ -199,14 +199,14 @@ DFTFIT optimize any float value in the potential replace the float
 value for with somthing similar to <code class="docutils literal notranslate"><span class="pre">{&quot;initial&quot;:</span> <span class="pre">1.0,</span> <span class="pre">&quot;bounds</span> <span class="pre">&quot;:</span> <span class="pre">[2.0,</span>
 <span class="pre">3.0]}</span></code>. This tells DFTFIT that the initial guess should be <code class="docutils literal notranslate"><span class="pre">1.0</span></code>
 and to restrict the optimization values between <code class="docutils literal notranslate"><span class="pre">2.0</span></code> and
-<code class="docutils literal notranslate"><span class="pre">3.0</span></code>. An example is shown <a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-fitting.yaml">here</a>
+<code class="docutils literal notranslate"><span class="pre">3.0</span></code>. An example is shown <a class="reference external" href="https://github.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-fitting.yaml">here</a>
 for MgO.</p>
 <p>Note that the yaml schema is not the only way to provide a
 potential. <code class="docutils literal notranslate"><span class="pre">json</span></code> can be used to represent any DFTFIT yaml
 specification. Additionally they can be represented with normal python
 datastructures <code class="docutils literal notranslate"><span class="pre">dict</span></code> and <code class="docutils literal notranslate"><span class="pre">list</span></code>.</p>
 <p>Bellow is a list of all the supported potentials. Soon EAM and
-arbitrary splines for potentials will be supported see <a class="reference external" href="https://gitlab.com/costrouc/dftfit/issues/17">issue 17</a></p>
+arbitrary splines for potentials will be supported see <a class="reference external" href="https://github.com/costrouc/dftfit/issues/17">issue 17</a></p>
 <div class="section" id="two-body-potentials">
 <h2>Two Body Potentials<a class="headerlink" href="#two-body-potentials" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="python-functions">
@@ -253,7 +253,7 @@ import and call any functions within the block.</p>
 <blockquote>
 <div><ul class="simple">
 <li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_coul.html)=">lammps documentation</a></li>
-<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck.yaml">example potential</a></li>
+<li><a class="reference external" href="https://github.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck.yaml">example potential</a></li>
 <li>n parameters: where n is number of elements - 1</li>
 </ul>
 </div></blockquote>
@@ -282,7 +282,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">LiTaO3</span><
 <blockquote>
 <div><ul class="simple">
 <li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_zbl.html">lammps documentation</a></li>
-<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-zbl.yaml">example potential</a></li>
+<li><a class="reference external" href="https://github.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-zbl.yaml">example potential</a></li>
 <li>2 parameters: Z_1, Z_2</li>
 </ul>
 </div></blockquote>
@@ -311,7 +311,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">LiTaO3</span><
 <blockquote>
 <div><ul class="simple">
 <li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_lj.html">lammps documentation</a></li>
-<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/Ne-lennard-jones.yaml">example potential</a></li>
+<li><a class="reference external" href="https://github.com/costrouc/dftfit/blob/master/test_files/potential/Ne-lennard-jones.yaml">example potential</a></li>
 <li>parameters 2: ε, σ</li>
 </ul>
 </div></blockquote>
@@ -332,7 +332,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">LiTaO3</span><
 <blockquote>
 <div><ul class="simple">
 <li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_beck.html">lammps documentation</a></li>
-<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/He-beck.yaml">example potential</a></li>
+<li><a class="reference external" href="https://github.com/costrouc/dftfit/blob/master/test_files/potential/He-beck.yaml">example potential</a></li>
 <li>5 parameters: A, B, a, α, β</li>
 </ul>
 </div></blockquote>
@@ -353,7 +353,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">LiTaO3</span><
 <blockquote>
 <div><ul class="simple">
 <li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_buck.html">lammps documentation</a></li>
-<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck.yaml">example potential</a></li>
+<li><a class="reference external" href="https://github.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck.yaml">example potential</a></li>
 <li>3 parameters: A, ρ, C</li>
 </ul>
 </div></blockquote>
@@ -385,7 +385,7 @@ potential for intercation element_{ij} can be calculated via
 <dl class="docutils">
 <dt>Currently defined mixes:</dt>
 <dd><ul class="first last simple">
-<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/LiTaO3-tersoff-2.yaml">tersoff-2</a></li>
+<li><a class="reference external" href="https://github.com/costrouc/dftfit/blob/master/test_files/potential/LiTaO3-tersoff-2.yaml">tersoff-2</a></li>
 </ul>
 </dd>
 </dl>
@@ -394,7 +394,7 @@ potential for intercation element_{ij} can be calculated via
 <blockquote>
 <div><ul class="simple">
 <li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_tersoff.html">lammmps documentation</a></li>
-<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiC-tersoff.yaml">example potential</a></li>
+<li><a class="reference external" href="https://github.com/costrouc/dftfit/blob/master/test_files/potential/SiC-tersoff.yaml">example potential</a></li>
 <li>14 parameters: <span class="math notranslate nohighlight">\(m, \gamma, \lambda_3, c, d, \cos(\theta_0), n, beta, \lambda_2, B, R, D, \lambda_1, A\)</span></li>
 </ul>
 </div></blockquote>
@@ -484,7 +484,7 @@ first neighbor shell only.</p>
 <blockquote>
 <div><ul class="simple">
 <li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_sw.html">lammps documentation</a></li>
-<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/CdTe-stillinger-weber.yaml">example potential</a></li>
+<li><a class="reference external" href="https://github.com/costrouc/dftfit/blob/master/test_files/potential/CdTe-stillinger-weber.yaml">example potential</a></li>
 <li>11 parameters: <span class="math notranslate nohighlight">\(\epsilon, \sigma, a, \lambda, \gamma, \cos(\theta_0), A, B, p, q, tol\)</span></li>
 </ul>
 </div></blockquote>
@@ -563,7 +563,7 @@ final atomic configurations.</p>
 <blockquote>
 <div><ul class="simple">
 <li>[lammps documentation](<a class="reference external" href="https://lammps.sandia.gov/doc/pair_gw.html">https://lammps.sandia.gov/doc/pair_gw.html</a>)</li>
-<li>[example potential](<a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiC-gao-weber.yaml">https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiC-gao-weber.yaml</a>)</li>
+<li>[example potential](<a class="reference external" href="https://github.com/costrouc/dftfit/blob/master/test_files/potential/SiC-gao-weber.yaml">https://github.com/costrouc/dftfit/blob/master/test_files/potential/SiC-gao-weber.yaml</a>)</li>
 <li>14 parameters: $`m, gamma, lambda_3, c, d, h, n, beta ,lambda_2, B, R, D, lambda_1, A`$</li>
 </ul>
 </div></blockquote>
@@ -597,7 +597,7 @@ final atomic configurations.</p>
 <blockquote>
 <div><ul class="simple">
 <li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_vashishta.html">lammps documentation</a></li>
-<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiC-vashishta.yaml">example potential</a></li>
+<li><a class="reference external" href="https://github.com/costrouc/dftfit/blob/master/test_files/potential/SiC-vashishta.yaml">example potential</a></li>
 <li>14 parameters: <span class="math notranslate nohighlight">\(H, \eta, Z_i, Z_j, \lambda_1, D, \lambda_4,
 W, rc, B, \gamma, r_0, C, \cos(\theta)\)</span></li>
 </ul>
@@ -637,8 +637,8 @@ W, rc, B, \gamma, r_0, C, \cos(\theta)\)</span></li>
 <blockquote>
 <div><ul class="simple">
 <li><a class="reference external" href="https://lammps.sandia.gov/doc/pair_comb.html">lammps documentation</a></li>
-<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiO2-comb.yaml">example comb potential</a></li>
-<li><a class="reference external" href="https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/Ti4Cu2O-comb-3.yaml">example comb3 potential</a></li>
+<li><a class="reference external" href="https://github.com/costrouc/dftfit/blob/master/test_files/potential/SiO2-comb.yaml">example comb potential</a></li>
+<li><a class="reference external" href="https://github.com/costrouc/dftfit/blob/master/test_files/potential/Ti4Cu2O-comb-3.yaml">example comb3 potential</a></li>
 <li>46 parameters (comb), 71 parameters (comb3)</li>
 </ul>
 </div></blockquote>

@@ -22,7 +22,7 @@ DFTFIT can define very complex potentials. Unlike similar potential
 fitting software, DFTFIT allows any combination of potentials defined
 bellow. This allows a user for example to mix a ZBL and buckingham
 with a coulombic interaction `seen here
-<https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-zbl.yaml>`_. Even
+<https://github.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-zbl.yaml>`_. Even
 though it may not make sense a user can mix a Tersoff, ZBL, Stillinger
 Weber, and python custom pair potential. The performance impact of
 mixing several potentials is almost negligible for small systems of
@@ -34,7 +34,7 @@ value for with somthing similar to ``{"initial": 1.0, "bounds ": [2.0,
 3.0]}``. This tells DFTFIT that the initial guess should be ``1.0``
 and to restrict the optimization values between ``2.0`` and
 ``3.0``. An example is shown `here
-<https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-fitting.yaml>`_
+<https://github.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-fitting.yaml>`_
 for MgO.
 
 Note that the yaml schema is not the only way to provide a
@@ -44,7 +44,7 @@ datastructures ``dict`` and ``list``.
 
 Bellow is a list of all the supported potentials. Soon EAM and
 arbitrary splines for potentials will be supported see `issue 17
-<https://gitlab.com/costrouc/dftfit/issues/17>`_
+<https://github.com/costrouc/dftfit/issues/17>`_
 
 Two Body Potentials
 -------------------
@@ -99,7 +99,7 @@ Coloumbic Interaction Potential
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
  - `lammps documentation <https://lammps.sandia.gov/doc/pair_coul.html)=>`_
- - `example potential <https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck.yaml>`_
+ - `example potential <https://github.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck.yaml>`_
  - n parameters: where n is number of elements - 1
 
 The coloumbic interaction potential has more knobs that other pair
@@ -130,7 +130,7 @@ ZBL Potential
 ~~~~~~~~~~~~~
 
  - `lammps documentation <https://lammps.sandia.gov/doc/pair_zbl.html>`_
- - `example potential <https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-zbl.yaml>`_
+ - `example potential <https://github.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck-zbl.yaml>`_
  - 2 parameters: Z_1, Z_2
 
 .. math::
@@ -165,7 +165,7 @@ Lennard Jones Potential
 ~~~~~~~~~~~~~~~~~~~~~~~
 
  - `lammps documentation <https://lammps.sandia.gov/doc/pair_lj.html>`_
- - `example potential <https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/Ne-lennard-jones.yaml>`_
+ - `example potential <https://github.com/costrouc/dftfit/blob/master/test_files/potential/Ne-lennard-jones.yaml>`_
  - parameters 2: ε, σ
 
 .. math::
@@ -187,7 +187,7 @@ Beck Potential
 ~~~~~~~~~~~~~~
 
  - `lammps documentation <https://lammps.sandia.gov/doc/pair_beck.html>`_
- - `example potential <https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/He-beck.yaml>`_
+ - `example potential <https://github.com/costrouc/dftfit/blob/master/test_files/potential/He-beck.yaml>`_
  - 5 parameters: A, B, a, α, β
 
 .. math::
@@ -209,7 +209,7 @@ Buckingham Potential
 ~~~~~~~~~~~~~~~~~~~~
 
  - `lammps documentation <https://lammps.sandia.gov/doc/pair_buck.html>`_
- - `example potential <https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck.yaml>`_
+ - `example potential <https://github.com/costrouc/dftfit/blob/master/test_files/potential/MgO-charge-buck.yaml>`_
  - 3 parameters: A, ρ, C
 
 .. math::
@@ -242,13 +242,13 @@ potential for intercation element_{ij} can be calculated via
 :math:`f(\nabda_i, \nabla_j)`.
 
 Currently defined mixes:
- - `tersoff-2 <https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/LiTaO3-tersoff-2.yaml>`_
+ - `tersoff-2 <https://github.com/costrouc/dftfit/blob/master/test_files/potential/LiTaO3-tersoff-2.yaml>`_
 
 Tersoff Potential
 ~~~~~~~~~~~~~~~~~
 
  - `lammmps documentation <https://lammps.sandia.gov/doc/pair_tersoff.html>`_
- - `example potential <https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiC-tersoff.yaml>`_
+ - `example potential <https://github.com/costrouc/dftfit/blob/master/test_files/potential/SiC-tersoff.yaml>`_
  - 14 parameters: :math:`m, \gamma, \lambda_3, c, d, \cos(\theta_0), n, beta, \lambda_2, B, R, D, \lambda_1, A`
 
 yaml schema
@@ -378,7 +378,7 @@ Stillinger Weber Potential
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
  - `lammps documentation <https://lammps.sandia.gov/doc/pair_sw.html>`_
- - `example potential <https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/CdTe-stillinger-weber.yaml>`_
+ - `example potential <https://github.com/costrouc/dftfit/blob/master/test_files/potential/CdTe-stillinger-weber.yaml>`_
  - 11 parameters: :math:`\epsilon, \sigma, a, \lambda, \gamma, \cos(\theta_0), A, B, p, q, tol`
 
 yaml schema
@@ -471,7 +471,7 @@ Gao Weber Potential
 ~~~~~~~~~~~~~~~~~~~
 
  - [lammps documentation](https://lammps.sandia.gov/doc/pair_gw.html)
- - [example potential](https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiC-gao-weber.yaml)
+ - [example potential](https://github.com/costrouc/dftfit/blob/master/test_files/potential/SiC-gao-weber.yaml)
  - 14 parameters: $`m, \gamma, \lambda_3, c, d, h, n, \beta ,\lambda_2, B, R, D, \lambda_1, A`$
 
 yaml schema
@@ -506,7 +506,7 @@ Vashishta Potential
 ~~~~~~~~~~~~~~~~~~~
 
  - `lammps documentation <https://lammps.sandia.gov/doc/pair_vashishta.html>`_
- - `example potential <https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiC-vashishta.yaml>`_
+ - `example potential <https://github.com/costrouc/dftfit/blob/master/test_files/potential/SiC-vashishta.yaml>`_
  - 14 parameters: :math:`H, \eta, Z_i, Z_j, \lambda_1, D, \lambda_4,
    W, rc, B, \gamma, r_0, C, \cos(\theta)`
 
@@ -552,8 +552,8 @@ COMB Potential
 ~~~~~~~~~~~~~~
 
  - `lammps documentation <https://lammps.sandia.gov/doc/pair_comb.html>`_
- - `example comb potential <https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/SiO2-comb.yaml>`_
- - `example comb3 potential <https://gitlab.com/costrouc/dftfit/blob/master/test_files/potential/Ti4Cu2O-comb-3.yaml>`_
+ - `example comb potential <https://github.com/costrouc/dftfit/blob/master/test_files/potential/SiO2-comb.yaml>`_
+ - `example comb3 potential <https://github.com/costrouc/dftfit/blob/master/test_files/potential/Ti4Cu2O-comb-3.yaml>`_
  - 46 parameters (comb), 71 parameters (comb3)
 
 Spec not provided here because is so large. See examples.
