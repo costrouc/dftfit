@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+
+## [v0.5.1] - 2019-07-28
+
+### Changed
+
+ - moving towards nix as deployment tool and travis-ci
+
+## v0.5.0
+
 ### Added
 
  - adding move towards modern deployment following https://costrouc-python-package-template.readthedocs.io/en/latest/

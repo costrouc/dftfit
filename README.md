@@ -1,35 +1,31 @@
-**All issues and contributions should be done on
-[Gitlab](https://gitlab.com/costrouc/dftfit). Github is used only as a
-mirror for visibility**
-
 # DFTFIT
 
 DFTFIT is a python code that used Ab Initio data from DFT calculations
 such as VASP, Quantum Espresso, and Siesta to develop molecular
 dynamic potentials. Our package differs from other similar codes in
 that we leverage LAMMPS as a calculator enabling a wide variety of
-[potentials](https://dftfit.readthedocs.io/en/latest/potentials.html). The
+[potentials](https://chrisostrouchov/dftfit/potentials.html). The
 potentials include custom python functions and a wide variety or
 three-body interactions including the Tersoff, Stillinger-Weber,
 Gao-Weber, Vashishta, and COMB Potentials. All of which can be
 combined to have for example a Buckingham + Coulomb + ZBL
 potential. We also have an extensive set of multi-objective and
 single-objective
-[optimizers](https://dftfit.readthedocs.io/en/latest/configuration.html#optimization)that can evaluate a potential for many properties including energy,
+[optimizers](https://chrisostrouchov/dftfit/configuration.html#optimization)that can evaluate a potential for many properties including energy,
 forces, stress, lattice constants, elastic constants, bulk modulus,
 and shear modulus.
 
 In general three things are required from the user.
   - [Ab-Initio Training
-    Data](https://dftfit.readthedocs.io/en/latest/training.html)
+    Data](https://chrisostrouchov/dftfit/training.html)
     includes VASP, Siesta, and Quantum Espresso
     Calculations. Additionally the user may supply measured properties
     such as lattice constants, elastic constants, bulk modulus, and
     shear modulus.
-  - [configuration](https://dftfit.readthedocs.io/en/latest/configuration.html):
+  - [configuration](https://chrisostrouchov/dftfit/configuration.html):
     specifies optimization algorithm and number of steps, sqlite
     database to store results, and MD calculator to use.
-  - [Potential](https://dftfit.readthedocs.io/en/latest/potentials.html)
+  - [Potential](https://chrisostrouchov/dftfit/potentials.html)
     among a rich set of two and three body potentials. Including a
     custom python function.
 
@@ -48,13 +44,13 @@ In general three things are required from the user.
 </tr>
 <tr>
   <td>Build Status</td>
-  <td> <a href="https://gitlab.com/costrouc/dftfit/pipelines"> <img
-src="https://gitlab.com/costrouc/dftfit/badges/master/pipeline.svg"
-alt="gitlab pipeline status" /> </a> </td>
+  <td> <a href="https://travis-ci.org/costrouc/dftfit"> <img
+src="https://api.travis-ci.org/costrouc/dftfit.svg?branch=master"
+alt="travis ci pipeline status" /> </a> </td>
 </tr>
 <tr>
   <td>Documentation</td>
-  <td> <a href="https://dftfit.readthedocs.io/en/latest/"> <img src="https://readthedocs.org/projects/dftfit/badge/?version=latest" alt="readthedocs documentation" /> </a> </td>
+  <td><a href="https://chrisostrouchov.com/dftfit/">documentation</a> </td>
 </tr>
 </table>
 
@@ -107,7 +103,7 @@ Our algorithm follows a
 [highly cited publication](http://dx.doi.org/10.1063/1.1513312) that
 proposes a method for determining a new potential for Silicon using the force matching of DFT calcultions.
 
-![Optimization Equation](https://gitlab.com/costrouc/dftfit/raw/master/docs/images/equations.png)
+![Optimization Equation](https://github.com/costrouc/dftfit/raw/master/docs/images/equations.png)
 
 ### Parameters
 
@@ -125,8 +121,8 @@ Dependencies
 ------------
 
  - MD Calculator: [LAMMPS](http://lammps.sandia.gov/)
-   - [pymatgen_lammps (run as command)](https://gitlab.com/costrouc/pymatgen-lammps)
-   - [lammps-cython (python interface)](https://gitlab.com/costrouc/lammps-cython)
+   - [pymatgen_lammps (run as command)](https://github.com/costrouc/pymatgen-lammps)
+   - [lammps-cython (python interface)](https://github.com/costrouc/lammps-cython)
  - [pagmo2](https://github.com/esa/pagmo2)
  - [pymatgen](https://github.com/materialsproject/pymatgen/)
  - Ab Initio data from either [VASP](https://www.vasp.at/) or [Quantum
@@ -137,7 +133,7 @@ Dependencies
 For `pypi` installation. Note that installation of `lammps-cython` may
 fail and is required. You will need to install ``LAMMPS`` as
 documented
-[here](https://costrouc.gitlab.io/lammps-cython/installation.html#pip). You may have to do `pip install numpy cython`.
+[here](https://chrisostrouchov.com/lammps-cython/installation.html#pip). You may have to do `pip install numpy cython`.
 
 ```bash
 pip install dftfit
@@ -157,26 +153,25 @@ docker pull costrouc/dftfit
 
 # Documentation
 
-The official documentation is hosted on readthedocs.org: https://dftfit.readthedocs.io/en/latest/
+The official documentation is hosted on github pages: https://chrisostrouchov.com/dftfit/
 
 # Running
 
 DFTFIT provides a [command line
-interface](https://dftfit.readthedocs.io/en/latest/commands.html). Of
+interface](https://chrisostrouchov.com/dftfit/commands.html). Of
 course the package can be used as a standard python package.
 
 # Tutorial and Documentation
 
- - [MgO tutorial](https://dftfit.readthedocs.io/en/latest/tutorial.html)
- - [Documentation](https://dftfit.readthedocs.io/en/latest/index.html)
+ - [MgO tutorial](https://chrisostrouchov.com/dftfit/tutorial.html)
+ - [Documentation](https://chrisostrouchov.com/dftfit/index.html)
 
 # Contributing
 
 All contributions, bug reports, bug fixes, documentation improvements,
 enhancements and ideas are welcome. These should be submitted at the
-[Gitlab repository](https://gitlab.com/costrouc/lammps-cython). Github
-is only used for visibility.
+[Github repository](https://github.com/costrouc/dftfit).
 
 # License
 
-[MIT](https://gitlab.com/costrouc/dftfit/blob/master/LICENSE.md)
+[MIT](https://github.com/costrouc/dftfit/blob/master/LICENSE.md)
