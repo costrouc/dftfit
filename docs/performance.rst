@@ -3,7 +3,7 @@ Improving Performance
 
 DFTFIT's performance is predictable. A great amount of effort has been
 put into ensuring that the code is benchmarked. See the `benchmark
-tests <https://gitlab.com/costrouc/dftfit/pipelines>`_ to view the time
+tests <https://travis-ci.org/costrouc/dftfit>`_ to view the time
 it takes for certain methods to complete.
 
 The optimization is limited by the time each ``LAMMPS`` calculator

@@ -18,7 +18,7 @@ setup(
     description='Ab-Initio Molecular Dynamics Potential Development',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url='https://gitlab.com/costrouc/dftfit',
+    url='https://github.com/costrouc/dftfit',
     author='Chris Ostrouchov',
     author_email='chris.ostrouchov+dftfit@gmail.com',
     license='MIT',
@@ -30,7 +30,7 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     keywords='materials dft molecular dynamics lammps science hpc',
-    download_url='https://gitlab.com/costrouc/dftfit/repository/archive.zip?ref=v%s' % version,
+    download_url='https://github.com/costrouc/dftfit/archive/v%s.zip' % version,
     packages=find_packages(exclude=('tests', 'docs', 'examples', 'test_files')),
     install_requires=[
         'pymatgen',

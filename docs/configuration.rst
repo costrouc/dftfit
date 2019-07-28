@@ -112,7 +112,7 @@ MD Calculator
 DFTFIT originally only had one MD calculator ``lammps``. However it
 worked by writting input files and then telling lammps to run
 them. This was not ideal so a new calculator was written that uses
-`lammps-cython <https://gitlab.com/costrouc/lammps-cython>`_. This
+`lammps-cython <https://github.com/costrouc/lammps-cython>`_. This
 calculator integrated `LAMMPS` within the python process.
 
 It is at least 5X-10X faster and is the recommended calculator.

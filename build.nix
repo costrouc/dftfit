@@ -44,7 +44,7 @@ rec {
 
     meta = with pkgs; {
       description = "Ab-Initio Molecular Dynamics Potential Development";
-      homepage = https://gitlab.com/costrouc/dftfit;
+      homepage = https://github.com/costrouc/dftfit;
       license = lib.licenses.mit;
       maintainers = with lib.maintainers; [ costrouc ];
     };

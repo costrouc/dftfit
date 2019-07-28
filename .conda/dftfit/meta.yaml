@@ -41,7 +41,7 @@ requirements:
 test: {}
 
 about:
-  home: https://gitlab.com/costrouc/dftfit
+  home: https://github.com/costrouc/dftfit
   license: MIT
   license_family: MIT
   license_file: LICENSE.md
@@ -52,7 +52,7 @@ about:
     molecular dynamic potentials. Our package differs from other
     similar codes in that we leverage LAMMPS as a calculator enabling
     a wide variety of
-    [potentials](https://dftfit.readthedocs.io/en/latest/potentials.html). The
+    [potentials](https://chrisostrouchov.com/dftfit/potentials.html). The
     potentials include custom python functions and a wide variety or
     three-body interactions including the Tersoff, Stillinger-Weber,
     Gao-Weber, Vashishta, and COMB Potentials. All of which can be
@@ -60,8 +60,8 @@ about:
     potential. We also have an extensive set of multi-objective and
     single-objective
     [optimizers](https://dftfit.readthedocs.io/en/latest/configuration.html#optimization).
-  doc_url: https://dftfit.readthedocs.io/
-  dev_url: https://gitlab.com/costrouc/dftfit
+  doc_url: https://chrisostrouchov/dftfit/
+  dev_url: https://github.com/costrouc/dftfit
 
 extra:
   recipe-maintainers:
