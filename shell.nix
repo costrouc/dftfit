@@ -5,7 +5,7 @@ pkgs.mkShell {
     # build dependecies
     pkgs.lammps
     pymatgen marshmallow pyyaml pygmo pybtex
-    pandas scipy numpy scikitlearn
+    pandas scipy numpy scikitlearn numba
     lammps-cython pymatgen-lammps
     # test dependencies
     pytest pytest-benchmark pytestcov
