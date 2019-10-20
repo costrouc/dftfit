@@ -122,7 +122,7 @@ class Training:
                 return cls(json.load(f))
         elif format in {'yaml', 'yml'}:
             with open(filename) as f:
-                return cls(yaml.load(f), **kwargs)
+                return cls(yaml.safe_load(f), **kwargs)
 
     def __str__(self):
         return json.dumps(self.schema, sort_keys=True, cls=utils.NumpyEncoder)

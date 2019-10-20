@@ -19,7 +19,7 @@ def is_not_file_type(filename):
 
 def load_filename(filename):
     if filename.endswith('.yaml') or filename.endswith('.yml'):
-        return yaml.load(open(filename))
+        return yaml.safe_load(open(filename))
     elif filename.endswith('.json'):
         return json.load(open(filename))
     else:

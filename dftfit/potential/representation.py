@@ -87,7 +87,7 @@ class Potential:
                 return cls(json.load(f))
         elif format in {'yaml', 'yml'}:
             with open(filename) as f:
-                return cls(yaml.load(f))
+                return cls(yaml.safe_load(f))
 
     @classmethod
     def from_run_evaluation(cls, schema, initial_parameters, optimization_indicies, optimization_parameters, optimization_bounds):
