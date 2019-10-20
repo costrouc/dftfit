@@ -52,12 +52,14 @@ class DFTFITProblemBase:
             'bulk_modulus': objective.bulk_modulus_objective_function,
             'shear_modulus': objective.shear_modulus_objective_function
         }
+
         for feature in self.features:
             self.objective_functions.append(feature_function_mapping[feature])
             if feature in {'lattice_constants'}:
                 self.md_calculations.add('lattice_constants')
             elif feature in {'elastic_constants', 'bulk_modulus', 'shear_modulus'}:
                 self.md_calculations = self.md_calculations | {'lattice_constants', 'elastic_constants'}
+
         logger.info('(problem) optimizing features with weights: ' + ', '.join('{}={:.2f}'.format(f, w) for f, w in zip(self.features, self.weights)))
 
         # Database Logging Initialization
@@ -65,6 +67,7 @@ class DFTFITProblemBase:
         self._run_id = run_id
         self.db_write_interval = db_write_interval
         self._evaluation_buffer = []
+
         if self.dbm and not isinstance(self._run_id, int):
             raise ValueError('cannot write evaluation to database without integer run_id')
 

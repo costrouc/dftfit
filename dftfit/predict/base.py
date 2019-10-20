@@ -4,7 +4,7 @@ import json
 import math
 import copy
 import logging
-import time
+
 
 import numpy as np
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
