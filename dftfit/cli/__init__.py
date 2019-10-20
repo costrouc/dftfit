@@ -7,7 +7,7 @@ from . import db
 
 
 def init_parser():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description='dftfit')
     subparsers = parser.add_subparsers()
     train.add_subcommand_train(subparsers)
     test.add_subcommand_test(subparsers)
